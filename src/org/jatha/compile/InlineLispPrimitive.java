@@ -29,19 +29,36 @@ import org.jatha.dynatype.*;
 import org.jatha.machine.*;
 
 
-public class AddOnePrimitive extends LispPrimitive
+/**
+ * if the function effectively evaluates itself
+ * simply by compiling its argument list.  This is true for
+ * functions like LIST, LIST*, and QUOTE.  This inhibits putting
+ * the function call on the stack, thus saving a millisecond of time.
+ *
+ * @see org.jatha.compile.LispPrimitive
+ */
+public abstract class InlineLispPrimitive extends LispPrimitive
 {
-  public AddOnePrimitive(Jatha lisp)
-  {
-    super(lisp, "1+", 1);
-  }
+	public InlineLispPrimitive(Jatha lisp, String fnName, long minArgs) {
+		super(lisp, fnName, minArgs);
+	}
+	public InlineLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
+		super(lisp, fnName, minArgs, maxArgs);
+	}
 
-  public void Execute(SECDMachine machine)
-  {
-    LispValue value = machine.S.pop();
-
-    machine.S.push(value.add(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL)));
-    machine.C.pop();
-  }
+	@Override
+	public void Execute(SECDMachine machine)
+			throws CompilerException
+	{
+		System.err.println(LispFunctionNameString() + " was compiled - shouldn't have been.");
+		machine.C.pop();
+	}
+	
+	@Override
+	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
+					LispValue args, LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		return CompileArgs(compiler, machine, args, valueList, code);
+	}
 }
-

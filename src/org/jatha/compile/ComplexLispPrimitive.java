@@ -25,20 +25,25 @@
 package org.jatha.compile;
 
 import org.jatha.Jatha;
+import org.jatha.dynatype.*;
 import org.jatha.machine.*;
 
 
-public class SinePrimitive extends LispPrimitive
+// todo: rename as LispPrimitiveWithVariableNumerOfArgs
+public abstract class ComplexLispPrimitive extends LispPrimitive
 {
-  public SinePrimitive(Jatha lisp)
-  {
-    super(lisp, "SIN", 1);
-  }
+	public ComplexLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
+		super(lisp, fnName, minArgs, maxArgs);
+	}
 
-  public void Execute(SECDMachine machine)
-  {
-    machine.S.push(machine.S.pop().sin());
-    machine.C.pop();
-  }
+	// Unlimited number of evaluated args.
+	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
+			LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		return
+				compiler.compileArgsLeftToRight(args, valueList,
+						f_lisp.makeCons(machine.LIS,
+								f_lisp.makeCons(args.length(), code)));
+	}
 }
-

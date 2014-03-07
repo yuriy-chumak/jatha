@@ -681,9 +681,9 @@ public class Jatha extends Object
     // Need to allow *TOP-LEVEL-PROMPT* to change this.
     prompt = makeString("Jatha> ");
 
-    STAR         = EVAL.intern("*",f_systemPackage);
-    STARSTAR     = EVAL.intern("**",f_systemPackage);
-    STARSTARSTAR = EVAL.intern("***",f_systemPackage);
+    STAR         = EVAL.internAndExport("*", f_systemPackage);
+    STARSTAR     = EVAL.internAndExport("**", f_systemPackage);
+    STARSTARSTAR = EVAL.internAndExport("***", f_systemPackage);
 
     STAR.setf_symbol_value(NIL);
     STARSTAR.setf_symbol_value(NIL);
@@ -696,9 +696,6 @@ public class Jatha extends Object
     PRINT_LEVEL  = EVAL.intern("*PRINT-LEVEL*",f_systemPackage);
     PRINT_LEVEL.setf_symbol_value(new StandardLispInteger(this, PRINT_LEVEL_VALUE));
 
-    f_systemPackage.export(STAR);
-    f_systemPackage.export(STARSTAR);
-    f_systemPackage.export(STARSTARSTAR);
     f_systemPackage.export(MAX_LIST_LENGTH);
     f_systemPackage.export(PRINT_LENGTH);
     f_systemPackage.export(PRINT_LEVEL);
@@ -1888,14 +1885,15 @@ public class Jatha extends Object
 		if (System.in == null)
 			return;
 		Jatha lisp = new Jatha();
-	  
-		LispParser cli = new LispParser(lisp, new InputStreamReader(System.in));
+
+		LispParser cli = new LispParser(lisp,
+				args.length > 0
+				?	new StringReader(args[0])
+				:	new InputStreamReader(System.in));
 		while (true) {
-			System.err.print("> ");
+			System.out.print("> ");
 			try {
-				String re = lisp.eval(cli.read()).toString();
-				System.err.print("! ");
-				System.out.println(re);
+				System.out.println(lisp.eval(cli.read()).toString());
 			} catch (EOFException e) {
 				return; // done.
 			}

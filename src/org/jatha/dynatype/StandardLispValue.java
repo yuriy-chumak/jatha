@@ -1196,13 +1196,13 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     add         (LispValue args)
   { throw new LispValueNotANumberException("An argument to + (add)"); }
 
-  public LispValue     divide      (LispValue args)
+  public LispValue     div      (LispValue args)
   { throw new LispValueNotANumberException("An argument to / (divide)"); }
 
-  public LispValue     multiply    (LispValue args)
+  public LispValue     mul    (LispValue args)
   { throw new LispValueNotANumberException("An argument to * (multiply)"); }
 
-  public LispValue     subtract    (LispValue args)
+  public LispValue     sub    (LispValue args)
   { throw new LispValueNotANumberException("An argument to - (subtract)"); }
 
   public LispValue greaterThan(LispValue arg)

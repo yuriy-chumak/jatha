@@ -58,17 +58,6 @@ public abstract class LispPrimitive extends StandardLispValue
   protected long maxNumberOfArgs;
 
   /**
-   * Set inlineP to true if the function effectively evaluates itself
-   * simply by compiling its argument list.  This is true for
-   * functions like LIST, LIST*, and QUOTE.  This inhibits putting
-   * the function call on the stack, thus saving a millisecond of time.
-   *
-   * @see org.jatha.compile.LispPrimitive
-   */
-  public boolean inlineP = false;
-
-
-  /**
    * the <tt>functionName</tt> is part of the string that
    * gets printed when the instruction appears in a printed list.
    */
@@ -167,26 +156,12 @@ public abstract class LispPrimitive extends StandardLispValue
     initConstants();
   }
 
-  public LispPrimitive(Jatha lisp, String fnName, long minArgs)
-  {
-    super(lisp);
-    minNumberOfArgs     = minArgs;
-    maxNumberOfArgs     = minArgs;  // default value
-    functionName        = fnName;
-    functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
-    
-    initConstants();
+  public LispPrimitive(Jatha lisp, String fnName, long minArgs) {
+	  this(lisp, fnName, minArgs, minArgs);
   }
 
-  public LispPrimitive(Jatha lisp, String fnName) // Abstract machine ops have no args
-  {
-    super(lisp);
-    minNumberOfArgs     = 0;         // default value
-    maxNumberOfArgs     = 0;         // default value
-    functionName        = fnName;
-    functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
-    
-    initConstants();
+  public LispPrimitive(Jatha lisp, String fnName) { // Abstract machine ops have no args
+	  this(lisp, fnName, 0);
   }
 
   public String    LispFunctionNameString() { return functionName; }
@@ -309,9 +284,21 @@ public abstract class LispPrimitive extends StandardLispValue
    * @see org.jatha.compile.LispCompiler
    * @param machine   The abstract machine instance.
    */
-  public abstract void Execute(SECDMachine machine)
-    throws CompilerException;
+	public void Execute(SECDMachine machine)
+			throws CompilerException
+	{
+		machine.S.push(Execute(machine.S.pop()));
+		machine.C.pop();
+	}
 
+//	todo: restore this after code refactoring
+//	public abstract LispValue Execute(LispValue arg)
+//			throws CompilerException;
+	public LispValue Execute(LispValue arg)
+	throws CompilerException
+	{
+		throw new UndefinedFunctionException();
+	}
 
    // Called only on Builtin Functions
    LispValue BuiltinFunctionCode(LispValue fn)
@@ -347,17 +334,12 @@ public abstract class LispPrimitive extends StandardLispValue
 			       LispValue args, LispValue valueList, LispValue code)
     throws CompilerException
   {
-    if (this.inlineP)
-      return  CompileArgs(compiler, machine, args, valueList, code);
-    else
-    {
       if (! (function instanceof LispFunction))
         function = function.symbol_function();
 
       LispValue fncode = ((LispFunction)function).getCode().second();
 
       return  CompileArgs(compiler, machine, args, valueList, f_lisp.makeCons(fncode, code));
-    }
   }
 
 

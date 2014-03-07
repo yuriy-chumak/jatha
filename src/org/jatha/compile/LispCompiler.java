@@ -92,34 +92,20 @@ public class LispCompiler
       final LispPackage keyPkg = (LispPackage)(f_lisp.findPackage("KEYWORD"));
       final LispPackage sysPkg = (LispPackage)(f_lisp.findPackage("SYSTEM"));
 
-    AMP_REST   = f_lisp.EVAL.intern("&REST",sysPkg);
-    sysPkg.export(AMP_REST);
-    AND        = f_lisp.EVAL.intern("AND",sysPkg);
-    sysPkg.export(AND);
-    DEFMACRO   = f_lisp.EVAL.intern("DEFMACRO",sysPkg);
-    sysPkg.export(DEFMACRO);
-    DEFUN      = f_lisp.EVAL.intern("DEFUN",sysPkg);
-    sysPkg.export(DEFUN);
-    IF         = f_lisp.EVAL.intern("IF",sysPkg);
-    sysPkg.export(IF);
-    LAMBDA     = f_lisp.EVAL.intern("LAMBDA",sysPkg);
-    sysPkg.export(LAMBDA);
-    LET        = f_lisp.EVAL.intern("LET",sysPkg);
-    sysPkg.export(LET);
-    LETREC     = f_lisp.EVAL.intern("LETREC",sysPkg);
-    sysPkg.export(LETREC);
-    MACRO      = f_lisp.EVAL.intern("MACRO",keyPkg);
-    keyPkg.export(MACRO);
-    OR         = f_lisp.EVAL.intern("OR",sysPkg);
-    sysPkg.export(OR);
-    PROGN      = f_lisp.EVAL.intern("PROGN",sysPkg);
-    sysPkg.export(PROGN);
-    PRIMITIVE  = f_lisp.EVAL.intern("PRIMITIVE",keyPkg);
-    keyPkg.export(PRIMITIVE);
-    QUOTE      = f_lisp.EVAL.intern("QUOTE",sysPkg);
-    sysPkg.export(QUOTE);
-    SETQ       = f_lisp.EVAL.intern("SETQ",sysPkg);
-    sysPkg.export(SETQ);
+    AMP_REST   = f_lisp.EVAL.internAndExport("&REST",sysPkg);
+    AND        = f_lisp.EVAL.internAndExport("AND",sysPkg);
+    DEFMACRO   = f_lisp.EVAL.internAndExport("DEFMACRO",sysPkg);
+    DEFUN      = f_lisp.EVAL.internAndExport("DEFUN",sysPkg);
+    IF         = f_lisp.EVAL.internAndExport("IF",sysPkg);
+    LAMBDA     = f_lisp.EVAL.internAndExport("LAMBDA",sysPkg);
+    LET        = f_lisp.EVAL.internAndExport("LET",sysPkg);
+    LETREC     = f_lisp.EVAL.internAndExport("LETREC",sysPkg);
+    MACRO      = f_lisp.EVAL.internAndExport("MACRO",keyPkg);
+    OR         = f_lisp.EVAL.internAndExport("OR",sysPkg);
+    PROGN      = f_lisp.EVAL.internAndExport("PROGN",sysPkg);
+    PRIMITIVE  = f_lisp.EVAL.internAndExport("PRIMITIVE",keyPkg);
+    QUOTE      = f_lisp.EVAL.internAndExport("QUOTE",sysPkg);
+    SETQ       = f_lisp.EVAL.internAndExport("SETQ",sysPkg);
     //    BLOCK       = f_lisp.EVAL.intern("BLOCK",sysPkg);
     //    sysPkg.export(BLOCK);
     //    WHEN       = f_lisp.EVAL.intern("WHEN");
@@ -150,12 +136,118 @@ public class LispCompiler
    * compiler can recognize them.
    *
    * @see org.jatha.compile.LispCompiler
+   * 
+   * Primitives list for basic use for leaving as different classes:
+   * LispPrimitive, ConsPrimitive, ...
+   * 
+   * SimpleLispPrimitive, ComplexLispPrimitive (contains special CompileArgs function), ...
+   * 
+   * and special "optimized" primitive InlineLispPrimitive
    */
-  public void init()
-  {
-      // Here put a call to in-package, then to export. for these things. I guess register should call export.
-      final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
-    Register(new AbsoluteValuePrimitive(f_lisp),SYSTEM_PKG);
+	public void init()
+	{
+		// Here put a call to in-package, then to export. for these things. I guess register should call export.
+		final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
+		
+		// http://jtra.cz/stuff/lisp/sclr/index.html
+		// Basic simple functions
+		Register(new LispPrimitive(f_lisp, "ATOM", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.atom();
+			}
+		}, SYSTEM_PKG);
+		
+		
+		Register(new LispPrimitive(f_lisp, "CAR", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.car();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "CDR", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.cdr();
+			}
+		}, SYSTEM_PKG);
+		
+		
+		Register(new LispPrimitive(f_lisp, "COS", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.cos();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "SEC", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.sec();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "SIN", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.sin();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "TAN", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.tan();
+			}
+		}, SYSTEM_PKG);
+		
+		
+		Register(new LispPrimitive(f_lisp, "ABS", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.abs();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "MOD", 2) {
+			public void Execute(SECDMachine machine) // override for 2 arguments, todo: make as part of LispPrimitive
+			{
+				LispValue n = machine.S.pop();
+				LispValue x = machine.S.pop();
+				machine.S.push(x.mod(n));
+				machine.C.pop();
+			}
+		}, SYSTEM_PKG);
+		
+
+		Register(new ComplexLispPrimitive(f_lisp, "+", 0, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				if (args == f_lisp.NIL)
+					return f_lisp.ZERO;
+				return args.car().add(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		Register(new ComplexLispPrimitive(f_lisp, "-", 1, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				return args.car().sub(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		Register(new ComplexLispPrimitive(f_lisp, "*", 0, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				if (args == f_lisp.NIL)
+					return f_lisp.ONE;
+				return args.car().mul(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		Register(new ComplexLispPrimitive(f_lisp, "/", 1, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				return args.car().div(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		
+		
+		Register(new ComplexLispPrimitive(f_lisp, "MIN", 1, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				return args.car().min(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		Register(new ComplexLispPrimitive(f_lisp, "MAX", 1, Long.MAX_VALUE) {
+			public LispValue Execute(LispValue args) {
+				return args.car().max(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		
+		// More complex functions
+		
+		
     Register(new AppendPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ApplyPrimitive(f_lisp),SYSTEM_PKG);
     Register(new AproposPrimitive(f_lisp),SYSTEM_PKG);
@@ -167,23 +259,28 @@ public class LispCompiler
     Register(new ArraypPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ArefPrimitive(f_lisp),SYSTEM_PKG);
     Register(new AssocPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new AtomPrimitive(f_lisp),SYSTEM_PKG);
     // Register(new BackquotePrimitive(f_lisp), (LispPackage)f_lisp.findPackage("SYSTEM"));
-    Register(new BoundpPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new BlockPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ButlastPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new CarPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new CdrPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new CeilingPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new CharacterpPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ClrhashPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ConcatenatePrimitive(f_lisp),SYSTEM_PKG);
+    	Register(new BoundpPrimitive(f_lisp),SYSTEM_PKG);
+		Register(new ButlastPrimitive(f_lisp),SYSTEM_PKG);
+		Register(new CeilingPrimitive(f_lisp),SYSTEM_PKG);
+		Register(new CharacterpPrimitive(f_lisp),SYSTEM_PKG);
+		Register(new ClrhashPrimitive(f_lisp),SYSTEM_PKG);
+    
+		Register(new ComplexLispPrimitive(f_lisp, "CONCATENATE", 1, Long.MAX_VALUE) {
+			// First argument should be 'STRING
+			// Apply concatenate to the next argument.
+			public LispValue Execute(LispValue args) {
+				if (args.basic_length() > 1)
+					return args.second().concatenate(f_lisp.makeCons(args.car(), args.cdr().cdr()));
+				return f_lisp.makeString("");
+			}
+		}, SYSTEM_PKG);
+    
     Register(new ConsPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ConspPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ConstantpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new CopyListPrimitive(f_lisp),SYSTEM_PKG);
     Register(new CosecantPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new CosinePrimitive(f_lisp),SYSTEM_PKG);
     Register(new CotangentPrimitive(f_lisp),SYSTEM_PKG);
     Register(new DefconstantPrimitive(f_lisp),SYSTEM_PKG);
     Register(new DefparameterPrimitive(f_lisp),SYSTEM_PKG);
@@ -237,9 +334,7 @@ public class LispCompiler
     Register(new LastPrimitive(f_lisp),SYSTEM_PKG);
     Register(new LengthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new LessThanPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new LessThanOrEqualPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ListPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ListStarPrimitive(f_lisp),SYSTEM_PKG);
+   	Register(new LessThanOrEqualPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ListAllPackagesPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ListpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new LoadPrimitive(f_lisp),SYSTEM_PKG);
@@ -248,10 +343,7 @@ public class LispCompiler
     Register(new MacroexpandPrimitive(f_lisp),SYSTEM_PKG);
     Register(new MakeArrayPrimitive(f_lisp),SYSTEM_PKG);
     Register(new MakeHashTablePrimitive(f_lisp),SYSTEM_PKG);
-    Register(new MaxPrimitive(f_lisp),SYSTEM_PKG);
     Register(new MemberPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new MinPrimitive(f_lisp),SYSTEM_PKG);
-	Register(new ModPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NconcPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NinthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NotPrimitive(f_lisp),SYSTEM_PKG);
@@ -267,7 +359,6 @@ public class LispCompiler
     Register(new PrincPrimitive(f_lisp),SYSTEM_PKG);
     Register(new PrintPrimitive(f_lisp),SYSTEM_PKG);
     Register(new PushPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new QuotePrimitive(f_lisp),SYSTEM_PKG);
     Register(new RadiansToDegreesPrimitive(f_lisp),SYSTEM_PKG);
     Register(new RassocPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ReadFromStringPrimitive(f_lisp),SYSTEM_PKG);
@@ -279,7 +370,6 @@ public class LispCompiler
     Register(new ReversePrimitive(f_lisp),SYSTEM_PKG);
     Register(new RplacaPrimitive(f_lisp),SYSTEM_PKG);
     Register(new RplacdPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SecantPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SecondPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfCarPrimitive(f_lisp),SYSTEM_PKG);
@@ -289,7 +379,6 @@ public class LispCompiler
     Register(new SetfSymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetqPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SeventhPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SinePrimitive(f_lisp),SYSTEM_PKG);
     Register(new SixthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SquareRootPrimitive(f_lisp),SYSTEM_PKG);
@@ -322,25 +411,73 @@ public class LispCompiler
     Register(new SymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new TagbodyPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new TangentPrimitive(f_lisp),SYSTEM_PKG);
     Register(new TenthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ThirdPrimitive(f_lisp),SYSTEM_PKG);
     Register(new TimePrimitive(f_lisp),SYSTEM_PKG);
     Register(new TypeOfPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ZeropPrimitive(f_lisp),SYSTEM_PKG);
 
-    Register(new AddPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new DividePrimitive(f_lisp),SYSTEM_PKG);
-    Register(new MultiplyPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SubtractPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new AddOnePrimitive(f_lisp),SYSTEM_PKG);       /* 1+  */
-    Register(new SubtractOnePrimitive(f_lisp),SYSTEM_PKG);  /* 1-  */
-
     Register(new TracePrimitive(f_lisp),SYSTEM_PKG);
     Register(new GcPrimitive(f_lisp),SYSTEM_PKG);
     Register(new GcFullPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FreePrimitive(f_lisp),SYSTEM_PKG);
-  }
+    
+		// Additional embedded primitives for perfomance improvement
+		Register(new LispPrimitive(f_lisp, "1+", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.add(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "1-", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.sub(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
+			}
+		}, SYSTEM_PKG);
+		
+    	// "inline" primitives (for perfomance purposes)
+		Register(new InlineLispPrimitive(f_lisp, "BLOCK", 1, Long.MAX_VALUE) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				final LispValue tag = args.car();
+				compiler.getLegalBlocks().push(tag);
+				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"),args.cdr()));
+				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList, f_lisp.makeCons(machine.BLK, f_lisp.makeCons(tag, code)));
+				compiler.getLegalBlocks().pop();
+				return compiledCode;
+			}
+		}, SYSTEM_PKG);
+		Register(new InlineLispPrimitive(f_lisp, "LIST", 0, Long.MAX_VALUE) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				return compiler.compileArgsLeftToRight(args, valueList,
+						f_lisp.makeCons(machine.LIS,
+								f_lisp.makeCons(args.length(), code)));
+			}
+		}, SYSTEM_PKG);
+		Register(new InlineLispPrimitive(f_lisp, "LIST*", 1, Long.MAX_VALUE) {
+			LispValue CONS = new ConsPrimitive(f_lisp);
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				if (args.cdr() == f_lisp.NIL)
+					return compiler.compileArgsLeftToRight(args, valueList, code);
+				return compiler.compile(args.car(), valueList,
+						CompileArgs(compiler, machine, args.cdr(),
+								valueList,
+								f_lisp.makeCons(CONS, code)));
+			}
+		}, SYSTEM_PKG);
+		Register(new InlineLispPrimitive(f_lisp, "QUOTE", 1) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				// Don't evaluate the arg. (load it as a constant)
+				return f_lisp.makeCons(machine.LDC, f_lisp.makeCons(args.first(), code));
+			}
+		}, SYSTEM_PKG);
+	}
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Wed Feb  5 09:45:51 1997

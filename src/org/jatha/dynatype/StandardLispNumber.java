@@ -161,7 +161,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         LispValue total = f_lisp.ONE;
         long index = 2L;
         while(index <= value.getLongValue()) {
-            total = total.multiply(new StandardLispInteger(f_lisp,index++));
+            total = total.mul(new StandardLispInteger(f_lisp,index++));
         }
         return total;
     }
@@ -285,7 +285,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    */
   public LispValue    negate()
   {
-    return this.subtract(f_lisp.NIL);  // Returns the negative.
+    return this.sub(f_lisp.NIL);  // Returns the negative.
   }
 
   public LispValue    numberp()  { return f_lisp.T; }
@@ -438,7 +438,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispInteger
    * @see LispBignum
    */
-  public LispValue     divide      (LispValue   args)
+  public LispValue     div      (LispValue   args)
   {
     double    d_quotient = 0.0;
     long      l_quotient = 0, term_value;
@@ -469,7 +469,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       term = arglist.car();             /* Arglist is already evaluated. */
       if (! term.basic_numberp())
       {
-        super.divide(arglist.car());  // Generate an error
+        super.div(arglist.car());  // Generate an error
         return(f_lisp.NIL);
       }
 
@@ -543,7 +543,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     multiply    (LispValue  args)
+  public LispValue     mul    (LispValue  args)
   {
     double     d_product     = this.getDoubleValue();
     long       l_product     = 0;
@@ -574,7 +574,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       // Check for a non-numeric argument.
       if (! term.basic_numberp())    // generates an error
       {
-        super.multiply(term);
+        super.mul(term);
         return(f_lisp.NIL);
       }
 
@@ -609,7 +609,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         if (term instanceof LispBignum)
         {
           LispBignum bn_val = f_lisp.makeBignum(l_product);
-          return bn_val.multiply(ptr);
+          return bn_val.mul(ptr);
         }
 
         l_term = ((LispInteger)term).getLongValue();
@@ -621,7 +621,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
           // Need to convert to bignum
           //System.out.println("Converting " + l_product + " to bignum and multiplying by " + ptr);
           LispBignum bn_val = f_lisp.makeBignum(l_product);
-          return bn_val.multiply(ptr);
+          return bn_val.mul(ptr);
         }
         else
           l_result = l_product * l_term;
@@ -655,7 +655,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     subtract    (LispValue  args)
+  public LispValue     sub    (LispValue  args)
   {
     // The list of numbers has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -686,7 +686,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       addend = arglist.car();
       if (! addend.basic_numberp())
       {
-        super.subtract(arglist.car());  // generates an error.
+        super.sub(arglist.car());  // generates an error.
         return(f_lisp.NIL);
       }
 
@@ -717,7 +717,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         {
           // System.out.println("Bignum arg (sub)...converting " + l_sum + " to bignum.");
           LispBignum bn_val = f_lisp.makeBignum(l_sum);
-          return bn_val.subtract(arglist);
+          return bn_val.sub(arglist);
         }
 
         l_addend = ((LispInteger)addend).getLongValue();
@@ -729,7 +729,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
           {
             // System.out.println("Converting " + l_sum + " to bignum.");
             LispBignum bn_val = f_lisp.makeBignum(l_sum);
-            return bn_val.subtract(arglist);
+            return bn_val.sub(arglist);
           }
         }
         else if ((l_sum < 0) && (l_addend > 0))
@@ -739,7 +739,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
             // Need to convert to bignum
             // System.out.println("Converting " + l_sum + " to bignum.");
             LispBignum bn_val = f_lisp.makeBignum(l_sum);
-            return bn_val.subtract(arglist);
+            return bn_val.sub(arglist);
           }
         }
       }

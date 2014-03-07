@@ -158,6 +158,12 @@ public class LispEvaluator
   {
     return intern(f_lisp.makeString(str), pkg);
   }
+  public LispValue internAndExport(String str, LispPackage pkg)
+  {
+	  LispValue value = intern(f_lisp.makeString(str), pkg);
+	  pkg.export(value);
+	  return value;
+  }
 
 /* ------------------     ------------------------------ */
 

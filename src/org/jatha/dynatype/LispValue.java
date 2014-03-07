@@ -1012,19 +1012,19 @@ public interface LispValue extends Comparable<LispValue>
    * Returns the quotient of the object and the object(s) in the argument list.
    * This is the <code>/</code> function in LISP.
    */
-  public LispValue divide(LispValue args);
+  public LispValue div(LispValue args);
 
   /**
    * Returns the product of the object and the object(s) in the argument list.
    * This is the <code>*</code> function in LISP.
    */
-  public LispValue multiply(LispValue args);
+  public LispValue mul(LispValue args);
 
   /**
    * Returns the difference of the object and the object(s) in the argument list.
    * This is the <code>-</code> function in LISP.
    */
-  public LispValue subtract(LispValue args);
+  public LispValue sub(LispValue args);
 
   /**
    * Returns T if the object prepended to the argument list is

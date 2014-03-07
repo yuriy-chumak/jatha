@@ -234,7 +234,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispInteger
    *
    */
-  public LispValue     divide      (LispValue   args)
+  public LispValue     div      (LispValue   args)
   {
     BigInteger quotient    = this.getBigIntegerValue();
     BigInteger quotientAndRem[];
@@ -247,7 +247,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       term = args.car();             /* Arglist is already evaluated. */
       if (term.numberp() != f_lisp.T)
       {
-        this.divide(args.car());  // generate error
+        this.div(args.car());  // generate error
         return(f_lisp.NIL);
       }
 
@@ -260,7 +260,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       {
         // Do we print a warning?
         LispReal realValue = f_lisp.makeReal(quotient.doubleValue());
-        return realValue.divide(args);
+        return realValue.div(args);
       }
 
 
@@ -276,7 +276,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
         if (quotientAndRem[1].compareTo(ZERO) != 0)
         {
           // Won't divide evenly, so convert to a real.
-          return f_lisp.makeReal(quotient.doubleValue()).divide(args);
+          return f_lisp.makeReal(quotient.doubleValue()).div(args);
         }
         else
           quotient = quotientAndRem[0];
@@ -316,7 +316,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     multiply    (LispValue  args)
+  public LispValue     mul    (LispValue  args)
   {
     BigInteger product     = this.getBigIntegerValue();
     LispValue  term,arglist;
@@ -333,7 +333,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       // Generate an error if the multiplicand is not a number.
       if (term.numberp() != f_lisp.T)
       {
-        super.multiply(arglist.car());  // generates an error
+        super.mul(arglist.car());  // generates an error
         return(f_lisp.NIL);
       }
 
@@ -344,7 +344,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       {
         // Do we print a warning?
         LispReal realValue = f_lisp.makeReal(this.getDoubleValue());
-        return realValue.multiply(arglist);
+        return realValue.mul(arglist);
       }
 
       if (term instanceof LispBignum)
@@ -378,7 +378,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     subtract         (LispValue  args)
+  public LispValue     sub         (LispValue  args)
   {
     // Args is a list of numbers that has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -392,7 +392,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       term = args.car();
       if (term.numberp() != f_lisp.T)
       {
-        this.subtract(args.car());  // generate error
+        this.sub(args.car());  // generate error
         return(f_lisp.NIL);
       }
 
@@ -403,7 +403,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       {
         // Do we print a warning?
         LispReal realValue = f_lisp.makeReal(this.getDoubleValue());
-        return realValue.subtract(args);
+        return realValue.sub(args);
       }
 
       ++argCount;
