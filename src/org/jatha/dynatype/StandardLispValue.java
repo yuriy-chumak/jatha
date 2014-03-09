@@ -125,27 +125,22 @@ import org.jatha.Jatha;
  */
 public abstract class StandardLispValue implements LispValue    // Base class for all the LISP data types
 {
-  protected Jatha f_lisp = null;
+	protected final Jatha f_lisp;
 
-  public StandardLispValue()
-  {
-    super();
-  }
+	public StandardLispValue()
+	{
+		f_lisp = null;
+	}
 
-  public StandardLispValue(Jatha lisp)
-  {
-    f_lisp = lisp;
-  }
+	public StandardLispValue(final Jatha lisp)
+	{
+		f_lisp = lisp;
+	}
 
-  public Jatha getLisp()
-  {
-    return f_lisp;
-  }
-
-  public void setLisp(Jatha lisp)
-  {
-    f_lisp = lisp;
-  }
+	public Jatha getLisp()
+	{
+		return f_lisp;
+	}
 
   public String internal_getName()
   {

@@ -43,10 +43,7 @@ public interface LispValue extends Comparable<LispValue>
 {
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
 
-
   public Jatha getLisp();
-
-  void setLisp(Jatha lisp);
 
   public String internal_getName();
 

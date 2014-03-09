@@ -1,6 +1,6 @@
-/*
+/**
  * Jatha - a Common LISP-compatible LISP library in Java.
- * Copyright (C) 1997-2005 Micheal Scott Hewett
+ * Copyright (C) 1997-2008 Micheal Scott Hewett
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -22,24 +22,36 @@
  *
  */
 
-package org.jatha.compile;
+package org.jatha;
 
-import org.jatha.Jatha;
-import org.jatha.machine.*;
-
-
-public class SeventhPrimitive extends LispPrimitive
+public class Tests extends Object
 {
-  public SeventhPrimitive(Jatha lisp)
-  {
-    super(lisp, "SEVENTH", 1);
-  }
-
-  public void Execute(SECDMachine machine)
-  {
-
-    machine.S.push(machine.S.pop().seventh());
-    machine.C.pop();
-  }
+	public static void test(String title, String program, String result)
+	{
+		System.out.println("Testing: " + title);
+		
+		Jatha lisp = new Jatha();
+		String o = lisp.eval(program).toString();
+		if (!result.equals(o))
+			System.out.print("FAILED!");
+	}
+	public static void main(String[] args)
+	{
+		testAccessorFunctions();
+	}
+	
+	
+	private static boolean testAccessorFunctions()
+	{
+		test("FIRST",
+				"(first '(1 2 3 4 5 6 7 8 9 10))",
+				"1"
+				);
+		test("SECOND",
+				"(second '(1 2 3 4 5 6 7 8 9 10))",
+				"2"
+				);
+		return false;
+	}
+	
 }
-

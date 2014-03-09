@@ -28,8 +28,8 @@ import java.util.Set;
 import java.util.Stack;
 import java.util.Map;
 import java.util.HashMap;
-
 import java.util.List;
+
 import org.jatha.Jatha;
 import org.jatha.dynatype.*;
 import org.jatha.machine.*;
@@ -67,7 +67,7 @@ public class LispCompiler
   LispValue LAMBDA;
   LispValue LET;
   LispValue LETREC;
-  LispValue OR;
+     LispValue OR;
   LispValue PRIMITIVE;
   LispValue PROGN;
   LispValue QUOTE;
@@ -157,6 +157,8 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		
+		registerAccessorFunctions(SYSTEM_PKG);
+//		registerStringFunctions(SYSTEM_PKG);
 		
 		Register(new LispPrimitive(f_lisp, "CAR", 1) {
 			public LispValue Execute(LispValue arg) {
@@ -288,7 +290,6 @@ public class LispCompiler
     Register(new DegreesToRadiansPrimitive(f_lisp),SYSTEM_PKG);
     Register(new DocumentationPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfDocumentationPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new EighthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new EltPrimitive(f_lisp),SYSTEM_PKG);
     Register(new EqPrimitive(f_lisp),SYSTEM_PKG);
     Register(new EqlPrimitive(f_lisp),SYSTEM_PKG);
@@ -308,13 +309,10 @@ public class LispCompiler
     Register(new ExportPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ShadowPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ShadowingImportPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new FifthPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new FirstPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FloatpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FloorPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FuncallPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FunctionPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new FourthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new GrindefPrimitive(f_lisp),SYSTEM_PKG);
     Register(new GethashPrimitive(f_lisp),SYSTEM_PKG);
     Register(new GoPrimitive(f_lisp),SYSTEM_PKG);
@@ -345,7 +343,6 @@ public class LispCompiler
     Register(new MakeHashTablePrimitive(f_lisp),SYSTEM_PKG);
     Register(new MemberPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NconcPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new NinthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NotPrimitive(f_lisp),SYSTEM_PKG);
     Register(new NreversePrimitive(f_lisp),SYSTEM_PKG);
     Register(new NStringCapitalizePrimitive(f_lisp),SYSTEM_PKG);
@@ -370,7 +367,6 @@ public class LispCompiler
     Register(new ReversePrimitive(f_lisp),SYSTEM_PKG);
     Register(new RplacaPrimitive(f_lisp),SYSTEM_PKG);
     Register(new RplacdPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SecondPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfCarPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfCdrPrimitive(f_lisp),SYSTEM_PKG);
@@ -378,10 +374,9 @@ public class LispCompiler
     Register(new SetfSymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfSymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetqPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SeventhPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new SixthPrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SquareRootPrimitive(f_lisp),SYSTEM_PKG);
+    
     Register(new StringPrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringUpcasePrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringDowncasePrimitive(f_lisp),SYSTEM_PKG);
@@ -411,8 +406,6 @@ public class LispCompiler
     Register(new SymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new TagbodyPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new TenthPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new ThirdPrimitive(f_lisp),SYSTEM_PKG);
     Register(new TimePrimitive(f_lisp),SYSTEM_PKG);
     Register(new TypeOfPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ZeropPrimitive(f_lisp),SYSTEM_PKG);
@@ -1635,4 +1628,59 @@ public class LispCompiler
     return code.basic_listp() && (code.car() == MACRO);
   }
 
+	// init
+  
+	private void registerAccessorFunctions(LispPackage pkg)
+	{
+		Register(new LispPrimitive(f_lisp, "FIRST", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.first();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "SECOND", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.second();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "THIRD", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.third();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "FOURTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.fourth();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "FIFTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.fifth();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "SIXTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.sixth();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "SEVENTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.seventh();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "EIGHTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.eighth();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "NINTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.ninth();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "TENTH", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.tenth();
+			}
+		}, pkg);
+	}
 }

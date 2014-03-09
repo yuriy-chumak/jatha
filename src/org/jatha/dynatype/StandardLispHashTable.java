@@ -150,7 +150,6 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public StandardLispHashTable(Jatha lisp)
   {
     super(lisp);
-    f_lisp = lisp;
   }
 
 
@@ -169,8 +168,6 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 		   LispValue rehashSizeArg, LispValue rehashThresholdArg)
   {
     super(lisp);
-
-    f_lisp = lisp;
 
     initializeConstants();
 

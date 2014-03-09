@@ -17,8 +17,6 @@ public class StandardLispArray extends StandardLispValue implements LispArray
   {
     super(lisp);
 
-    f_lisp = lisp;
-
     dimensions = new ArrayList<Integer>();
     defaultValue = lisp.NIL;
 
