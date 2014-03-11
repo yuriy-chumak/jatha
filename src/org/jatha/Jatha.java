@@ -728,7 +728,7 @@ public class Jatha extends Object
     String filePrefix = "init/";
     String fileSuffix = ".lisp";
 
-    if (useConsole) {
+    if (DEBUG) {
         System.out.println("Loading init files.");
     }
 
@@ -743,7 +743,7 @@ public class Jatha extends Object
         LispValue result = loadFromJar(filename);
         if (result == T)
         {
-            if(useConsole) {
+            if (DEBUG) {
                 System.out.println("  loaded " + baseFilename);
             }
           fileCounter++;
@@ -764,7 +764,7 @@ public class Jatha extends Object
       }
     }
 
-    if(useConsole) {
+    if (DEBUG) {
         System.out.println("Loaded " + fileCounter + " file(s).");
     }
   }

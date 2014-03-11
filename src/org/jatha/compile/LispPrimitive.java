@@ -51,6 +51,13 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
+	abstract class Evaluator {
+		public abstract void Execute(SECDMachine machine)
+				throws CompilerException;
+	}
+	Evaluator evaluator = null;
+	
+	
   public static LispValue s_PRIMITIVE_TAG = null;
   
   // Fields
@@ -158,6 +165,37 @@ public abstract class LispPrimitive extends StandardLispValue
 
   public LispPrimitive(Jatha lisp, String fnName, long minArgs) {
 	  this(lisp, fnName, minArgs, minArgs);
+	  switch ((int)minArgs) {
+	  case 1:
+		  evaluator = new Evaluator() {
+			@Override
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+			    LispValue arg1 = machine.S.pop();
+			    
+				machine.S.push(LispPrimitive.this.Execute(arg1));
+				machine.C.pop();
+			}
+		  };
+		  break;
+	  case 2:
+		  evaluator = new Evaluator() {
+			@Override
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+			    LispValue arg2 = machine.S.pop();
+			    LispValue arg1 = machine.S.pop();
+
+			    machine.S.push(LispPrimitive.this.Execute(arg1, arg2));
+			    machine.C.pop();
+			}
+		  };
+		  break;
+	  default:
+		  break;
+	  }
   }
 
   public LispPrimitive(Jatha lisp, String fnName) { // Abstract machine ops have no args
@@ -287,8 +325,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	public void Execute(SECDMachine machine)
 			throws CompilerException
 	{
-		machine.S.push(Execute(machine.S.pop()));
-		machine.C.pop();
+		evaluator.Execute(machine);
 	}
 
 //	todo: restore this after code refactoring
@@ -297,6 +334,13 @@ public abstract class LispPrimitive extends StandardLispValue
 	public LispValue Execute(LispValue arg)
 	throws CompilerException
 	{
+		// todo: assert for arg count as 1
+		throw new UndefinedFunctionException();
+	}
+	public LispValue Execute(LispValue arg1, LispValue arg2)
+	throws CompilerException
+	{
+		// todo: assert for arg count as 2
 		throw new UndefinedFunctionException();
 	}
 

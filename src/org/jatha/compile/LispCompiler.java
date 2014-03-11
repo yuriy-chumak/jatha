@@ -67,7 +67,7 @@ public class LispCompiler
   LispValue LAMBDA;
   LispValue LET;
   LispValue LETREC;
-     LispValue OR;
+  LispValue OR;
   LispValue PRIMITIVE;
   LispValue PROGN;
   LispValue QUOTE;
@@ -150,27 +150,67 @@ public class LispCompiler
 		final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
 		
 		// http://jtra.cz/stuff/lisp/sclr/index.html
+		// http://habrahabr.ru/post/65791/
 		// Basic simple functions
 		Register(new LispPrimitive(f_lisp, "ATOM", 1) {
 			public LispValue Execute(LispValue arg) {
 				return arg.atom();
 			}
 		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "CONS", 2) {
+			public LispValue Execute(LispValue a, LispValue b) {
+				return f_lisp.makeCons(a, b);
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "QUOTE", 1) {
+			@Override
+			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
+							LispValue args, LispValue valueList, LispValue code)
+					throws CompilerException
+			{
+				// Don't evaluate the arg. (load it as a constant)
+				return f_lisp.makeCons(machine.LDC, f_lisp.makeCons(args.first(), code));
+			}
+			@Override
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+				System.err.println(LispFunctionNameString() + " was compiled - shouldn't have been.");
+				machine.C.pop();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "EQ", 2) {
+			public LispValue Execute(LispValue a, LispValue b) {
+			    return a.eq(b);
+			}
+		}, SYSTEM_PKG);
+
+		// 
+		Register(new LispPrimitive(f_lisp, "NUMBERP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.numberp(); // (numberp object) ==  (typep object 'number)
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "FLOATP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.floatp();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "STRINGP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.stringp();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "INTEGERP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.integerp();
+			}
+		}, SYSTEM_PKG);
+		
+		
 		
 		registerAccessorFunctions(SYSTEM_PKG);
 //		registerStringFunctions(SYSTEM_PKG);
-		
-		Register(new LispPrimitive(f_lisp, "CAR", 1) {
-			public LispValue Execute(LispValue arg) {
-				return arg.car();
-			}
-		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "CDR", 1) {
-			public LispValue Execute(LispValue arg) {
-				return arg.cdr();
-			}
-		}, SYSTEM_PKG);
-		
 		
 		Register(new LispPrimitive(f_lisp, "COS", 1) {
 			public LispValue Execute(LispValue arg) {
@@ -200,12 +240,9 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		Register(new LispPrimitive(f_lisp, "MOD", 2) {
-			public void Execute(SECDMachine machine) // override for 2 arguments, todo: make as part of LispPrimitive
+			public LispValue Execute(LispValue x, LispValue n)
 			{
-				LispValue n = machine.S.pop();
-				LispValue x = machine.S.pop();
-				machine.S.push(x.mod(n));
-				machine.C.pop();
+				return x.mod(n);
 			}
 		}, SYSTEM_PKG);
 		
@@ -278,7 +315,6 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
     
-    Register(new ConsPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ConspPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ConstantpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new CopyListPrimitive(f_lisp),SYSTEM_PKG);
@@ -290,8 +326,6 @@ public class LispCompiler
     Register(new DegreesToRadiansPrimitive(f_lisp),SYSTEM_PKG);
     Register(new DocumentationPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfDocumentationPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new EltPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new EqPrimitive(f_lisp),SYSTEM_PKG);
     Register(new EqlPrimitive(f_lisp),SYSTEM_PKG);
     Register(new EqualNumericPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ExitPrimitive(f_lisp),SYSTEM_PKG);
@@ -309,7 +343,6 @@ public class LispCompiler
     Register(new ExportPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ShadowPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ShadowingImportPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new FloatpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FloorPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FuncallPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FunctionPrimitive(f_lisp),SYSTEM_PKG);
@@ -326,7 +359,6 @@ public class LispCompiler
     Register(new HashtableRehashThresholdPrimitive(f_lisp),SYSTEM_PKG);
     Register(new HashtableSizePrimitive(f_lisp),SYSTEM_PKG);
     Register(new HashtableTestPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new IntegerpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new InternPrimitive(f_lisp),SYSTEM_PKG);
     Register(new KeywordpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new LastPrimitive(f_lisp),SYSTEM_PKG);
@@ -349,7 +381,6 @@ public class LispCompiler
     Register(new NStringDowncasePrimitive(f_lisp),SYSTEM_PKG);
     Register(new NStringUpcasePrimitive(f_lisp),SYSTEM_PKG);
     Register(new NullPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new NumberpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new PopPrimitive(f_lisp),SYSTEM_PKG);
     Register(new PositionPrimitive(f_lisp),SYSTEM_PKG);
     Register(new Prin1Primitive(f_lisp),SYSTEM_PKG);
@@ -374,7 +405,6 @@ public class LispCompiler
     Register(new SetfSymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetfSymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new SetqPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new StringpPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SquareRootPrimitive(f_lisp),SYSTEM_PKG);
     
     Register(new StringPrimitive(f_lisp),SYSTEM_PKG);
@@ -462,14 +492,11 @@ public class LispCompiler
 								f_lisp.makeCons(CONS, code)));
 			}
 		}, SYSTEM_PKG);
-		Register(new InlineLispPrimitive(f_lisp, "QUOTE", 1) {
-			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
-					throws CompilerException
-			{
-				// Don't evaluate the arg. (load it as a constant)
-				return f_lisp.makeCons(machine.LDC, f_lisp.makeCons(args.first(), code));
-			}
-		}, SYSTEM_PKG);
+	}
+	
+	public LispValue eval(String expression)
+	{
+		return f_lisp.eval(expression);
 	}
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -488,7 +515,7 @@ public class LispCompiler
    */
   public void Register(LispPrimitive primitive)
   {
-      Register(primitive,f_lisp.PACKAGE);
+      Register(primitive, f_lisp.PACKAGE);
   }
 
 
@@ -1632,6 +1659,40 @@ public class LispCompiler
   
 	private void registerAccessorFunctions(LispPackage pkg)
 	{
+		Register(new LispPrimitive(f_lisp, "CAR", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.car();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "CDR", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.cdr();
+			}
+		}, pkg);
+		Register(new LispPrimitive(f_lisp, "ELT", 2) {
+			public void Execute(SECDMachine machine)
+			{
+				LispValue n = machine.S.pop();
+				LispValue x = machine.S.pop();
+				machine.S.push(x.elt(n));
+				machine.C.pop();
+			}
+		}, pkg);
+		
+//		eval("(defun nth (n list) (elt list (- n 1)))");
+//		eval("(defun first (list) (car list))");
+//		eval("(second list)   ==   (car (cdr list))
+//		eval("(third list)    ==   (car (cddr list))
+//		eval("(fourth list)   ==   (car (cdddr list))
+//		eval("(fifth list)    ==   (car (cddddr list))
+//		eval("(sixth list)    ==   (car (cdr (cddddr list)))
+//		eval("(seventh list)  ==   (car (cddr (cddddr list)))
+//		eval("(eighth list)   ==   (car (cdddr (cddddr list)))
+//		eval("(ninth list)    ==   (car (cddddr (cddddr list)))
+//		eval("(tenth list)    ==   (car (cdr (cddddr (cddddr list))))
+		/*		
+		
+		// todo: выкинуть их нафиг, а то место занимают :)
 		Register(new LispPrimitive(f_lisp, "FIRST", 1) {
 			public LispValue Execute(LispValue arg) {
 				return arg.first();
@@ -1682,5 +1743,6 @@ public class LispCompiler
 				return arg.tenth();
 			}
 		}, pkg);
+*/		
 	}
 }

@@ -375,16 +375,9 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     }
   }
 
-  public LispValue     first        ()  { return carCell;         }
-  public LispValue     second       ()  { return cdr().first();   }
-  public LispValue     third        ()  { return cdr().second();  }
-  public LispValue     fourth       ()  { return cdr().third();   }
-  public LispValue     fifth        ()  { return cdr().fourth();  }
-  public LispValue     sixth        ()  { return cdr().fifth();   }
-  public LispValue     seventh      ()  { return cdr().sixth();   }
-  public LispValue     eighth       ()  { return cdr().seventh(); }
-  public LispValue     ninth        ()  { return cdr().eighth();  }
-  public LispValue     tenth        ()  { return cdr().ninth();   }
+  public LispValue     first  () { return carCell;        }
+  public LispValue     second () { return cdr().car();    }
+  public LispValue     third  () { return cdr().second(); }
 
   public LispValue last()
   {

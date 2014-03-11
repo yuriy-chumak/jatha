@@ -398,12 +398,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue degreesToRadians();
 
   /**
-   * Returns the 8th element of a list.
-   * If the list is shorter than 8 elements, returns NIL.
-   */
-  public LispValue eighth();
-
-  /**
    * Returns the nth element of a list.
    * The zeroth element is the first element.
    * @param index
@@ -451,23 +445,11 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue floatp();
 
   /**
-   * Returns the fifth element of a list, or NIL if
-   * the list is shorter than 5 elements.
-   */
-  public LispValue fifth();
-
-  /**
    * Returns the first element of a list.
    * Identical to the CAR function.
    */
   public LispValue first();
-
-  /**
-   * Returns the 4th element of a list, or NIL if the list
-   * is shorter than 4 elements.
-   */
-  public LispValue fourth();
-
+  
   /**
    * Calls a functio non a list of arguments.
    */
@@ -590,12 +572,6 @@ public interface LispValue extends Comparable<LispValue>
    * don't have to compose (NOT (EQL ...)) when creating expressions.
    */
   public LispValue neql(LispValue val);
-
-  /**
-   * Returns the ninth element of a list, or NIL if
-   * the list is shorter than nine elements.
-   */
-  public LispValue ninth();
 
   /**
    * Destructively reverses the given list.
@@ -760,18 +736,6 @@ public interface LispValue extends Comparable<LispValue>
    * Assigns a value to a symbol.
    */
   public LispValue setq(LispValue newValue);
-
-  /**
-   * Returns the seventh element of a list or NIL
-   * if the list is shorter than seven elements.
-   */
-  public LispValue seventh();
-
-  /**
-   * Returns the sixth element of a list or NIL
-   * if the list is shorter than six elements.
-   */
-  public LispValue sixth();
 
   /**
    * Converts a String, Symbol or Character to a string.
@@ -969,12 +933,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns the value of a symbol.
    */
   public LispValue symbol_value() throws LispException;
-
-  /**
-   * Returns the tenth element of a list or NIL if the list
-   * is less than ten elements long.
-   */
-  public LispValue tenth();
 
   /**
    * Returns the third element of a list or NIL if the list

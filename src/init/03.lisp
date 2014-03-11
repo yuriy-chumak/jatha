@@ -13,90 +13,6 @@
 
 (in-package "SYSTEM")
 
-(defun caar (l)
-  (car (car l)))
-
-(defun cadr (l)
-  (second l))
-
-(defun cdar (l)
-  (cdr (car l)))
-
-(defun cddr (l)
-  (cdr (cdr l)))
-
-(defun caaar (l)
-  (car (car (car l))))
-
-(defun caadr (l)
-  (car (car (cdr l))))
-
-(defun cadar (l)
-  (car (cdr (car l))))
-
-(defun caddr (l)
-  (third l))
-
-(defun cdaar (l)
-  (cdr (car (car l))))
-
-(defun cdadr (l)
-  (cdr (car (cdr l))))
-
-(defun cddar (l)
-  (cdr (cdr (car l))))
-
-(defun cdddr (l)
-  (cdr (cdr (cdr l))))
-
-(defun caaaar (l)
-  (car (car (car (car l)))))
-
-(defun caaadr (l)
-  (car (car (car (cdr l)))))
-
-(defun caadar (l)
-  (car (car (cdr (car l)))))
-
-(defun caaddr (l)
-  (car (car (cdr (cdr l)))))
-
-(defun cadaar (l)
-  (car (cdr (car (car l)))))
-
-(defun cadadr (l)
-  (car (cdr (car (cdr l)))))
-
-(defun caddar (l)
-  (car (cdr (cdr (car l)))))
-
-(defun cadddr (l)
-  (fourth l))
-
-(defun cdaaar (l)
-  (cdr (car (car (car l)))))
-
-(defun cdaadr (l)
-  (cdr (car (car (cdr l)))))
-
-(defun cdadar (l)
-  (cdr (car (cdr (car l)))))
-
-(defun cdaddr (l)
-  (cdr (car (cdr (cdr l)))))
-
-(defun cddaar (l)
-  (cdr (cdr (car (car l)))))
-
-(defun cddadr (l)
-  (cdr (cdr (car (cdr l)))))
-
-(defun cdddar (l)
-  (cdr (cdr (cdr (car l)))))
-
-(defun cddddr (l)
-  (cdr (cdr (cdr (cdr l)))))
-
 (defmacro unless (test &rest body)
   `(and (not ,test) (progn ,@body)))
 
@@ -149,4 +65,4 @@
 (defun terpri ()
   (princ #\Newline))
 
-(export '(caar cadr cdar cddr caaar caadr cadar caddr cdaar cdadr cddar cdddr caaaar caaadr caadar caaddr cadaar cadadr caddar cadddr cdaaar cdaadr cdadar cdaddr cddaar cddadr cdddar cddddr unless when let* in-package eval-when return loop dotimes dolist terpri))
+(export '(unless when let* in-package eval-when return loop dotimes dolist terpri))
