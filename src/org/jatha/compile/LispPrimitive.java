@@ -144,7 +144,6 @@ public abstract class LispPrimitive extends StandardLispValue
 
 
 /* ------------------ CONSTRUCTORS    ------------------------------ */
-
   /**
    * The constructor for the LispPrimitive class.
    * @see org.jatha.compile.LispCompiler
@@ -161,11 +160,31 @@ public abstract class LispPrimitive extends StandardLispValue
     functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
     
     initConstants();
+
+    evaluator = new Evaluator() {
+		@Override
+		public void Execute(SECDMachine machine)
+				throws CompilerException
+		{
+		    LispValue arg1 = machine.S.pop();
+		    
+			machine.S.push(LispPrimitive.this.Execute(arg1));
+			machine.C.pop();
+		}
+    };
   }
 
   public LispPrimitive(Jatha lisp, String fnName, long minArgs) {
-	  this(lisp, fnName, minArgs, minArgs);
+	    super(lisp);
+	    minNumberOfArgs     = minArgs;
+	    maxNumberOfArgs     = minArgs;
+	    functionName        = fnName;
+	    functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
+	    
+	    initConstants();
+	    
 	  switch ((int)minArgs) {
+	  case 0:
 	  case 1:
 		  evaluator = new Evaluator() {
 			@Override

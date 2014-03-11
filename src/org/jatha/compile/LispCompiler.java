@@ -149,6 +149,28 @@ public class LispCompiler
 		// Here put a call to in-package, then to export. for these things. I guess register should call export.
 		final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
 		
+		// (time (...))
+		Register(new LispPrimitive(f_lisp, "TIME", 1) {
+			public LispValue Execute(LispValue expression)
+					throws CompilerException
+			{
+			    LispValue code = f_lisp.COMPILER.compile(f_lisp.MACHINE, expression, f_lisp.NIL);
+			    SECDMachine newMachine = new SECDMachine(f_lisp);
+
+			    long startMemory  = f_lisp.SYSTEM_INFO.freeMemory();
+			    long startTime    = System.currentTimeMillis();
+			    LispValue value   = newMachine.Execute(code, f_lisp.NIL);
+			    long endTime      = System.currentTimeMillis();
+			    long endMemory    = f_lisp.SYSTEM_INFO.freeMemory();
+
+			    System.out.println("\n; real time: " + (endTime - startTime)     + " ms");
+			    System.out.println(  ";     space: " + (startMemory - endMemory) + " bytes");
+
+			    return value;
+			}
+		}, SYSTEM_PKG);
+		
+		
 		// http://jtra.cz/stuff/lisp/sclr/index.html
 		// http://habrahabr.ru/post/65791/
 		// Basic simple functions
@@ -185,7 +207,13 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 
-		// 
+		//
+		Register(new LispPrimitive(f_lisp, "TYPE-OF", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.type_of();
+			}
+		}, SYSTEM_PKG);
+		
 		Register(new LispPrimitive(f_lisp, "NUMBERP", 1) {
 			public LispValue Execute(LispValue arg) {
 				return arg.numberp(); // (numberp object) ==  (typep object 'number)
@@ -269,6 +297,18 @@ public class LispCompiler
 		Register(new ComplexLispPrimitive(f_lisp, "/", 1, Long.MAX_VALUE) {
 			public LispValue Execute(LispValue args) {
 				return args.car().div(args.cdr());
+			}
+		}, SYSTEM_PKG);
+		
+		// Additional embedded primitives for perfomance improvement
+		Register(new LispPrimitive(f_lisp, "1+", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.add(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "1-", 1) {
+			public LispValue Execute(LispValue arg) {
+				return arg.sub(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
 			}
 		}, SYSTEM_PKG);
 		
@@ -407,11 +447,21 @@ public class LispCompiler
     Register(new SetqPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SquareRootPrimitive(f_lisp),SYSTEM_PKG);
     
-    Register(new StringPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new StringUpcasePrimitive(f_lisp),SYSTEM_PKG);
+	Register(new LispPrimitive(f_lisp, "STRING", 1) {
+		public LispValue Execute(LispValue arg) {
+			return arg.string();
+		}
+	}, SYSTEM_PKG);
+	Register(new LispPrimitive(f_lisp, "STRING-UPCASE", 1) {
+		public LispValue Execute(LispValue arg) {
+			return arg.stringUpcase();
+		}
+	}, SYSTEM_PKG);
+    
     Register(new StringDowncasePrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringCapitalizePrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringEndsWithPrimitive(f_lisp),SYSTEM_PKG);
+    
     Register(new StringEqualPrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringEqPrimitive(f_lisp),SYSTEM_PKG);
     Register(new StringNeqPrimitive(f_lisp),SYSTEM_PKG);
@@ -436,8 +486,6 @@ public class LispCompiler
     Register(new SymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     Register(new SymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     Register(new TagbodyPrimitive(f_lisp),SYSTEM_PKG);
-    Register(new TimePrimitive(f_lisp),SYSTEM_PKG);
-    Register(new TypeOfPrimitive(f_lisp),SYSTEM_PKG);
     Register(new ZeropPrimitive(f_lisp),SYSTEM_PKG);
 
     Register(new TracePrimitive(f_lisp),SYSTEM_PKG);
@@ -445,18 +493,6 @@ public class LispCompiler
     Register(new GcFullPrimitive(f_lisp),SYSTEM_PKG);
     Register(new FreePrimitive(f_lisp),SYSTEM_PKG);
     
-		// Additional embedded primitives for perfomance improvement
-		Register(new LispPrimitive(f_lisp, "1+", 1) {
-			public LispValue Execute(LispValue arg) {
-				return arg.add(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
-			}
-		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "1-", 1) {
-			public LispValue Execute(LispValue arg) {
-				return arg.sub(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
-			}
-		}, SYSTEM_PKG);
-		
     	// "inline" primitives (for perfomance purposes)
 		Register(new InlineLispPrimitive(f_lisp, "BLOCK", 1, Long.MAX_VALUE) {
 			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
@@ -1670,12 +1706,8 @@ public class LispCompiler
 			}
 		}, pkg);
 		Register(new LispPrimitive(f_lisp, "ELT", 2) {
-			public void Execute(SECDMachine machine)
-			{
-				LispValue n = machine.S.pop();
-				LispValue x = machine.S.pop();
-				machine.S.push(x.elt(n));
-				machine.C.pop();
+			public LispValue Execute(LispValue list, LispValue n) {
+				return list.elt(n);
 			}
 		}, pkg);
 		
