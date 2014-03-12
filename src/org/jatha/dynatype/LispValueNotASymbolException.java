@@ -23,10 +23,12 @@
  */
 package org.jatha.dynatype;
 
+@SuppressWarnings("serial")
 public class LispValueNotASymbolException extends LispException
 {
-  LispValueNotASymbolException()            { super();  }
-  LispValueNotASymbolException(String s)    { super(s + " is not a SYMBOL."); }
+	public LispValueNotASymbolException()            { super();  }
+	public LispValueNotASymbolException(String s)    { super(s + " is not a SYMBOL."); }
+	public LispValueNotASymbolException(LispValue v) { this(v.toString()); }
 }
 
 

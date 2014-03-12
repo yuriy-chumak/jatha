@@ -1,15 +1,15 @@
 ;;; LISP
-     (numberp 0)
-(NOT (numberp nil))
-(NOT (numberp T))
-     (numberp -200)
-(NOT (numberp "12"))
-(NOT (numberp '(14.39)))
-(NOT (numberp (cons 1 2)))
+;     (numberp 0)
+;(NOT (numberp nil))
+;(NOT (numberp T))
+;     (numberp -200)
+;(NOT (numberp "12"))
+;(NOT (numberp '(14.39)))
+;(NOT (numberp (cons 1 2)))
 
 ;;; T
-     (numberp 123)
-(NOT (numberp nil))
+;     (numberp 123)
+;(NOT (numberp nil))
 
 ;;; recursive
 (restart)

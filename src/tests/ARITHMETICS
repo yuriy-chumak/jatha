@@ -1,4 +1,4 @@
-;;; lisp
+;;;; lisp
 T
 (not NIL)
 (not (not T))

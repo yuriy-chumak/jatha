@@ -236,14 +236,26 @@ public class SECDMachine    // extends Abstract Machine !
         System.out.flush();
       }
 
-      if (opcode != null) {
-        ((LispPrimitive)opcode).Execute(this);
+      if (opcode == null) {
+          System.err.println("internal error in Jatha.SECDMachine.Execute: opcode is null");
+          System.err.println("remaining code is " + C.value().toString());
       }
       else
-      {
-        System.err.println("internal error in Jatha.SECDMachine.Execute: opcode is null");
-        System.err.println("remaining code is " + C.value().toString());
-      }
+//      try {
+    	  ((LispPrimitive)opcode).Execute(this);
+//      }
+/*      catch (ClassCastException ce) {
+    	  String error = ce.getMessage();
+    	  int p = error.indexOf("org.jatha.dynatype.Lisp");
+    	  if (p < 0)
+    		  throw ce;
+    	  // org.jatha.dynatype
+    	  String type = error.substring(p + "org.jatha.dynatype.".length());
+    	  if (type.equals("LispNumber"))
+    		  throw new LispValueNotANumberException(opcode + " argument");
+    	  
+    	  throw ce;
+      }*/
 
       try {
         opcode = C.value().car();  // Each opcode pops the C register as necessary

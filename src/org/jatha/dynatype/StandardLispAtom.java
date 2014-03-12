@@ -52,10 +52,6 @@ abstract public class StandardLispAtom extends StandardLispValue implements Lisp
     super(lisp);
   }
 
-  public boolean basic_atom()  { return true; }
-
-  public LispValue atom()      { return f_lisp.T; }
-
   public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);

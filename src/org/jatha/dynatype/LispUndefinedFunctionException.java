@@ -25,7 +25,7 @@ package org.jatha.dynatype;
 
 public class LispUndefinedFunctionException extends LispException
 {
-  LispUndefinedFunctionException()          { super();  }
-  LispUndefinedFunctionException(String s)  { super(s + " is not a defined function.");  }
+	public LispUndefinedFunctionException()          { super();  }
+	public LispUndefinedFunctionException(String s)  { super(s + " is not a defined function.");  }
 }
 

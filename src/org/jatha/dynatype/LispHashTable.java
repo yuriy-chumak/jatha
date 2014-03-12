@@ -38,11 +38,7 @@ package org.jatha.dynatype;
  * @version 1.0
  *
  */
-public interface LispHashTable extends LispValue
+public interface LispHashTable extends LispAtom
 {
 
-
 }
-
-
-

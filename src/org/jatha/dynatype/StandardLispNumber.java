@@ -158,7 +158,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       return f_lisp.ONE;
     else {
         // changed algorithm, due to stack overflow when factorizing big numbers. (n > 1000 ca)
-        LispValue total = f_lisp.ONE;
+        LispNumber total = f_lisp.ONE;
         long index = 2L;
         while(index <= value.getLongValue()) {
             total = total.mul(new StandardLispInteger(f_lisp,index++));
@@ -330,7 +330,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     add(LispValue  args)
+  public LispNumber     add(LispValue  args)
   {
     // The list of numbers has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -359,7 +359,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (! addend.basic_numberp())
       {
         super.add(arglist.car());  // generates an error.
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);// todo: add exception
       }
 
       // Might need to convert to a double
@@ -438,7 +438,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispInteger
    * @see LispBignum
    */
-  public LispValue     div      (LispValue   args)
+  public LispNumber     div      (LispValue   args)
   {
     double    d_quotient = 0.0;
     long      l_quotient = 0, term_value;
@@ -470,7 +470,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (! term.basic_numberp())
       {
         super.div(arglist.car());  // Generate an error
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
 
@@ -508,7 +508,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       arglist = arglist.cdr();
@@ -525,7 +525,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
     if (allIntegers)
@@ -543,7 +543,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     mul    (LispValue  args)
+  public LispNumber     mul    (LispValue  args)
   {
     double     d_product     = this.getDoubleValue();
     long       l_product     = 0;
@@ -575,7 +575,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (! term.basic_numberp())    // generates an error
       {
         super.mul(term);
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       // Multiplying by one?
@@ -655,7 +655,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     sub    (LispValue  args)
+  public LispNumber     sub    (LispValue  args)
   {
     // The list of numbers has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -687,7 +687,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (! addend.basic_numberp())
       {
         super.sub(arglist.car());  // generates an error.
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       // Might need to convert to a double
@@ -767,53 +767,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
 
   /**
-   * Arccos function with result in radians.
-   * Also called Inverse Cosine, this is the
-   * angle whose cosine is the argument.
-   */
-  public LispValue acos()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.acos(getDoubleValue()));
-  }
-
-
-  /**
-   * Arcsin function with result in radians.
-   * Also called Inverse Sine, this is the
-   * angle whose sine is the argument.
-   */
-  public LispValue asin()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.asin(getDoubleValue()));
-  }
-
-
-  /**
-   * Arctan function with result in radians.
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is the argument.
-   */
-  public LispValue atan()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.atan(getDoubleValue()));
-  }
-
-
-  /**
-   * Two-argument Arctan function with result in radians
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is y/x, where y is
-   * the first argument and x is the second argument.
-   */
-  public LispValue atan2(LispValue x)
-  {
-    if (x instanceof LispNumber)
-      return new StandardLispReal(f_lisp, StrictMath.atan2(getDoubleValue(), ((LispNumber)x).getDoubleValue()));
-    else
-      throw new LispValueNotANumberException("The second argument to atan2 (" + x + ")");
-  }
-
-  /**
    * Returns the smallest integer greater than or equal to the input value.
    */
   public LispValue ceiling()
@@ -828,30 +781,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
 
   /**
-   * Cosine function, argument in radians.
-   */
-  public LispValue cos()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.cos(getDoubleValue()));
-  }
-
-  /**
-   * Cotangent function, 1/tan(x), argument in radians.
-   */
-  public LispValue cot()
-  {
-    return new StandardLispReal(f_lisp, 1.0 / StrictMath.tan(getDoubleValue()));
-  }
-
-  /**
-   * Cosecant function, 1/sin(x), argument in radians.
-   */
-  public LispValue csc()
-  {
-    return new StandardLispReal(f_lisp, 1.0 / StrictMath.sin(getDoubleValue()));
-  }
-
-  /**
    * Returns the largest integer less than or equal to the input value.
    */
   public LispValue floor()
@@ -864,33 +793,9 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       return f_lisp.makeInteger((long)Math.floor(getDoubleValue()));
   }
 
-  /**
-   * Secant function, 1/cos(x), argument in radians.
-   */
-  public LispValue sec()
-  {
-    return new StandardLispReal(f_lisp, 1.0 / StrictMath.cos(getDoubleValue()));
-  }
-
-  /**
-   * Sine trigonometric function, argument is in radians.
-   */
-  public LispValue sin()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.sin(getDoubleValue()));
-  }
-
   public LispValue sqrt()
   {
     return new StandardLispReal(f_lisp, StrictMath.sqrt(getDoubleValue()));
-  }
-
-  /**
-   * Tangent trigonometric function, argument is in radians.
-   */
-  public LispValue tan()
-  {
-    return new StandardLispReal(f_lisp, StrictMath.tan(getDoubleValue()));
   }
 
   public LispValue typep(LispValue type)

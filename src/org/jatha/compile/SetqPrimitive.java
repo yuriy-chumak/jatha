@@ -68,7 +68,7 @@ public class SetqPrimitive extends LispPrimitive
 
     LispValue lookupVal = compiler.indexAndAttribute(args.first(), valueList);
 
-    if (lookupVal.second().basic_null())  // SETQ of a global var
+    if (lookupVal.second() instanceof LispNil)  // SETQ of a global var
       return
           f_lisp.makeCons(machine.LDC,
                           f_lisp.makeCons(args.first(),

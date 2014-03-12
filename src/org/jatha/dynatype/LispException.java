@@ -25,9 +25,10 @@ package org.jatha.dynatype;
 
 //--------------------------  LispException  ---------------------------------
 
-public abstract class LispException extends RuntimeException
+@SuppressWarnings("serial")
+public class LispException extends RuntimeException
 {
-  LispException()         { super();  }
-  LispException(String s) { super(s); }
+	public LispException()         { super();  }
+	public LispException(String s) { super(s); }
 }
 

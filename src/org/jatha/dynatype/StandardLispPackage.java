@@ -96,7 +96,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   /**
    * Creates a new package.  Caller should verify
    * that none exists by the same name before calling
-   * this function.Þ
+   * this function.ï¿½
    * @param name - a LISP string giving the name of the package
    *
    */
@@ -456,7 +456,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   {
     LispValue p = f_uses;
 
-    while (! p.basic_null())
+    while (!(p instanceof LispNil))
     {
       if (pkg.eq(f_lisp.findPackage(p.car())) == f_lisp.T)
         return true;

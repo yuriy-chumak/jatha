@@ -307,7 +307,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     LispValue  ptr = this;
     LispValue  value;
 
-    while (!ptr.basic_null())
+    while (!(ptr instanceof LispNil))
     {
       value = ptr.car();
 
@@ -385,7 +385,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     long      len = 0;  // To prevent runaway lists.
     long      maxLength = f_lisp.getMaxListLength().getLongValue();
 
-    while (!ptr.cdr().basic_null())
+    while (!(ptr.cdr() instanceof LispNil))
       if (!ptr.basic_consp())
       {
         throw new LispValueNotAListException("An argument to LAST");
@@ -414,7 +414,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     long      len = 0;
     long      maxLength = f_lisp.getMaxListLength().getLongValue();
 
-    while (!ptr.basic_null())
+    while (!(ptr instanceof LispNil))
     {
       ++len;
       if (len > maxLength)
@@ -473,7 +473,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     long       len = 0;  // To prevent runaway lists.
     long       maxLength = f_lisp.getMaxListLength().getLongValue();
 
-    while (!ptr.basic_null())
+    while (!(ptr instanceof LispNil))
     {
       value = ptr.car();
 

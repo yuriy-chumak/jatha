@@ -169,7 +169,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     System.err.print("** Internal error: apropos_print called on non-Symbol: #<unprintable object>");
   }
 
-  public boolean basic_atom()      { return false; }
   public boolean basic_bignump()   { return false; }
   public boolean basic_consp()     { return false; }
   public boolean basic_constantp() { return false; }
@@ -181,7 +180,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public int     basic_length()    { throw new LispValueNotAListException("The argument to basic_length"); }
   public boolean basic_listp()     { return false; }
   public boolean basic_macrop()    { return false; }
-  public boolean basic_null()      { return false; }
   public boolean basic_numberp()   { return false; }
   public boolean basic_stringp()   { return false; }
   public boolean basic_symbolp()   { return false; }
@@ -439,37 +437,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   }
   public LispValue     arrayp   ()  { return f_lisp.NIL; }
 
-  /**
-   * Arcsin function, argument in radians.
-   * Also called Inverse Sine, this is the
-   * angle whose sine is the argument.
-   */
-  public LispValue asin()
-  {
-    throw new LispValueNotANumberException("The first argument to ASIN");
-  }
-
-  /**
-   * Arctan function, argument in radians.
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is the argument.
-   */
-  public LispValue atan()
-  {
-    throw new LispValueNotANumberException("The first argument to ATAN");
-  }
-
-  /**
-   * Arctan function, argument in radians.
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is y/x, where y is
-   * the first argument and x is the second argument.
-   */
-  public LispValue atan2(LispValue x)
-  {
-    throw new LispValueNotANumberException("The first argument to ATAN2");
-  }
-
   public LispValue     append       (LispValue otherList)
   { throw new LispValueNotAListException("The first argument to APPEND");  }
 
@@ -478,8 +445,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     assoc        (LispValue index)
   { throw new LispValueNotAListException("The second argument to ASSOC"); }
-
-  public LispValue     atom         ()  { return f_lisp.NIL;  }
 
   public LispValue     bignump      ()  { return f_lisp.NIL; }
 
@@ -509,38 +474,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     clrhash      ()
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
 
-  /**
-   * Concatenate a string or symbol to other strings or symbols.
-   * This does not have all the functionality of concatenate in Common LISP.
-   * Pass in a list of values, the first of which must be the symbol STRING.
-   * All values (except the first) are converted to strings and appended to
-   * the end of the string.
-   * This returns a new LispString.
-   */
-  public LispValue concatenate(LispValue values)
-  {
-    // First value must be the atom 'STRING'
-    LispValue concatType = values.car();
-    if (concatType.toString().equalsIgnoreCase("string") || concatType.toString().toUpperCase().endsWith(":STRING"))
-    {
-      StringBuffer buff = new StringBuffer(values.basic_length() * 5);
-      buff.append(this.toStringSimple());
-
-      Iterator<LispValue> valuesIt = values.cdr().iterator();
-      while (valuesIt.hasNext())
-      {
-        LispValue value = valuesIt.next();
-        if (value instanceof LispString)
-          buff.append(value.toStringSimple());
-        else
-          buff.append(value.toString());
-      }
-      return new StandardLispString(f_lisp, buff.toString());
-    }
-    else
-      throw new LispValueNotAStringException("The first argument to Concatenate (" + concatType + ") must be 'STRING");
-
-  }
 
   public LispValue     consp        ()  { return f_lisp.NIL;  }
 
@@ -560,12 +493,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public LispValue     copy         ()
   { return this; }
-
-  /**
-   * Cosine function, argument in radians.
-   */
-  public LispValue     cos          ()
-  { throw new LispValueNotANumberException("The argument to COS"); }
 
   /**
    * Cotangent function, 1/tan(x), argument in radians.
@@ -702,8 +629,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     length       ()
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
-
-  public LispValue     lisp_null    () { return f_lisp.NIL; }
 
   public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
 

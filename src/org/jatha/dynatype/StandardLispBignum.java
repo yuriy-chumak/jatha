@@ -183,7 +183,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
   }
 
 
-  public LispValue     add         (LispValue  args)
+  public LispNumber     add         (LispValue  args)
   {
     // Args is a list of numbers that has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -197,7 +197,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (addend.numberp() != f_lisp.T)
       {
         this.add(args.car());
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);	// todo: throw exception?
       }
 
       // If an addend is a float, we need to convert the
@@ -234,7 +234,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispInteger
    *
    */
-  public LispValue     div      (LispValue   args)
+  public LispNumber     div      (LispValue   args)
   {
     BigInteger quotient    = this.getBigIntegerValue();
     BigInteger quotientAndRem[];
@@ -248,7 +248,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (term.numberp() != f_lisp.T)
       {
         this.div(args.car());  // generate error
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       ++argCount;
@@ -284,7 +284,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL); todo: return NaN
       }
 
       args = args.cdr();
@@ -296,7 +296,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
 
@@ -316,7 +316,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     mul    (LispValue  args)
+  public LispNumber     mul    (LispValue  args)
   {
     BigInteger product     = this.getBigIntegerValue();
     LispValue  term,arglist;
@@ -334,7 +334,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (term.numberp() != f_lisp.T)
       {
         super.mul(arglist.car());  // generates an error
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       // If a term is a float, we need to convert the
@@ -378,7 +378,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
    * @see LispReal
    * @see LispInteger
    */
-  public LispValue     sub         (LispValue  args)
+  public LispNumber     sub         (LispValue  args)
   {
     // Args is a list of numbers that has already been evaluated.
     // Terminate if we hit any non-numbers.
@@ -393,7 +393,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (term.numberp() != f_lisp.T)
       {
         this.sub(args.car());  // generate error
-        return(f_lisp.NIL);
+        return null;//(f_lisp.NIL);
       }
 
       // If a term is a float, we need to convert the

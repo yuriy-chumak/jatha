@@ -28,7 +28,9 @@ package org.jatha.dynatype;
 
 
 //------------------------------  LispInteger  -------------------------------
-
+/**
+ * @see http://en.wikipedia.org/wiki/Integer
+ */
 public interface LispInteger extends LispNumber
 {
 

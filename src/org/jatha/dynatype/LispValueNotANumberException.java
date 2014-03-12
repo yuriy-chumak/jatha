@@ -25,7 +25,8 @@ package org.jatha.dynatype;
 
 public class LispValueNotANumberException extends LispException
 {
-  LispValueNotANumberException()            { super();  }
-  LispValueNotANumberException(String s)    { super(s + " is not a NUMBER."); }
+	public LispValueNotANumberException()            { super();  }
+	public LispValueNotANumberException(String s)    { super(s + " is not a NUMBER."); }
+	public LispValueNotANumberException(LispValue v) { this(v.toString()); }
 }
 

@@ -1,0 +1,16 @@
+;;;; ATOM TESTS
+T
+(not NIL)
+
+;; positive tests
+(atom 'a)
+(atom ())
+(atom "hello")
+(atom 123)
+(atom 111111111111111111111111112222222222222222222222222222222223333333333333333333333333333333333344444444444444444444444444444444444444444)
+(atom -23)
+(atom 12.34)
+(atom NIL)
+
+;; negative tests
+(not (atom '(a b c))

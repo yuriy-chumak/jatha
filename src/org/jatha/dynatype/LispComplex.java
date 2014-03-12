@@ -194,19 +194,6 @@ public interface LispComplex extends LispNumber
   public LispComplex pow(LispComplex a, LispComplex b);
   public LispComplex pow(int a, LispComplex b);
   public LispComplex pow(double a, LispComplex b);
-  // Trigonometric Functions
-  // 	  	public LispComplex sin(LispComplex aa );
-  public LispComplex asin(LispComplex aa );
-  public LispComplex cos(LispComplex aa );
-  public LispComplex acos(LispComplex aa );
-  public LispComplex tan(LispComplex aa );
-  public LispComplex atan(LispComplex aa );
-  public LispComplex sinh(LispComplex aa );
-  public LispComplex asinh(LispComplex aa );
-  public LispComplex cosh(LispComplex aa );
-  public LispComplex acosh(LispComplex aa );
-  public LispComplex tanh(LispComplex aa );
-  public LispComplex atanh(LispComplex aa );
   //Hypotenuse
   public double hypot(LispComplex aa, LispComplex bb);
   // Logical Tests

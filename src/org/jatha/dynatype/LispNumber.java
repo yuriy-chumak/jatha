@@ -26,13 +26,12 @@ package org.jatha.dynatype;
 
 import java.math.BigInteger;
 
-
-// @date    Thu Mar 27 13:29:37 1997
 /**
  * LispNumber is an abstract class that implements
  * the Common LISP NUMBER type.  It contains the
  * definitions of add, subtract, multiply and divide.
  *
+ * @see http://en.wikipedia.org/wiki/Natural_number
  *
  * @see LispValue
  * @see LispAtom
@@ -43,14 +42,34 @@ import java.math.BigInteger;
 public interface LispNumber extends LispAtom
 {
 
-  /**
-   * Returns a double value corresponding to this value.
-   */
-  public double getDoubleValue();
+	/**
+	 * Returns a double value corresponding to this value.
+	 */
+	public double getDoubleValue();
+	public BigInteger getBigIntegerValue();
+	long getLongValue();
 
-  public BigInteger getBigIntegerValue();
-
-  long getLongValue();
-
+	/**
+	 * Returns the sum of the object and the object(s) in the argument list.
+	 * This is the <code>+</code> function in LISP.
+	 */
+	public LispNumber add(LispValue args);
+	
+	/**
+	 * Returns the quotient of the object and the object(s) in the argument list.
+	 * This is the <code>/</code> function in LISP.
+	 */
+	public LispNumber div(LispValue args);
+	
+	/**
+	 * Returns the product of the object and the object(s) in the argument list.
+	 * This is the <code>*</code> function in LISP.
+	 */
+	public LispNumber mul(LispValue args);
+	
+	/**
+	 * Returns the difference of the object and the object(s) in the argument list.
+	 * This is the <code>-</code> function in LISP.
+	 */
+	public LispNumber sub(LispValue args);
 }
-

@@ -1,8 +1,7 @@
 ;; General-purpose functions contributed by Jean-Pierre Gaillardin
 ;; May 2005.
-
+(require '(unsorted strings))
 (setq *package* (find-package "SYSTEM"))
-
 
 ;; Accessors 
 (defun caar (l) (car (car l)))
@@ -51,6 +50,10 @@
 (defun nth (n list) (elt list (- n 1)))
 
 (export '(first second third fourth fifth sixth seventh eighth ninth tenth nth))
+
+; http://clhs.lisp.se/Body/f_zerop.htm
+(defun zerop (x) (= x 0))
+(export '(zerop))
 
 ;; ------------------------------------------------
 ;; GENSYM

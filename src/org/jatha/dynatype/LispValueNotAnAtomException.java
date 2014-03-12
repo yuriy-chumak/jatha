@@ -23,9 +23,12 @@
  */
 package org.jatha.dynatype;
 
+@SuppressWarnings("serial")
 public class LispValueNotAnAtomException extends LispException
 {
-  LispValueNotAnAtomException()             { super();  }
-  LispValueNotAnAtomException(String s)     { super(s + " is not an ATOM."); }
+	public LispValueNotAnAtomException()            { super();  }
+	public LispValueNotAnAtomException(String s)    { super(s + " is not an ATOM."); }
+	
+	public LispValueNotAnAtomException(LispValue v) { this(v.toString()); }
 }
 

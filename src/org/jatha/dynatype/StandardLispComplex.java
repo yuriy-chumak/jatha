@@ -155,28 +155,6 @@ public class StandardLispComplex extends StandardLispNumber implements LispCompl
     return 0;  //To change body of implemented methods use File | Settings | File Templates.
   }
 
-  // Trigonometric Functions
-  // 	  	public LispComplex sin(LispComplex aa );
-  public LispComplex asin(LispComplex aa)
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public LispComplex asinh(LispComplex aa)
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public LispComplex atan(LispComplex aa)
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
-  public LispComplex atanh(LispComplex aa)
-  {
-    return null;  //To change body of implemented methods use File | Settings | File Templates.
-  }
-
   // Conjugate
   public LispComplex conjugate()
   {

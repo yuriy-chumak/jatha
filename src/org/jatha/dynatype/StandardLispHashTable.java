@@ -237,11 +237,6 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 				 (float)(((LispReal)rehashSize).getDoubleValue()));
   }
 
-  public boolean basic_atom()
-  {
-    return true;
-  }
-
 /* ------------------  PUBLIC non-LISP functions   ------------------------------ */
 
   public void    internal_princ(PrintStream os) { os.print(toString()); }

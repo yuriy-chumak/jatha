@@ -66,11 +66,6 @@ public interface LispValue extends Comparable<LispValue>
   public void apropos_print(PrintWriter out);
 
   /**
-   * Returns Java true if the object is an atom.
-   */
-  public boolean basic_atom();
-
-  /**
    * Returns Java true if the object is a Bignum.
    */
   public boolean basic_bignump();
@@ -124,11 +119,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns Java true if the object is a macro.
    */
   public boolean basic_macrop();
-
-  /**
-   * Returns Java true if the object is NIL.
-   */
-  public boolean basic_null();
 
   /**
    * Returns Java true if the object is a number.
@@ -305,11 +295,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue assoc(LispValue index);
 
   /**
-   * Returns T if the object is an atom.
-   */
-  public LispValue atom();
-
-  /**
    * Returns T if the object is a Bignum.
    */
   public LispValue bignump();
@@ -356,14 +341,6 @@ public interface LispValue extends Comparable<LispValue>
    * Clears a hash table.
    */
   public LispValue clrhash();
-
-  /**
-   * Concatenate a string to another string.
-   * Passing in any LispValue causes it to be converted to a string
-   * and concatenated to the end.
-   * This returns a new LispString.
-   */
-  public LispValue concatenate(LispValue value);
 
   /**
    * Returns T if the object is a CONS cell.
@@ -526,11 +503,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns the length of a list or string.
    */
   public LispValue length();
-
-  /**
-   * Returns T if the object is NIL.
-   */
-  public LispValue lisp_null();
 
   /**
    * Creates a list from the object.
@@ -958,30 +930,6 @@ public interface LispValue extends Comparable<LispValue>
   // Arithmetic functions
 
   /**
-   * Returns the sum of the object and the object(s) in the argument list.
-   * This is the <code>+</code> function in LISP.
-   */
-  public LispValue add(LispValue args);
-
-  /**
-   * Returns the quotient of the object and the object(s) in the argument list.
-   * This is the <code>/</code> function in LISP.
-   */
-  public LispValue div(LispValue args);
-
-  /**
-   * Returns the product of the object and the object(s) in the argument list.
-   * This is the <code>*</code> function in LISP.
-   */
-  public LispValue mul(LispValue args);
-
-  /**
-   * Returns the difference of the object and the object(s) in the argument list.
-   * This is the <code>-</code> function in LISP.
-   */
-  public LispValue sub(LispValue args);
-
-  /**
    * Returns T if the object prepended to the argument list is
    * in strictly decreasing order.
    */
@@ -1021,68 +969,9 @@ public interface LispValue extends Comparable<LispValue>
   LispValue     min          (LispValue args);
 
   /**
-   * Arccos function.  Argument in radians.
-   * Also called Inverse Cosine, this is the
-   * angle whose cosine is the argument.
-   */
-  LispValue     acos          ();
-
-  /**
-   * Arcsin function.  Argument in radians.
-   * Also called Inverse Sine, this is the
-   * angle whose sine is the argument.
-   */
-  LispValue     asin          ();
-
-  /**
-   * Arctan function.  Argument in radians.
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is the argument.
-   */
-  LispValue     atan          ();
-
-  /**
-   * Arctan function.  Argument in radians.
-   * Also called Inverse Tangent, this is the
-   * angle whose tangent is y/x, where y is
-   * the first argument and x is the second argument.
-   */
-  LispValue     atan2          (LispValue x);
-
-  /**
-   * Cosine function, argument in radians.
-   */
-  LispValue     cos          ();
-
-  /**
-   * Cosecant function, 1/sin(x), argument in radians.
-   */
-  LispValue     csc          ();
-
-  /**
-   * Cotangent function, 1/tan(x), argument in radians.
-   */
-  LispValue     cot          ();
-
-  /**
-   * Secant function, 1/cos(x), argument in radians.
-   */
-  LispValue     sec          ();
-
-  /**
-   * Sine trigonometric function, argument is in radians.
-   */
-  LispValue     sin          ();
-
-  /**
    * Square root, accepts negative numbers.
    */
   LispValue     sqrt         ();
-
-  /**
-   * Tangent trigonometric function, argument is in radians.
-   */
-    LispValue     tan          ();
 
   /**
    * Returns the smallest integer greater than or equal

@@ -87,38 +87,6 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
 
   // -----  LISP methods  ----------
-
-  /**
-   * Concatenate a string to another string.
-   * Passing in any LispValue causes it to be converted to a string
-   * and concatenated to the end.
-   * Must be at least two arguments, the first of which is 'STRING.
-   * This returns a new LispString.
-   */
-  public LispValue concatenate(LispValue values)
-  {
-    // First value must be the atom 'STRING'
-    LispValue concatType = values.car();
-    if (concatType.toStringSimple().equalsIgnoreCase("string"))
-    {
-      StringBuffer buff = new StringBuffer(values.basic_length() * 5);
-      buff.append(this.toStringSimple());
-
-      Iterator valuesIt = values.cdr().iterator();
-      while (valuesIt.hasNext())
-      {
-        LispValue value = (LispValue) valuesIt.next();
-        if (value instanceof LispString)
-          buff.append(value.toStringSimple());
-        else
-          buff.append(value.toString());
-      }
-      return new StandardLispString(f_lisp, buff.toString());
-    }
-    else
-      throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING.  Use f_lisp.STRING");
-  }
-
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {

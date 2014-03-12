@@ -406,6 +406,8 @@ public abstract class LispPrimitive extends StandardLispValue
   }
 
 
+	public LispValue bool(boolean arg)
+	{
+		return arg ? f_lisp.T : f_lisp.NIL;
+	}
 }
-
-

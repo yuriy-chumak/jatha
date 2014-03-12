@@ -116,12 +116,10 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public String toStringAsCdr() { return ""; }
 
 
-  public boolean basic_atom()      { return true;  }
   public boolean basic_consp()     { return false; }
   public boolean basic_constantp() { return true;  }
   public int     basic_length()    { return 0;     }
   public boolean basic_symbolp()   { return true;  }
-  public boolean basic_null()      { return true;  }
 
 
   // Packages
@@ -136,7 +134,6 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
 
   public LispValue     append(LispValue otherList) { return otherList; }
   public LispValue     assoc(LispValue index)      { return f_lisp.NIL; }
-  public LispValue     atom()                      { return f_lisp.T;   }
   public LispValue     boundp()                    { return f_lisp.T;   }
   public LispValue     butlast()                   { return f_lisp.NIL; }
   public LispValue     car()                       { return f_lisp.NIL; }
@@ -160,7 +157,6 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public LispValue     member(LispValue elt)     { return f_lisp.NIL; }
   public LispValue     nreverse(LispValue index) { return f_lisp.NIL; }
 
-  public LispValue     lisp_null    ()           { return f_lisp.T;   }
   public LispValue     rassoc(LispValue index)   { return f_lisp.NIL; }
   public LispValue     remove(LispValue elt)     { return f_lisp.NIL; }
   public LispValue     rest()                    { return f_lisp.NIL; }

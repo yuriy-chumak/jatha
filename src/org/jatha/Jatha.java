@@ -47,6 +47,7 @@ import java.util.jar.JarFile;
 import org.jatha.compile.CompilerException;
 import org.jatha.compile.LispCompiler;
 import org.jatha.dynatype.LispAlreadyDefinedPackageException;
+import org.jatha.dynatype.LispAtom;
 import org.jatha.dynatype.LispBignum;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispConsOrNil;
@@ -214,16 +215,16 @@ public class Jatha extends Object
   public LispValue STRING;
 
   // Used in the compiler
-  public LispValue ZERO;
-  public LispValue ONE;
-  public LispValue TWO;
+  public LispInteger ZERO;
+  public LispInteger ONE;
+  public LispInteger TWO;
 
   // Math constants
-  public LispValue PI;
-  public LispValue E;
+  public LispNumber PI;
+  public LispNumber E;
 
   // The symbol T
-  public LispValue T;
+  public LispConstant T;
 
   // Types
   public LispValue ARRAY_TYPE;
@@ -917,7 +918,8 @@ public class Jatha extends Object
 
       // eval
       value = MACHINE.Execute(code, varValues);
-    } catch (LispUndefinedFunctionException ufe) {
+    }
+    catch (LispUndefinedFunctionException ufe) {
       System.err.println("ERROR: " + ufe.getMessage());
       return makeString(ufe.getMessage());
     } catch (CompilerException ce) {
@@ -927,7 +929,8 @@ public class Jatha extends Object
       System.err.println("ERROR: " + le.getMessage());
       le.printStackTrace();
       return makeString(le.getMessage());
-    } catch (Exception e) {
+    }
+    catch (Exception e) {
       System.err.println("Unknown error: " + e.getMessage());
       return makeString(e.getMessage());
     }
@@ -970,7 +973,7 @@ public class Jatha extends Object
   private LispValue parseVarNames_new(final LispValue vars)
   {
     LispValue outp = NIL;
-    if (vars.basic_null())
+    if (vars instanceof LispNil)
       return outp;
 
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
@@ -990,7 +993,7 @@ public class Jatha extends Object
   private LispValue parseVarValues_new(final LispValue vars)
   {
     LispValue outp = NIL;
-    if (vars.basic_null())
+    if (vars instanceof LispNil)
       return outp;
 
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
@@ -1505,10 +1508,14 @@ public class Jatha extends Object
    * @return LispValue
    *
    */
-  public LispCons makeCons(LispValue theCar, LispValue theCdr)
-  {
-    return new StandardLispCons(this, theCar, theCdr);
-  }
+	public LispCons makeCons(LispValue theCar, LispValue theCdr)
+	{
+		return new StandardLispCons(this, theCar, theCdr);
+	}
+	public LispValue makeBool(boolean predicate)
+	{
+		return predicate ? T : NIL;
+	}
 
 
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -1846,9 +1853,9 @@ public class Jatha extends Object
   {
     if (left.basic_constantp() && (right.basic_constantp()))
       return makeList(QUOTE, expr);
-    else if (right.basic_null())
+    else if (right instanceof LispNil)
       return makeList(LIST, left);
-    else if (right.basic_consp() &&  (! right.car().equal(LIST).basic_null()))
+    else if (right.basic_consp() && !(right.car().equal(LIST) instanceof LispNil))
       return makeList(CONS, left, right);
     else
       return expr;  // ??  (mh) 9 Mar 2008.  The previous "if" had a wayward semi-colon at the end, and thus was not working correctly.  I don't really know what should be returned here.
@@ -1860,13 +1867,13 @@ public class Jatha extends Object
    */
   public LispValue backquote(LispValue expr)
   {
-    if (expr.basic_null())
+    if (expr instanceof LispNil)
       return NIL;
-    else if (expr.basic_atom())
+    else if (expr instanceof LispAtom || expr instanceof LispNil)
       return makeList(QUOTE, expr);
-    else if (! expr.car().eq(COMMA_FN).basic_null())
+    else if (expr.car() == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
       return expr.second();
-    else if (expr.car().basic_consp() &&  (! expr.car().car().eq(COMMA_ATSIGN_FN).basic_null()))
+    else if (expr.car().basic_consp() && expr.car().car() == COMMA_ATSIGN_FN)
       return makeList(APPEND, expr.car().second(), backquote(expr.cdr()));
     else
       return combineExprs(backquote(expr.car()), backquote(expr.cdr()), expr);

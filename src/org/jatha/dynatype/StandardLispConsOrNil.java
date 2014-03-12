@@ -162,7 +162,7 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   {
     LispValue ptr = this;
     int index = 0;
-    while ((ptr != f_lisp.NIL) && (ptr.car().eql(element).basic_null()))
+    while ((ptr != f_lisp.NIL) && (ptr.car().eql(element) instanceof LispNil))
     {
       ptr = ptr.cdr();
       index++;
