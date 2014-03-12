@@ -23,9 +23,11 @@
  */
 package org.jatha.dynatype;
 
+@SuppressWarnings("serial")
 public class LispValueNotAConsException extends LispException
 {
-  LispValueNotAConsException()              { super();  }
-  LispValueNotAConsException(String s)      { super(s + " is not a CONS."); }
+	public LispValueNotAConsException()            { super();  }
+	public LispValueNotAConsException(String s)    { super(s + " is not a CONS."); }
+	public LispValueNotAConsException(LispValue v) { this(v.toString()); }
 }
 

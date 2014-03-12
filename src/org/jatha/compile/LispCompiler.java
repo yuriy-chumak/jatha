@@ -62,7 +62,9 @@ public class LispCompiler
   // Set this to true to produce debugging output during compilation.
   static boolean DEBUG = false;
 
-  // These are special forms that get expanded in the compiler
+	// These are special forms that get expanded in the compiler
+	LispValue COMMENT;
+	LispValue QUOTE;
   LispValue AND;
   LispValue DEFMACRO;
   LispValue DEFUN;
@@ -73,7 +75,6 @@ public class LispCompiler
   LispValue OR;
   LispValue PRIMITIVE;
   LispValue PROGN;
-  LispValue QUOTE;
   LispValue SETQ;
     //  LispValue BLOCK;
     //  LispValue WHEN;
@@ -91,25 +92,26 @@ public class LispCompiler
   private final Map<Long, LispValue> registeredGos = new HashMap<Long, LispValue>();
 
   // static initializer.
-  private void initializeConstants()
-  {
-      final LispPackage keyPkg = (LispPackage)(f_lisp.findPackage("KEYWORD"));
-      final LispPackage sysPkg = (LispPackage)(f_lisp.findPackage("SYSTEM"));
+	private void initializeConstants()
+	{
+		final LispPackage keyPkg = (LispPackage)(f_lisp.findPackage("KEYWORD"));
+		final LispPackage SYSTEM_PKG = (LispPackage)(f_lisp.findPackage("SYSTEM"));
 
-    AMP_REST   = f_lisp.EVAL.internAndExport("&REST",sysPkg);
-    AND        = f_lisp.EVAL.internAndExport("AND",sysPkg);
-    DEFMACRO   = f_lisp.EVAL.internAndExport("DEFMACRO",sysPkg);
-    DEFUN      = f_lisp.EVAL.internAndExport("DEFUN",sysPkg);
-    IF         = f_lisp.EVAL.internAndExport("IF",sysPkg);
-    LAMBDA     = f_lisp.EVAL.internAndExport("LAMBDA",sysPkg);
-    LET        = f_lisp.EVAL.internAndExport("LET",sysPkg);
-    LETREC     = f_lisp.EVAL.internAndExport("LETREC",sysPkg);
-    MACRO      = f_lisp.EVAL.internAndExport("MACRO",keyPkg);
-    OR         = f_lisp.EVAL.internAndExport("OR",sysPkg);
-    PROGN      = f_lisp.EVAL.internAndExport("PROGN",sysPkg);
-    PRIMITIVE  = f_lisp.EVAL.internAndExport("PRIMITIVE",keyPkg);
-    QUOTE      = f_lisp.EVAL.internAndExport("QUOTE",sysPkg);
-    SETQ       = f_lisp.EVAL.internAndExport("SETQ",sysPkg);
+		QUOTE      = f_lisp.EVAL.internAndExport("QUOTE",   SYSTEM_PKG);
+		COMMENT    = f_lisp.EVAL.internAndExport("COMMENT", SYSTEM_PKG);
+    AMP_REST   = f_lisp.EVAL.internAndExport("&REST", SYSTEM_PKG);
+    AND        = f_lisp.EVAL.internAndExport("AND", SYSTEM_PKG);
+    DEFMACRO   = f_lisp.EVAL.internAndExport("DEFMACRO", SYSTEM_PKG);
+    DEFUN      = f_lisp.EVAL.internAndExport("DEFUN", SYSTEM_PKG);
+    IF         = f_lisp.EVAL.internAndExport("IF", SYSTEM_PKG);
+    LAMBDA     = f_lisp.EVAL.internAndExport("LAMBDA", SYSTEM_PKG);
+    LET        = f_lisp.EVAL.internAndExport("LET", SYSTEM_PKG);
+    LETREC     = f_lisp.EVAL.internAndExport("LETREC", SYSTEM_PKG);
+    MACRO      = f_lisp.EVAL.internAndExport("MACRO", keyPkg);
+    OR         = f_lisp.EVAL.internAndExport("OR", SYSTEM_PKG);
+    PROGN      = f_lisp.EVAL.internAndExport("PROGN", SYSTEM_PKG);
+    PRIMITIVE  = f_lisp.EVAL.internAndExport("PRIMITIVE", keyPkg);
+    SETQ       = f_lisp.EVAL.internAndExport("SETQ", SYSTEM_PKG);
     //    BLOCK       = f_lisp.EVAL.intern("BLOCK",sysPkg);
     //    sysPkg.export(BLOCK);
     //    WHEN       = f_lisp.EVAL.intern("WHEN");
@@ -118,7 +120,7 @@ public class LispCompiler
     // should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
     DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, f_lisp.makeCons(f_lisp.T, f_lisp.NIL));
     DUMMY_MACRO    = new StandardLispMacro(f_lisp, null, f_lisp.makeCons(f_lisp.T, f_lisp.NIL));
-  }
+	}
 
   public LispCompiler(Jatha lisp)
   {
@@ -736,6 +738,9 @@ public class LispCompiler
     // Function on a symbol
     else if (is_atom(function))
     {
+        if (function == COMMENT)
+        	return f_lisp.makeCons(machine.T, code);
+    	
       if (isBuiltinFunction(function))
       {
         return compileBuiltin(machine, function, args, valueList, code);
@@ -1467,12 +1472,16 @@ public class LispCompiler
 	{
 		Register(new LispPrimitive(f_lisp, "CAR", 1) {
 			public LispValue Execute(LispValue arg) {
-				return arg.car();
+				if (arg instanceof LispConsOrNil)
+					return ((LispConsOrNil)arg).car();
+				throw new LispValueNotAConsException(arg);
 			}
 		}, pkg);
 		Register(new LispPrimitive(f_lisp, "CDR", 1) {
 			public LispValue Execute(LispValue arg) {
-				return arg.cdr();
+				if (arg instanceof LispConsOrNil)
+					return ((LispConsOrNil)arg).cdr();
+				throw new LispValueNotAConsException(arg); 
 			}
 		}, pkg);
 		Register(new LispPrimitive(f_lisp, "ELT", 2) {
