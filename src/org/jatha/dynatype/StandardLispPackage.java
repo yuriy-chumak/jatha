@@ -38,43 +38,39 @@ import org.jatha.util.SymbolTable;
  * @see org.jatha.Jatha
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  * @version 1.0
- *
+ * 
+ * http://www.cs.cmu.edu/Groups/AI/html/cltl/cltl2.html
  */
-public class StandardLispPackage extends StandardLispValue implements LispPackage
+public class StandardLispPackage extends StandardLispCons implements LispPackage
 {
 /* ------------------  FIELDS   ------------------------------ */
 
-  // author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // date    Mon May  5 22:46:11 1997
-  /**
-   * SYMTAB is the local symbol table for this package.
-   */
-  protected SymbolTable f_symbolTable;
+	// author  Micheal S. Hewett    hewett@cs.stanford.edu
+	// date    Mon May  5 22:46:11 1997
+	/**
+	 * SYMTAB is the local symbol table for this package.
+	 */
+	protected SymbolTable f_symbolTable;
 
-  // author Ola Bini, ola.bini@itc.ki.se
-  // date Sun May 22 20:27:00 2005
-  /**
-   * The shadowing symbols of this package. Read CLTL, chapter 11.5 for more information.
-   */
-  protected SymbolTable f_shadowingSymbols;
+	// author Ola Bini, ola.bini@itc.ki.se
+	// date Sun May 22 20:27:00 2005
+	/**
+	 * The shadowing symbols of this package.
+	 * Read CLTL, chapter 11.5 for more information.
+	 */
+	protected SymbolTable f_shadowingSymbols;
 
-  // author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // date    Mon May  5 22:48:52 1997
-  /**
-   * The LISP string giving the name of the package.
-   */
-  protected LispValue f_name;       // A Lisp String
-  protected LispValue f_nicknames;  // List of Lisp Strings
+	// author  Micheal S. Hewett    hewett@cs.stanford.edu
+	// date    Mon May  5 22:48:52 1997
+	/**
+	 * The LISP string giving the name of the package.
+	 */
+	protected LispValue f_name;     // A Lisp String
+	protected LispValue f_nicknames;// List of Lisp Strings
 
-  protected LispValue f_uses;    // List of packages used by this one.
+	protected LispConsOrNil f_uses;     // List of packages used by this one.
 
-/* ------------------  CONSTRUCTORS   ------------------------------ */
-
-  public StandardLispPackage()
-  {
-    super();
-  }
-
+  /* ------------------  CONSTRUCTORS   ------------------------------ */
 
   // return the package
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -119,7 +115,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   }
 
   public StandardLispPackage(Jatha lisp, LispValue name, LispValue nicknames,
-                             LispValue usesList)
+                             LispConsOrNil usesList)
   {
     this(lisp, name, nicknames, usesList, null);
   }
@@ -136,7 +132,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    * @param symtab a symbol table to use for this package.
    */
   public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
-		                 LispValue puses, SymbolTable symtab)
+		                 LispConsOrNil puses, SymbolTable symtab)
   {
       this(lisp, pname, pnicknames, puses, symtab, null);
   }
@@ -154,7 +150,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    *
    */
   public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
-		                 LispValue puses, SymbolTable symtab, final SymbolTable shadows)
+		                 LispConsOrNil puses, SymbolTable symtab, final SymbolTable shadows)
   {
     super(lisp);
 
@@ -305,7 +301,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    */
   public LispValue export(LispValue symbols)
   {
-    if (!symbols.basic_consp())
+    if (!(symbols instanceof LispCons))
       symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
@@ -316,10 +312,9 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
             ((LispSymbol)(f_lisp.car(s))).setExternal(true); // Should handle error here.
         }
 
-      s = f_lisp.cdr(s);
+      s = (LispConsOrNil)f_lisp.cdr(s);
     }
 
-    // Return T
     return f_lisp.T;
   }
 
@@ -334,7 +329,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    */
   public LispValue lisp_import(LispValue symbols)
   {
-	  if (!symbols.basic_consp())
+	  if (!(symbols instanceof LispCons))
 		  symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
@@ -369,7 +364,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    * Imports the given symbols into the current package shadowing list.
    */
   public LispValue shadowing_import(LispValue symbols) {
-    if (!symbols.basic_consp())
+    if (!(symbols instanceof LispCons))
       symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
@@ -392,7 +387,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   // author  Ola Bini    ola.bini@itc.ki.se
   // date    Sun May 22 20:31:00 2005
   public LispValue shadow(LispValue symbols) {
-    if (!symbols.basic_consp())
+    if (!(symbols instanceof LispCons))
       symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     LispValue  s = symbols;
@@ -451,7 +446,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
     return f_uses;
   }
 
-  public void setUses(final LispValue uses) {
+  public void setUses(final LispConsOrNil uses) {
     this.f_uses = uses;
   }
 

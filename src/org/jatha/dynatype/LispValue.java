@@ -96,11 +96,6 @@ public interface LispValue extends Comparable<LispValue>
   public boolean basic_bignump();
 
   /**
-   * Returns Java true if the object is a CONS cell.
-   */
-  public boolean basic_consp();
-
-  /**
    * Returns Java true if the object is a constant.
    */
   public boolean basic_constantp();
@@ -356,13 +351,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue clrhash();
 
   /**
-   * Returns T if the object is a CONS cell.
-   * This is equivalent to asking whether it has a CAR and a CDR
-   * and is not NIL.
-   */
-  public LispValue consp();
-
-  /**
    * Returns T if the object is a constant.
    */
   public LispValue constantp();
@@ -523,12 +511,6 @@ public interface LispValue extends Comparable<LispValue>
    * to the CAR and NIL to the CDR.
    */
   public LispValue list();
-
-  /**
-   * Returns T if the object is a list.
-   * True if it is a CONS cell or NIL.
-   */
-  public LispValue listp();
 
   /**
    * Returns the tail of the list starting at the

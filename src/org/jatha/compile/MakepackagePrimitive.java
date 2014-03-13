@@ -71,8 +71,8 @@ public class MakepackagePrimitive extends LispPrimitive {
         final Map arguments = args.parse(argsList);
   	final LispValue name = (LispValue)arguments.get(pckSym);
   	final LispValue nick = (LispValue)arguments.get(nckSym);
-  	final LispValue use = (LispValue)arguments.get(useSym);
-        machine.S.push(f_lisp.makePackage(name,nick,use));
+  	final LispConsOrNil use = (LispConsOrNil)arguments.get(useSym);
+        machine.S.push(f_lisp.makePackage(name,nick, use));
         machine.C.pop();
     }
 

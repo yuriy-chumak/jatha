@@ -25,6 +25,8 @@
 package org.jatha.compile;
 
 import org.jatha.Jatha;
+import org.jatha.dynatype.LispCons;
+import org.jatha.dynatype.LispConsOrNil;
 import org.jatha.dynatype.LispFunction;
 import org.jatha.dynatype.LispValue;
 import org.jatha.machine.SECDMachine;
@@ -107,7 +109,7 @@ public class ApplyPrimitive extends LispPrimitive
   public boolean validArgumentList(LispValue args)
   {
     // The last argument must be a CONS
-    if (f_lisp.car(args.last()).basic_consp() || f_lisp.car(args.last()) == f_lisp.NIL)
+    if (f_lisp.car(args.last()) instanceof LispConsOrNil)
       return super.validArgumentList(args);
     else
     {

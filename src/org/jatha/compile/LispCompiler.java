@@ -1060,7 +1060,7 @@ public class LispCompiler
   {
     if (varValueList == f_lisp.NIL)
       return f_lisp.NIL;
-    else if (f_lisp.car(varValueList).basic_consp())
+    else if (f_lisp.car(varValueList) instanceof LispCons)
       return f_lisp.makeCons(f_lisp.car(f_lisp.car(varValueList)),
                                        varsFromLetBindings(f_lisp.cdr(varValueList)));
     else
@@ -1073,7 +1073,7 @@ public class LispCompiler
   {
     if (varValueList == f_lisp.NIL)
       return f_lisp.NIL;
-    else if (f_lisp.car(varValueList).basic_consp())
+    else if (f_lisp.car(varValueList) instanceof LispCons)
       return f_lisp.makeCons(f_lisp.car(varValueList).second(),
                                        valuesFromLetBindings(f_lisp.cdr(varValueList)));
     else

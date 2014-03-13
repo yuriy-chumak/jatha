@@ -37,7 +37,7 @@ import org.jatha.util.SymbolTable;
  * @version 1.0
  *
  */
-public interface LispPackage extends LispValue
+public interface LispPackage extends LispCons
 {
   /**
    * Returns the name of this package as a LispString.
@@ -92,7 +92,7 @@ public interface LispPackage extends LispValue
      *
      * @param uses the uses of this package
      */
-    void setUses(final LispValue uses);
+    void setUses(final LispConsOrNil uses);
 
     void setNicknames(final LispValue nicknames);
 }

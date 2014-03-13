@@ -52,7 +52,7 @@ public class UsePackagePrimitive extends LispPrimitive {
         final LispValue pkg = args.second();
         LispPackage thePack;
         
-        if(pkg == f_lisp.NIL) {
+        if (pkg == f_lisp.NIL) {
             thePack = (LispPackage)machine.get_special_value(f_lisp.PACKAGE_SYMBOL);
         } else {
             thePack = (LispPackage)f_lisp.findPackage(pkg);
@@ -64,7 +64,7 @@ public class UsePackagePrimitive extends LispPrimitive {
             useList = useDef;
         }
 
-        thePack.setUses(thePack.getUses().append(useList));
+        thePack.setUses((LispConsOrNil)thePack.getUses().append(useList));
 
         machine.S.push(f_lisp.T);
         machine.C.pop();

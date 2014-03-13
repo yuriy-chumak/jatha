@@ -24,11 +24,6 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
-
-import java.util.Iterator;
-
-
 // @date    Thu Mar 27 13:35:07 1997
 /**
  * An abstract class for the CONS and NIL data types.
@@ -51,6 +46,5 @@ public interface LispConsOrNil extends LispValue
    * Returns all but the first element of a list.
    * CDR of NIL is NIL.
    */
-  public LispConsOrNil cdr();
-
+  public LispValue cdr();
 }

@@ -81,7 +81,7 @@ class opLDR extends SECDop
     long i, j;
 
     i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
     LispValue subList = loc(i, valueList);
     for (int idx = 1 ; idx < j ; idx++)

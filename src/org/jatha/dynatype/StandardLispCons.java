@@ -43,8 +43,8 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
   
   public static boolean DEBUG = false;
   
-  protected LispValue  carCell;
-  protected LispConsOrNil cdrCell;
+  protected LispValue carCell;
+  protected LispValue cdrCell;
 
   public StandardLispCons()
   {
@@ -71,7 +71,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
         showStackTrace();
       theCdr = lisp.NIL;
     }
-    cdrCell = (LispConsOrNil)theCdr;
+    cdrCell = theCdr;
   }
 
 
@@ -132,7 +132,6 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
   }
 
 
-  public boolean basic_consp()     { return true; }
   public boolean basic_constantp()
   { // returns true if the list evaluates to itself - if it is quoted.
     return carCell == f_lisp.QUOTE;
@@ -312,7 +311,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     {
       value = f_lisp.car(ptr);
 
-      if (!ptr.basic_consp())
+      if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("An argument to ASSOC");
       }
@@ -334,7 +333,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     return carCell; 
   }
   
-  public LispConsOrNil cdr() { return cdrCell; }
+  public LispValue cdr() { return cdrCell; }
   
 //todo: change argument to LispConsOrNil
   public LispValue setf_cdr(LispValue newCdr) 
@@ -342,8 +341,6 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     cdrCell = (LispConsOrNil)newCdr; 
     return cdrCell; 
   }
-
-  public LispValue     consp        ()  { return f_lisp.T;  }
 
   public LispValue     copy_list    ()
   {
@@ -388,7 +385,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     long      maxLength = f_lisp.getMaxListLength().getLongValue();
 
     while (!(f_lisp.cdr(ptr) instanceof LispNil))
-      if (!ptr.basic_consp())
+      if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("An argument to LAST");
       }
@@ -426,7 +423,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
                                              maxLength + ".  This is probably an error.  Set *MAX-LIST-LENGTH* to a larger value if necessary.");
       }
 
-      if (!ptr.basic_consp())
+      if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("An argument to LENGTH");
       }
@@ -479,7 +476,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     {
       value = f_lisp.car(ptr);
 
-      if (!ptr.basic_consp())
+      if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("The second argument to RASSOC");
       }

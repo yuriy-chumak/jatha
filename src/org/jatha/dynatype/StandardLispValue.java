@@ -170,7 +170,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   }
 
   public boolean basic_bignump()   { return false; }
-  public boolean basic_consp()     { return false; }
   public boolean basic_constantp() { return false; }
   public boolean basic_floatp()    { return false; }
   public boolean basic_foreignp()  { return false; }
@@ -475,8 +474,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
 
 
-  public LispValue     consp        ()  { return f_lisp.NIL;  }
-
   public LispValue     constantp    ()
   {
     return basic_constantp() ? f_lisp.T : f_lisp.NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
@@ -631,8 +628,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
 
   public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
-
-  public LispValue     listp        ()  { return f_lisp.NIL;  }
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }

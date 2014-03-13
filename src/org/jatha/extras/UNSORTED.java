@@ -3,6 +3,8 @@ package org.jatha.extras;
 import org.jatha.Jatha;
 import org.jatha.Registrar;
 import org.jatha.compile.*;
+import org.jatha.dynatype.LispCons;
+import org.jatha.dynatype.LispConsOrNil;
 import org.jatha.dynatype.LispPackage;
 import org.jatha.compile.LispPrimitive;
 import org.jatha.dynatype.LispValue;
@@ -24,6 +26,27 @@ public class UNSORTED implements Registrar {
 			public LispValue Execute(LispValue x, LispValue n)
 			{
 				return x.mod(n);
+			}
+		}, SYSTEM_PKG);
+		
+		
+		/**
+		 * Returns T if the object is a CONS cell.
+		 * This is equivalent to asking whether it has a CAR and a CDR
+		 * and is not NIL.
+		 */
+		compiler.Register(new LispPrimitive(f_lisp, "CONSP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return bool(arg instanceof LispCons);
+			}
+		}, SYSTEM_PKG);
+		/**
+		 * Returns T if the object is a list.
+		 * True if it is a CONS cell or NIL.
+		 */
+		compiler.Register(new LispPrimitive(f_lisp, "LISTP", 1) {
+			public LispValue Execute(LispValue arg) {
+				return bool(arg instanceof LispConsOrNil);
 			}
 		}, SYSTEM_PKG);
 		
@@ -68,7 +91,9 @@ public class UNSORTED implements Registrar {
 		compiler.Register(new CharacterpPrimitive(f_lisp),SYSTEM_PKG);
 		compiler.Register(new ClrhashPrimitive(f_lisp),SYSTEM_PKG);
     
-    compiler.Register(new ConspPrimitive(f_lisp),SYSTEM_PKG);
+		
+		
+		
     compiler.Register(new ConstantpPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new CopyListPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new DefconstantPrimitive(f_lisp),SYSTEM_PKG);
@@ -117,7 +142,6 @@ public class UNSORTED implements Registrar {
     compiler.Register(new LessThanPrimitive(f_lisp),SYSTEM_PKG);
    	compiler.Register(new LessThanOrEqualPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new ListAllPackagesPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new ListpPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new LoadPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new LoadFromJarPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new Macroexpand1Primitive(f_lisp),SYSTEM_PKG);

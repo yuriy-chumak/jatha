@@ -108,7 +108,7 @@ public abstract class SECDop extends LispPrimitive
     long i, j;
 
     i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
     return loc(j, loc(i, valueList));
   }
@@ -118,7 +118,7 @@ public abstract class SECDop extends LispPrimitive
     long i, j;
 
     i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
     setLoc(j, loc(i, valueList), newValue);
   }

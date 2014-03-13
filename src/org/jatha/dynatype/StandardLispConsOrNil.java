@@ -52,24 +52,15 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   }
 
 
-  public boolean basic_consp()
-  {
-    if (this == f_lisp.NIL)
-      return false;
-    else
-      return true;
-  }
-
   public boolean basic_listp()  { return true; }
 
   // ------ LISP methods  ----------
 
   public LispValue butlast()
   {
-    if (cdr().consp() != f_lisp.T)
-      return f_lisp.NIL;
-    else
+    if (cdr() instanceof LispCons)
       return (f_lisp.makeCons(car(), cdr().butlast()));
+    return f_lisp.NIL;
   }
 
   public LispValue elt (LispValue index)
@@ -104,8 +95,6 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
     return new StandardLispInteger(f_lisp, count);
   }
 
-  public LispValue     listp        ()  { return f_lisp.T;  }
-
   /**
    * If this object is NIL, returns the argument.
    * Otherwise, destructively appends the argument to this one.
@@ -122,7 +111,7 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
     if (this == f_lisp.NIL)
       return arg;
 
-    else if (arg.basic_consp())
+    else if (arg instanceof LispCons)
       this.last().rplacd(arg);
 
     return this;
@@ -197,5 +186,5 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
 
 
   public abstract LispValue car();
-  public abstract LispConsOrNil cdr();
+  public abstract LispValue cdr();
 }

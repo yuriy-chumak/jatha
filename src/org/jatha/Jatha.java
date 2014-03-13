@@ -1493,7 +1493,7 @@ public class Jatha extends Object
      * @param use a list of package names to use. may be strings or symbols.
      * @return Jatha.PACKAGE
      */
-    public LispValue makePackage(final LispValue name, final LispValue nickNames, final LispValue use) {
+    public LispValue makePackage(final LispValue name, final LispValue nickNames, final LispConsOrNil use) {
         LispValue firstPkg = findPackage(name);
         if(NIL != firstPkg) {
             throw new LispAlreadyDefinedPackageException(((LispString)name.string()).getValue());
@@ -1507,21 +1507,24 @@ public class Jatha extends Object
   // ---------------------  methods formerly in LispValueFactory  ------------------
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
   //* @date    Thu Feb 20 12:08:32 1997
-  /**
-   * makeCons(a,b) creates a new Cons cell, initialized with
-   * the values a and b as the CAR and CDR respectively.
-   *
-   * @see LispCons
-   * @param theCar
-   * @param theCdr
-   * @return LispValue
-   *
-   */
+	/**
+	 * makeCons(a,b) creates a new Cons cell, initialized with
+	 * the values a and b as the CAR and CDR respectively.
+	 *
+	 * @see LispCons
+	 * @param theCar
+	 * @param theCdr
+	 * @return LispValue
+	 *
+	 */
+/*	public LispCons makeCons(LispValue theCar, LispConsOrNil theCdr)
+	{
+		return new StandardLispCons(this, theCar, theCdr);
+	}*/
 	public LispCons makeCons(LispValue theCar, LispValue theCdr)
 	{
-		if (theCdr instanceof LispConsOrNil)
-			return new StandardLispCons(this, theCar, theCdr);
-		return new StandardLispCons(this, theCar, makeCons(theCdr, NIL));
+//		assert theCdr instanceof LispConsOrNil;
+		return new StandardLispCons(this, theCar, theCdr);
 	}
 	public LispValue makeBool(boolean predicate)
 	{
@@ -1529,44 +1532,43 @@ public class Jatha extends Object
 	}
 
 
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Thu Feb 20 12:10:00 1997
-  /**
-   * Creates a LISP list from the elements of the Collection.
-   * which must be LispValue types.
-   *
-   * @see LispValue
-   *
-   */
-  public LispConsOrNil makeList(Collection<LispValue> elements)
-  {
-    // Use array so as to iterate from the end to the beginning.
-    Object[] elArray = elements.toArray();
-    LispConsOrNil result = NIL;
+	//* @author  Micheal S. Hewett    hewett@cs.stanford.edu
+	//* @date    Thu Feb 20 12:10:00 1997
+	/**
+	 * Creates a LISP list from the elements of the Collection.
+	 * which must be LispValue types.
+	 *
+	 * @see LispValue
+	 *
+	 */
+	public LispConsOrNil makeList(Collection<LispValue> elements)
+	{
+		// Use array so as to iterate from the end to the beginning.
+		Object[] elArray = elements.toArray();
+		LispConsOrNil result = NIL;
 
-    for (int i = elArray.length - 1; i >= 0; i--)
-      result = new StandardLispCons(this, (LispValue) (elArray[i]), result);
+		for (int i = elArray.length - 1; i >= 0; i--)
+			result = new StandardLispCons(this, (LispValue)(elArray[i]), result);
 
-    return result;
-  }
+		return result;
+	}
 
 
-  // Removed previous versions of this method that had 1, 2, 3 or 4 parameters.
-  // (mh) 22 Feb 2007  also changed return type to LispConsOrNil from LispCons.
-  /**
-   * This is a Java 5-compatible version of makeList that
-   * accepts any number of arguments.
-   * Returns NIL if no arguments are passed.
-   * makeList(NIL) returns (NIL) - a list containing NIL.
-   */
-  public LispConsOrNil makeList(LispValue... parts)
-  {
-    LispConsOrNil result = NIL;
-    for (int i = parts.length-1 ; i >= 0; i--)
-      result = new StandardLispCons(this, parts[i], result);
-    
-    return result;
-  }
+	// Removed previous versions of this method that had 1, 2, 3 or 4 parameters.
+	// (mh) 22 Feb 2007  also changed return type to LispConsOrNil from LispCons.
+	/**
+	 * This is a Java 5-compatible version of makeList that
+	 * accepts any number of arguments.
+	 * Returns NIL if no arguments are passed.
+	 * makeList(NIL) returns (NIL) - a list containing NIL.
+	 */
+	public LispConsOrNil makeList(LispValue... parts)
+	{
+		LispConsOrNil result = NIL;
+		for (int i = parts.length-1 ; i >= 0; i--)
+			result = new StandardLispCons(this, parts[i], result);
+		return result;
+	}
   
 
   /**
@@ -1866,7 +1868,7 @@ public class Jatha extends Object
       return makeList(QUOTE, expr);
     else if (right instanceof LispNil)
       return makeList(LIST, left);
-    else if (right.basic_consp() && !(this.car(right).equal(LIST) instanceof LispNil))
+    else if (right instanceof LispCons && !(this.car(right).equal(LIST) instanceof LispNil))
       return makeList(CONS, left, right);
     else
       return expr;  // ??  (mh) 9 Mar 2008.  The previous "if" had a wayward semi-colon at the end, and thus was not working correctly.  I don't really know what should be returned here.
@@ -1884,7 +1886,7 @@ public class Jatha extends Object
       return makeList(QUOTE, expr);
     else if (this.car(expr) == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
       return expr.second();
-    else if (this.car(expr).basic_consp() && this.car(this.car(expr)) == COMMA_ATSIGN_FN)
+    else if (this.car(expr) instanceof LispCons && this.car(this.car(expr)) == COMMA_ATSIGN_FN)
       return makeList(APPEND, this.car(expr).second(), backquote(this.cdr(expr)));
     else
       return combineExprs(backquote(this.car(expr)), backquote(this.cdr(expr)), expr);
@@ -1900,10 +1902,10 @@ public class Jatha extends Object
 			return ((LispConsOrNil)arg).car();
 		throw new LispValueNotAConsException(arg);
 	}
-	public LispConsOrNil cdr(LispValue arg) 
+	public LispValue cdr(LispValue arg) 
 	{
 		if (arg instanceof LispConsOrNil)
-			return (LispConsOrNil)((LispConsOrNil)arg).cdr();
+			return ((LispConsOrNil)arg).cdr();
 		throw new LispValueNotAConsException(arg);
 	}
 

@@ -27,6 +27,7 @@
 package org.jatha.compile;
 
 import org.jatha.Jatha;
+import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispPackage;
 import org.jatha.dynatype.LispSymbol;
 import org.jatha.dynatype.LispValue;
@@ -48,7 +49,7 @@ public class MacroexpandPrimitive extends LispPrimitive {
         final LispValue form = machine.S.pop();
         LispValue now = expand(form);
         LispValue lastOne = form;
-        while(now != lastOne && now.basic_consp() && !(now == f_lisp.NIL)) {
+        while(now != lastOne && now instanceof LispCons && !(now == f_lisp.NIL)) {
             lastOne = now;
             now = expand(now);
         }

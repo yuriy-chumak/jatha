@@ -116,7 +116,6 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public String toStringAsCdr() { return ""; }
 
 
-  public boolean basic_consp()     { return false; }
   public boolean basic_constantp() { return true;  }
   public int     basic_length()    { return 0;     }
   public boolean basic_symbolp()   { return true;  }
@@ -137,7 +136,7 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public LispValue     boundp()                    { return f_lisp.T;   }
   public LispValue     butlast()                   { return f_lisp.NIL; }
   public LispValue     car()                       { return f_lisp.NIL; }
-  public LispConsOrNil cdr()                       { return f_lisp.NIL; }
+  public LispValue     cdr()                       { return f_lisp.NIL; }
   public LispValue     copy_list()                 { return f_lisp.NIL; }
   public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
 
