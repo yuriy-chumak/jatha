@@ -46,10 +46,10 @@ public class NconcPrimitive extends LispPrimitive
 
   LispValue nconcArgs(LispValue args)
   {
-    if (args.cdr() == f_lisp.NIL)
-      return args.car();
+    if (f_lisp.cdr(args) == f_lisp.NIL)
+      return f_lisp.car(args);
     else
-      return args.car().nconc(nconcArgs(args.cdr()));
+      return f_lisp.car(args).nconc(nconcArgs(f_lisp.cdr(args)));
   }
 
   // Unlimited number of evaluated args.

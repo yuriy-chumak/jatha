@@ -64,7 +64,7 @@ class opAP extends SECDop
       printf("\nAP:   v  = "); print(v);
       */
 
-    LispValue code = fe.car();
+    LispValue code = f_lisp.car(fe);
     if (code instanceof LispFunction)
       code = ((LispFunction)code).getCode();
 
@@ -74,7 +74,7 @@ class opAP extends SECDop
                                      f_lisp.makeCons(machine.E.value(),
                                                      f_lisp.makeCons(machine.C.value(), machine.D.value()))));
     machine.C.assign(code);
-    machine.E.assign(f_lisp.makeCons(v, fe.cdr()));
+    machine.E.assign(f_lisp.makeCons(v, f_lisp.cdr(fe)));
     machine.S.assign(f_lisp.NIL);
   }
 }

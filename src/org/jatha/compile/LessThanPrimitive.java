@@ -48,7 +48,7 @@ public class LessThanPrimitive extends LispPrimitive
     {
       // There should be at least 2 arguments.
       LispValue prevArg = args.first();
-      args = args.cdr();
+      args = f_lisp.cdr(args);
       for (Iterator iterator = args.iterator(); iterator.hasNext();)
       {
         LispValue arg = (LispValue) iterator.next();

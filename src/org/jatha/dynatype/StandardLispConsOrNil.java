@@ -87,9 +87,9 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
       // All is okay
       LispValue element = this;
 
-      for (int i = 0; i < indexValue; ++i)  element = element.cdr();
+      for (int i = 0; i < indexValue; ++i)  element = f_lisp.cdr(element);
 
-      return element.car();
+      return f_lisp.car(element);
     }
   }
 
@@ -99,7 +99,7 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
     long       count = 0;
     LispValue  ptr   = this;
 
-    while (ptr != f_lisp.NIL) { ++count; ptr = ptr.cdr(); }
+    while (ptr != f_lisp.NIL) { ++count; ptr = f_lisp.cdr(ptr); }
 
     return new StandardLispInteger(f_lisp, count);
   }
@@ -137,7 +137,7 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
     // p stays one ahead of the main list pointer.
     while (head != f_lisp.NIL)
     {
-      next = head.cdr();     // Save pointer to next element in list.
+      next = f_lisp.cdr(head);     // Save pointer to next element in list.
       head.rplacd(result);   // Alter cdr of head.
       result = head;         // Reset pointer to top of result
       head = next;           // Start over with the next element of the list.
@@ -162,9 +162,9 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   {
     LispValue ptr = this;
     int index = 0;
-    while ((ptr != f_lisp.NIL) && (ptr.car().eql(element) instanceof LispNil))
+    while ((ptr != f_lisp.NIL) && (f_lisp.car(ptr).eql(element) instanceof LispNil))
     {
-      ptr = ptr.cdr();
+      ptr = f_lisp.cdr(ptr);
       index++;
     }
 
@@ -178,8 +178,8 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   {
     LispValue result = f_lisp.NIL;
 
-    for (LispValue p=this; p != f_lisp.NIL; p = p.cdr() )
-      result = new StandardLispCons(f_lisp, p.car(), result);
+    for (LispValue p=this; p != f_lisp.NIL; p = f_lisp.cdr(p) )
+      result = new StandardLispCons(f_lisp, f_lisp.car(p), result);
 
     return result;
   }
@@ -196,4 +196,6 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   }
 
 
+  public abstract LispValue car();
+  public abstract LispConsOrNil cdr();
 }

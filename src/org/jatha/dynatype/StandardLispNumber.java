@@ -196,11 +196,11 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != f_lisp.NIL)
     {
-      LispValue arg = arglist.car();
+      LispValue arg = f_lisp.car(arglist);
 
       if (! arg.basic_numberp())
       {
-        super.max(arglist.car());  // generates an error.
+        super.max(f_lisp.car(arglist));  // generates an error.
         return(f_lisp.NIL);
       }
 
@@ -215,7 +215,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (otherValue > maxValue)
         maxValue = otherValue;
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
       //System.err.println("  max value is " + maxValue);
     }
 
@@ -251,11 +251,11 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != f_lisp.NIL)
     {
-      LispValue arg = arglist.car();
+      LispValue arg = f_lisp.car(arglist);
 
       if (! arg.basic_numberp())
       {
-        super.max(arglist.car());  // generates an error.
+        super.max(f_lisp.car(arglist));  // generates an error.
         return(f_lisp.NIL);
       }
 
@@ -270,7 +270,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (otherValue < minValue)
         minValue = otherValue;
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
     }
 
     if (allIntegers)
@@ -355,10 +355,10 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != f_lisp.NIL)
     {
-      addend = arglist.car();
+      addend = f_lisp.car(arglist);
       if (! addend.basic_numberp())
       {
-        super.add(arglist.car());  // generates an error.
+        super.add(f_lisp.car(arglist));  // generates an error.
         return null;//(f_lisp.NIL);// todo: add exception
       }
 
@@ -421,7 +421,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         else
           d_sum += ((LispInteger)addend).getLongValue();
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
     };
 
     if (allIntegers)
@@ -466,10 +466,10 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != f_lisp.NIL)
     {
-      term = arglist.car();             /* Arglist is already evaluated. */
+      term = f_lisp.car(arglist);             /* Arglist is already evaluated. */
       if (! term.basic_numberp())
       {
-        super.div(arglist.car());  // Generate an error
+        super.div(f_lisp.car(arglist));  // Generate an error
         return null;//(f_lisp.NIL);
       }
 
@@ -511,7 +511,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         return null;//(f_lisp.NIL);
       }
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
     }
 
     if (argCount == 1)        /* Have to handle n-arg differently from 1-arg */
@@ -581,7 +581,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       // Multiplying by one?
       if (term.equals(f_lisp.ONE))
       {
-        ptr = ptr.cdr();
+        ptr = f_lisp.cdr(ptr);
         continue;
       }
 
@@ -637,7 +637,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         else
           d_product *= ((LispInteger)term).getLongValue();
 
-      ptr = ptr.cdr();
+      ptr = f_lisp.cdr(ptr);
     }
 
     if (allIntegers)
@@ -683,10 +683,10 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != f_lisp.NIL)
     {
-      addend = arglist.car();
+      addend = f_lisp.car(arglist);
       if (! addend.basic_numberp())
       {
-        super.sub(arglist.car());  // generates an error.
+        super.sub(f_lisp.car(arglist));  // generates an error.
         return null;//(f_lisp.NIL);
       }
 
@@ -756,7 +756,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         else
           d_sum -= ((LispInteger)addend).getLongValue();
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
     };
 
     if (allIntegers)

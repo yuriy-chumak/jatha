@@ -16,7 +16,7 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *Þ
+ *ï¿½
  * For further information, please contact Micheal Hewett at
  *   hewett@cs.stanford.edu
  *
@@ -137,7 +137,7 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public LispValue     boundp()                    { return f_lisp.T;   }
   public LispValue     butlast()                   { return f_lisp.NIL; }
   public LispValue     car()                       { return f_lisp.NIL; }
-  public LispValue     cdr()                       { return f_lisp.NIL; }
+  public LispConsOrNil cdr()                       { return f_lisp.NIL; }
   public LispValue     copy_list()                 { return f_lisp.NIL; }
   public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
 

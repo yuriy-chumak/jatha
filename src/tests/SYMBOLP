@@ -3,8 +3,8 @@
 (require 'symbols)
 
 (symbolp 'elephant)
-(not (symbolp 12))
+(not (symbolp 123))
 (symbolp nil)
 (symbolp '())
-(symbolp :test)
-(not (symbolp "hello"))
+(symbolp :pp)
+(not (symbolp "s"))

@@ -47,7 +47,7 @@ public class UsePackagePrimitive extends LispPrimitive {
     
     public void Execute(final SECDMachine machine) {
         final LispValue args    = machine.S.pop();
-        final LispValue useDef = args.car();
+        final LispValue useDef = f_lisp.car(args);
         LispValue useList = null;
         final LispValue pkg = args.second();
         LispPackage thePack;

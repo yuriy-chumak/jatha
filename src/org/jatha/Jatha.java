@@ -63,6 +63,7 @@ import org.jatha.dynatype.LispString;
 import org.jatha.dynatype.LispSymbol;
 import org.jatha.dynatype.LispUndefinedFunctionException;
 import org.jatha.dynatype.LispValue;
+import org.jatha.dynatype.LispValueNotAConsException;
 import org.jatha.dynatype.StandardLispBignum;
 import org.jatha.dynatype.StandardLispCharacter;
 import org.jatha.dynatype.StandardLispCons;
@@ -858,6 +859,7 @@ public class Jatha extends Object
         load(new InputStreamReader(resourceStream));
         return T;
       } catch (Exception e) {
+    	  e.printStackTrace();
         return makeString(e.getMessage());
       }
   }
@@ -981,7 +983,7 @@ public class Jatha extends Object
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
     {
       final LispValue current = iter.next();
-      outp = makeCons(current.car(), outp);
+      outp = makeCons(this.car(current), outp);
     }
     return outp.nreverse();
   }
@@ -1001,7 +1003,7 @@ public class Jatha extends Object
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
     {
       final LispValue current = iter.next();
-      outp = makeCons(current.cdr(), outp);
+      outp = makeCons(this.cdr(current), outp);
     }
     return outp.nreverse();
   }
@@ -1206,6 +1208,11 @@ public class Jatha extends Object
       } catch (IOException e2) {
         return T;
       }
+    catch (Exception ex)
+    {
+    	final Exception ex2 = ex;
+    	throw new LispValueNotAConsException();
+    }
     } finally {
       PACKAGE_SYMBOL.setf_symbol_value(oldPackage);
     }
@@ -1302,7 +1309,7 @@ public class Jatha extends Object
 
     while (pList != NIL)
     {
-      pkg = (LispPackage)(pList.car());
+      pkg = (LispPackage)(this.car(pList));
 
       // Try to match the package name
       if (packageNameStr.equalsIgnoreCase(pkg.getName().getValue()))
@@ -1312,13 +1319,13 @@ public class Jatha extends Object
       nickNameList = pkg.getNicknames();
       while (nickNameList != NIL)
       {
-        if (packageNameStr.equalsIgnoreCase(((LispString)(nickNameList.car())).getValue()))
+        if (packageNameStr.equalsIgnoreCase(((LispString)(this.car(nickNameList))).getValue()))
           return pkg;
-        nickNameList = nickNameList.cdr();
+        nickNameList = this.cdr(nickNameList);
       }
 
       // Try the next package.
-      pList = pList.cdr();
+      pList = this.cdr(pList);
     }
 
     return NIL;
@@ -1362,7 +1369,7 @@ public class Jatha extends Object
 
     while (pkg != NIL)
     {
-      iter = ((LispPackage)(pkg.car())).getSymbolTable().values().iterator();
+      iter = ((LispPackage)(this.car(pkg))).getSymbolTable().values().iterator();
 
       while (iter.hasNext())
       {
@@ -1373,7 +1380,7 @@ public class Jatha extends Object
         if (symbstr.indexOf(matchStr) >= 0)
           symb.apropos_print(out);
       }
-      pkg = pkg.cdr();
+      pkg = this.cdr(pkg);
     }
 
     out.flush();
@@ -1512,7 +1519,9 @@ public class Jatha extends Object
    */
 	public LispCons makeCons(LispValue theCar, LispValue theCdr)
 	{
-		return new StandardLispCons(this, theCar, theCdr);
+		if (theCdr instanceof LispConsOrNil)
+			return new StandardLispCons(this, theCar, theCdr);
+		return new StandardLispCons(this, theCar, makeCons(theCdr, NIL));
 	}
 	public LispValue makeBool(boolean predicate)
 	{
@@ -1857,7 +1866,7 @@ public class Jatha extends Object
       return makeList(QUOTE, expr);
     else if (right instanceof LispNil)
       return makeList(LIST, left);
-    else if (right.basic_consp() && !(right.car().equal(LIST) instanceof LispNil))
+    else if (right.basic_consp() && !(this.car(right).equal(LIST) instanceof LispNil))
       return makeList(CONS, left, right);
     else
       return expr;  // ??  (mh) 9 Mar 2008.  The previous "if" had a wayward semi-colon at the end, and thus was not working correctly.  I don't really know what should be returned here.
@@ -1873,13 +1882,30 @@ public class Jatha extends Object
       return NIL;
     else if (expr instanceof LispAtom || expr instanceof LispNil)
       return makeList(QUOTE, expr);
-    else if (expr.car() == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
+    else if (this.car(expr) == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
       return expr.second();
-    else if (expr.car().basic_consp() && expr.car().car() == COMMA_ATSIGN_FN)
-      return makeList(APPEND, expr.car().second(), backquote(expr.cdr()));
+    else if (this.car(expr).basic_consp() && this.car(this.car(expr)) == COMMA_ATSIGN_FN)
+      return makeList(APPEND, this.car(expr).second(), backquote(this.cdr(expr)));
     else
-      return combineExprs(backquote(expr.car()), backquote(expr.cdr()), expr);
+      return combineExprs(backquote(this.car(expr)), backquote(this.cdr(expr)), expr);
  }
+  
+	/**
+	 * Temporary for change arg.car to the f_lisp.car(arg) for
+	 * move "car" and "cdr" functions into LispConsOrNil from LispValue
+     */
+	public LispValue car(LispValue arg)
+	{
+		if (arg instanceof LispConsOrNil)
+			return ((LispConsOrNil)arg).car();
+		throw new LispValueNotAConsException(arg);
+	}
+	public LispConsOrNil cdr(LispValue arg) 
+	{
+		if (arg instanceof LispConsOrNil)
+			return (LispConsOrNil)((LispConsOrNil)arg).cdr();
+		throw new LispValueNotAConsException(arg);
+	}
 
   /**
    * Use this to exit Jatha.

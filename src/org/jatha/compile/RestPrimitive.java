@@ -39,7 +39,7 @@ public class RestPrimitive extends LispPrimitive
 
   public void Execute(SECDMachine machine)
   {
-    machine.S.push(machine.S.pop().cdr());
+    machine.S.push(f_lisp.cdr(machine.S.pop()));
     machine.C.pop();
   }
 }

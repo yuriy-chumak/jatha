@@ -86,12 +86,12 @@ class opRAP extends SECDop
                                                                      */
     LispValue e2 = machine.E.value();
     machine.D.assign(f_lisp.makeCons(machine.S.value(),
-                                     f_lisp.makeCons(e2.cdr(),
+                                     f_lisp.makeCons(f_lisp.cdr(e2),
                                                      f_lisp.makeCons(machine.C.value(),
                                                                      machine.D.value()))));
 
 
-    machine.C.assign(recursiveClosure.car());  /* f */
+    machine.C.assign(f_lisp.car(recursiveClosure));  /* f */
 
     // The car of E should be rplaca'd with the list of closures
     //machine.E.assign(f_lisp.makeCons(v, recursiveClosure.cdr().cdr())); //  (v . e1)

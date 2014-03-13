@@ -60,6 +60,6 @@ class opBLK extends SECDop{
         indent(5);
         code.second().internal_princ(System.out);
         f_lisp.NEWLINE.internal_princ(System.out);
-        return code.cdr().cdr();
+        return f_lisp.cdr(f_lisp.cdr(code));
     }
 }// opBLK

@@ -39,8 +39,8 @@ public class AproposPrimitive extends LispPrimitive
 
   public void Execute(SECDMachine machine)
   {
-    LispValue args    = machine.S.pop();
-    LispValue str     = args.car();
+    LispValue args    = machine.S.pop();	// todo: is it must be LispConsOrNil ?
+    LispValue str     = f_lisp.car(args);
     LispValue pkgArg  = args.second();
     LispValue pkg;
 

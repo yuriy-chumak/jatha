@@ -39,7 +39,7 @@ public class ArefPrimitive extends LispPrimitive
   public void Execute(SECDMachine machine)  
   {
     LispValue args = machine.S.pop();
-    machine.S.push(args.car().aref(args.cdr()));
+    machine.S.push(f_lisp.car(args).aref(f_lisp.cdr(args)));
     machine.C.pop();
   }
   

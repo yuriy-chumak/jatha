@@ -48,10 +48,10 @@ public class AppendPrimitive extends LispPrimitive
   // The last arg is not copied, of course.
   LispValue appendArgs(LispValue args)
   {
-    if (args.cdr() == f_lisp.NIL)
-      return args.car();
+    if (f_lisp.cdr(args) == f_lisp.NIL)
+      return f_lisp.car(args);
     else
-      return args.car().append(appendArgs(args.cdr()));
+      return f_lisp.car(args).append(appendArgs(f_lisp.cdr(args)));
   }
 
   // Unlimited number of evaluated args.

@@ -53,8 +53,8 @@ public class LispConsIterator extends StandardLispValue implements Iterator
 
   public Object next()
   {
-    LispValue result = m_list.car();
-    m_list = m_list.cdr();
+    LispValue result = f_lisp.car(m_list);
+    m_list = f_lisp.cdr(m_list);
     return result;
   }
 

@@ -498,7 +498,7 @@ public class LispParser
     newQuotedList = f_lisp.makeCons(f_lisp.QUOTE,
                                     f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
     newCell = read();
-    newQuotedList.cdr().rplaca(newCell);
+    f_lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -523,7 +523,7 @@ public class LispParser
     newCell = read();
     --BackQuoteLevel;
 
-    newQuotedList.cdr().rplaca(newCell);
+    f_lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -573,7 +573,7 @@ public class LispParser
 
     newCell = read();
 
-    newQuotedList.cdr().rplaca(newCell);
+    f_lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 

@@ -54,10 +54,10 @@ public class STRINGS implements Registrar {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
 			public LispValue Execute(LispValue args) {
-				LispValue concatType = args.car();
+				LispValue concatType = f_lisp.car(args);
 				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
 					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
-				args = args.cdr();
+				args = f_lisp.cdr(args);
 				
 				if (args.basic_length() == 0)
 					return f_lisp.makeString("");

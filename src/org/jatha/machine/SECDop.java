@@ -81,9 +81,9 @@ public abstract class SECDop extends LispPrimitive
   public LispValue loc(long y, LispValue z)
   {
     if (y == 1)
-      return(z.car());
+      return(f_lisp.car(z));
     else
-      return loc(y-1, z.cdr());
+      return loc(y-1, f_lisp.cdr(z));
   }
 
 
@@ -98,16 +98,17 @@ public abstract class SECDop extends LispPrimitive
     if (y == 1)
       values.rplaca(newValue);
     else
-      setLoc(y-1, values.cdr(), newValue);
+      setLoc(y-1, f_lisp.cdr(values), newValue);
   }
 
 
   public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
   {
+	  // we have no pair (Integer, Integer) but instead we have (Integer, (Integer, Nil))! 
     long i, j;
 
-    i = ((LispInteger)(ij_indexes.car())).getLongValue();
-    j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
+    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
 
     return loc(j, loc(i, valueList));
   }
@@ -116,8 +117,8 @@ public abstract class SECDop extends LispPrimitive
   {
     long i, j;
 
-    i = ((LispInteger)(ij_indexes.car())).getLongValue();
-    j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
+    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
 
     setLoc(j, loc(i, valueList), newValue);
   }

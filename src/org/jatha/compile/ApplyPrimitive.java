@@ -51,13 +51,13 @@ public class ApplyPrimitive extends LispPrimitive
     throws CompilerException
   {
     LispValue args   = machine.S.pop();
-    LispValue fn     = args.car();
-    LispValue fnArgs = args.cdr();
+    LispValue fn     = f_lisp.car(args);
+    LispValue fnArgs = f_lisp.cdr(args);
 
     // The last arg must be a list.
     if (!validArgumentList(args))
       throw new WrongArgumentTypeException("APPLY", "a CONS in the last argument",
-					   "a " + fnArgs.last().car().type_of().toString());
+					   "a " + f_lisp.car(fnArgs.last()).type_of().toString());
     machine.S.push(f_lisp.makeCons(fn, f_lisp.COMPILER.quoteList(constructArgList(fnArgs))));
 
     // (mh) 4 Sep 2004
@@ -98,16 +98,16 @@ public class ApplyPrimitive extends LispPrimitive
   {
     // The last argument is a list, and we need to quote
     // the values in that list.
-    if (args.cdr() == f_lisp.NIL)
-      return args.car();
+    if (f_lisp.cdr(args) == f_lisp.NIL)
+      return f_lisp.car(args);
     else
-      return f_lisp.makeCons(args.car(), constructArgList(args.cdr()));
+      return f_lisp.makeCons(f_lisp.car(args), constructArgList(f_lisp.cdr(args)));
   }
 
   public boolean validArgumentList(LispValue args)
   {
     // The last argument must be a CONS
-    if (args.last().car().basic_consp() || args.last().car() == f_lisp.NIL)
+    if (f_lisp.car(args.last()).basic_consp() || f_lisp.car(args.last()) == f_lisp.NIL)
       return super.validArgumentList(args);
     else
     {

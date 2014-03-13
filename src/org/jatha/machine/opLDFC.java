@@ -79,6 +79,6 @@ class opLDFC extends SECDop
 
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return code.cdr().cdr();
+    return f_lisp.cdr(f_lisp.cdr(code));
   }
 }

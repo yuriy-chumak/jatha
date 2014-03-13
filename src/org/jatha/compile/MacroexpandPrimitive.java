@@ -57,9 +57,9 @@ public class MacroexpandPrimitive extends LispPrimitive {
     }
 
     private LispValue expand(final LispValue form) {
-        final LispValue carForm = form.car(); // todo: check for LispSymbol
+        final LispValue carForm = f_lisp.car(form); // todo: check for LispSymbol
         if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
-            return f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(form.cdr())));
+            return f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form))));
         } else {
             return form;
         }

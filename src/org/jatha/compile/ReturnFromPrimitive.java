@@ -48,7 +48,7 @@ public class ReturnFromPrimitive extends LispPrimitive {
   {
     final LispValue tag = machine.S.pop();
     final LispValue args = machine.S.pop();
-    final LispValue retVal = (args.basic_length()==0)?f_lisp.NIL:args.car();
+    final LispValue retVal = (args.basic_length()==0) ? f_lisp.NIL : f_lisp.car(args);
     machine.S.push(retVal);
     findBlock(tag,machine);
   }
@@ -80,11 +80,11 @@ public class ReturnFromPrimitive extends LispPrimitive {
   }
 
   public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code) throws CompilerException {
-    final LispValue tag = args.car();
+    final LispValue tag = f_lisp.car(args);
     if(!compiler.getLegalBlocks().contains(tag)) {
       throw new IllegalReturnStatement("No enclosing lexical block with tag " + tag);
     }
-    final LispValue fullCode = args.cdr();
+    final LispValue fullCode = f_lisp.cdr(args);
     final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList,f_lisp.makeCons(machine.LIS,f_lisp.makeCons(fullCode.length(),f_lisp.makeCons(machine.LDC,f_lisp.makeCons(tag,code)))));
     return compiledCode;
   }

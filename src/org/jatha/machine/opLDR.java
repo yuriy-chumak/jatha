@@ -80,13 +80,13 @@ class opLDR extends SECDop
   {
     long i, j;
 
-    i = ((LispInteger)(ij_indexes.car())).getLongValue();
-    j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
+    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
+    j = ((LispInteger)(f_lisp.cdr(ij_indexes).car())).getLongValue();
 
     LispValue subList = loc(i, valueList);
     for (int idx = 1 ; idx < j ; idx++)
     {
-      subList = subList.cdr();
+      subList = f_lisp.cdr(subList);
     }
     return subList;
   }
@@ -102,6 +102,6 @@ class opLDR extends SECDop
 
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return code.cdr().cdr();
+    return f_lisp.cdr(f_lisp.cdr(code));
   }
 }

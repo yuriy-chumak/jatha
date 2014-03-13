@@ -222,7 +222,7 @@ public class StandardLispArray extends StandardLispValue implements LispArray
     long index = 0;
     for (int i = 0; i < multipliers.size(); i++)
     {
-      LispValue val = location.car();
+      LispValue val = f_lisp.car(location);
       if (val.basic_integerp())
       {
         long longValue = ((LispNumber) val).getLongValue();
@@ -236,7 +236,7 @@ public class StandardLispArray extends StandardLispValue implements LispArray
       {
         throw new LispValueNotAnIntegerException(val.toString());
       }
-      location = location.cdr();
+      location = f_lisp.cdr(location);
     }
     return (int) index;
   }
@@ -254,8 +254,8 @@ public class StandardLispArray extends StandardLispValue implements LispArray
   {
     // Either the arguments are given as a list in the first argument, or 
     // are given as the rest of the arguments.
-    int index = args.car().basic_listp() 
-            ? indexFromLocation(args.car()) : indexFromLocation(args);
+    int index = f_lisp.car(args).basic_listp() 
+            ? indexFromLocation(f_lisp.car(args)) : indexFromLocation(args);
     return lookup(index);
   }
 }

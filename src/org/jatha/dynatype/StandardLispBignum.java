@@ -193,10 +193,10 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     while (args != f_lisp.NIL)
     {
       // System.out.println("LispBignum.add: " + sum + " and " + args);
-      addend = args.car();
+      addend = f_lisp.car(args);
       if (addend.numberp() != f_lisp.T)
       {
-        this.add(args.car());
+        this.add(f_lisp.car(args));
         return null;//(f_lisp.NIL);	// todo: throw exception?
       }
 
@@ -215,7 +215,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else // must be an integer
         sum = sum.add(BigInteger.valueOf(((LispInteger)addend).getLongValue()));
 
-      args = args.cdr();
+      args = f_lisp.cdr(args);
     };
 
     if ((sum.compareTo(MAXINT) <= 0)    // If LispInteger size...
@@ -244,10 +244,10 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
     while (args != f_lisp.NIL)
     {
-      term = args.car();             /* Arglist is already evaluated. */
+      term = f_lisp.car(args);             /* Arglist is already evaluated. */
       if (term.numberp() != f_lisp.T)
       {
-        this.div(args.car());  // generate error
+        this.div(f_lisp.car(args));  // generate error
         return null;//(f_lisp.NIL);
       }
 
@@ -287,7 +287,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
         return null;//(f_lisp.NIL); todo: return NaN
       }
 
-      args = args.cdr();
+      args = f_lisp.cdr(args);
     }
 
     if (argCount == 1)           /* Have to handle n-arg differently from 1-arg */
@@ -328,12 +328,12 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
     while (arglist != f_lisp.NIL)
     {
-      term = arglist.car();
+      term = f_lisp.car(arglist);
 
       // Generate an error if the multiplicand is not a number.
       if (term.numberp() != f_lisp.T)
       {
-        super.mul(arglist.car());  // generates an error
+        super.mul(f_lisp.car(arglist));  // generates an error
         return null;//(f_lisp.NIL);
       }
 
@@ -360,7 +360,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
         //System.out.println(", producing " + product);
       }
 
-      arglist = arglist.cdr();
+      arglist = f_lisp.cdr(arglist);
     };
 
     if ((product.compareTo(MAXINT) <= 0)    // If LispInteger size...
@@ -389,10 +389,10 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     while (args != f_lisp.NIL)
     {
       // System.out.println("LispBignum.subtract: " + sum + " and " + args);
-      term = args.car();
+      term = f_lisp.car(args);
       if (term.numberp() != f_lisp.T)
       {
-        this.sub(args.car());  // generate error
+        this.sub(f_lisp.car(args));  // generate error
         return null;//(f_lisp.NIL);
       }
 
@@ -416,7 +416,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else // (term instanceof LispInteger)
         sum = sum.subtract(BigInteger.valueOf(((LispInteger)term).getLongValue()));
 
-      args = args.cdr();
+      args = f_lisp.cdr(args);
     };
 
 

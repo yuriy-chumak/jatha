@@ -42,12 +42,12 @@ public class UNSORTED implements Registrar {
 		
 		compiler.Register(new ComplexLispPrimitive(f_lisp, "MIN", 1, Long.MAX_VALUE) {
 			public LispValue Execute(LispValue args) {
-				return args.car().min(args.cdr());
+				return f_lisp.car(args).min(f_lisp.cdr(args));
 			}
 		}, SYSTEM_PKG);
 		compiler.Register(new ComplexLispPrimitive(f_lisp, "MAX", 1, Long.MAX_VALUE) {
 			public LispValue Execute(LispValue args) {
-				return args.car().max(args.cdr());
+				return f_lisp.car(args).max(f_lisp.cdr(args));
 			}
 		}, SYSTEM_PKG);
 		
@@ -177,9 +177,9 @@ public class UNSORTED implements Registrar {
 			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
 					throws CompilerException
 			{
-				final LispValue tag = args.car();
+				final LispValue tag = f_lisp.car(args);
 				compiler.getLegalBlocks().push(tag);
-				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"),args.cdr()));
+				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"), f_lisp.cdr(args)));
 				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList, f_lisp.makeCons(machine.BLK, f_lisp.makeCons(tag, code)));
 				compiler.getLegalBlocks().pop();
 				return compiledCode;
@@ -199,10 +199,10 @@ public class UNSORTED implements Registrar {
 			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
 					throws CompilerException
 			{
-				if (args.cdr() == f_lisp.NIL)
+				if (f_lisp.cdr(args) == f_lisp.NIL)
 					return compiler.compileArgsLeftToRight(args, valueList, code);
-				return compiler.compile(args.car(), valueList,
-						CompileArgs(compiler, machine, args.cdr(),
+				return compiler.compile(f_lisp.car(args), valueList,
+						CompileArgs(compiler, machine, f_lisp.cdr(args),
 								valueList,
 								f_lisp.makeCons(CONS, code)));
 			}

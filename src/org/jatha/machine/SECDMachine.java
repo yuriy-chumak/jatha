@@ -180,7 +180,7 @@ public class SECDMachine    // extends Abstract Machine !
 
     // System.err.println("Special unbind called on: " + symbol);
 
-    B.setf_gethash(symbol, bindings.cdr());
+    B.setf_gethash(symbol, f_lisp.cdr(bindings));
     symbol.adjustSpecialCount(-1);
   }
 
@@ -191,7 +191,7 @@ public class SECDMachine    // extends Abstract Machine !
     if (symbol.get_specialCount() > 0)
     {
       LispValue bindings = B.gethash(symbol, f_lisp.NIL);
-      B.setf_gethash(symbol, f_lisp.makeCons(value, bindings.cdr()));
+      B.setf_gethash(symbol, f_lisp.makeCons(value, f_lisp.cdr(bindings)));
     }
     else
       symbol.setf_symbol_value(value);
@@ -204,7 +204,7 @@ public class SECDMachine    // extends Abstract Machine !
     // System.err.println("specialCount of " + symbol + " is " + symbol.get_specialCount());
 
     if (symbol.get_specialCount() > 0)
-      return B.gethash(symbol).car();
+      return f_lisp.car(B.gethash(symbol));
     else
       return ((LispSymbol)symbol).symbol_value();
   }
@@ -224,7 +224,7 @@ public class SECDMachine    // extends Abstract Machine !
     C.assign(code);
     D.assign(f_lisp.NIL);
 
-    opcode = C.value().car();
+    opcode = f_lisp.car(C.value());
 
     while ((opcode != STOP) && (opcode != f_lisp.NIL))
     {
@@ -265,7 +265,7 @@ public class SECDMachine    // extends Abstract Machine !
       }*/
 
       try {
-        opcode = C.value().car();  // Each opcode pops the C register as necessary
+        opcode = f_lisp.car(C.value());  // Each opcode pops the C register as necessary
       } catch (Exception e) {
         e.printStackTrace();
         System.err.print("\n  S: " + S.value());
@@ -282,7 +282,7 @@ public class SECDMachine    // extends Abstract Machine !
       }
     }
 
-    return  S.value().car(); //  Top value on Stack is the return value.
+    return  f_lisp.car(S.value()); //  Top value on Stack is the return value.
   }
 
   public void setStackValue(SECDRegister e, LispValue val)

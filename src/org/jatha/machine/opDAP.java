@@ -65,8 +65,8 @@ class opDAP extends SECDop
 
     machine.C.pop();  // Pop DAD instruction
 
-    machine.C.assign(fe.car());
-    machine.E.assign(f_lisp.makeCons(v, fe.cdr()));
+    machine.C.assign(f_lisp.car(fe));
+    machine.E.assign(f_lisp.makeCons(v, f_lisp.cdr(fe)));
     machine.S.assign(f_lisp.NIL);
   }
 }

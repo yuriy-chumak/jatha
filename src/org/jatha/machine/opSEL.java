@@ -85,6 +85,6 @@ class opSEL extends SECDop
     printCode(code.third(), indentAmount + 8);
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return code.cdr().cdr().cdr();
+    return f_lisp.cdr(f_lisp.cdr(f_lisp.cdr(code)));
   }
 }

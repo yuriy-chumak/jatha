@@ -60,7 +60,7 @@ import org.jatha.Jatha;
  *             \-------------- LispJavaObject
  *   \------ LispFunction
  *             \--------- LispMacro
- *   \------- LispPackage
+ *   \------ LispPackage
  *   \
  *   
  */
@@ -336,22 +336,10 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue butlast();
 
   /**
-   * Returns the first element of a list.
-   * CAR of NIL is NIL.
-   */
-  public LispValue car();
-
-  /**
    * Sets the first element of a list.
    */
   public LispValue setf_car(LispValue newCar);
   
-  /**
-   * Returns all but the first element of a list.
-   * CDR of NIL is NIL.
-   */
-  public LispValue cdr();
-
   /**
    * Sets the tail of a list.
    */

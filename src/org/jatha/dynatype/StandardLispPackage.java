@@ -210,7 +210,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   public String toString()
   {
       if (f_nicknames != f_lisp.NIL && f_nicknames != null)
-      return getAsString(f_nicknames.car()).getValue();
+      return getAsString(f_lisp.car(f_nicknames)).getValue();
     else
       return ((LispString)(f_name)).getValue();
   }
@@ -219,8 +219,8 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
         LispValue internal = list;
         LispValue build = f_lisp.NIL;
         while(internal != f_lisp.NIL) {
-            build = f_lisp.makeCons(getAsString(internal.car()),build);
-            internal = internal.cdr();
+            build = f_lisp.makeCons(getAsString(f_lisp.car(internal)),build);
+            internal = f_lisp.cdr(internal);
         }
         return build.reverse();
     }
@@ -272,11 +272,11 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 		LispValue p = f_uses;
 		while (p != f_lisp.NIL)
 		{
-			symbol = ((LispPackage)(f_lisp.findPackage(p.car()))).getExternalSymbol(str);
+			symbol = ((LispPackage)(f_lisp.findPackage(f_lisp.car(p)))).getExternalSymbol(str);
 			if (symbol != null)
 				return symbol;
 			else
-				p = p.cdr();
+				p = f_lisp.cdr(p);
 		}
 
 		// If all fails, return null.
@@ -290,11 +290,11 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
   {
     if (symbolList == f_lisp.NIL)
       return symbolList;
-    else if (symbolList.car().basic_symbolp())
-      return f_lisp.makeCons(symbolList.car(),
-			 makeSymbolsFromList(symbolList.cdr()));
+    else if (f_lisp.car(symbolList).basic_symbolp())
+      return f_lisp.makeCons(f_lisp.car(symbolList),
+			 makeSymbolsFromList(f_lisp.cdr(symbolList)));
     else // Assume it's a string
-      return f_lisp.makeCons(f_lisp.EVAL.intern(getAsString(symbolList.car()), this),makeSymbolsFromList(symbolList.cdr()));
+      return f_lisp.makeCons(f_lisp.EVAL.intern(getAsString(f_lisp.car(symbolList)), this),makeSymbolsFromList(f_lisp.cdr(symbolList)));
   }
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -309,14 +309,14 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
       symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
-    LispValue s = symbols;
+    LispConsOrNil s = (LispConsOrNil)symbols;
     while (s != f_lisp.NIL)
     {
-        if(s.car() instanceof LispSymbol) {
-            ((LispSymbol)(s.car())).setExternal(true); // Should handle error here.
+        if (f_lisp.car(s) instanceof LispSymbol) {
+            ((LispSymbol)(f_lisp.car(s))).setExternal(true); // Should handle error here.
         }
 
-      s = s.cdr();
+      s = f_lisp.cdr(s);
     }
 
     // Return T
@@ -343,7 +343,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 
     while (s != f_lisp.NIL)
     {
-      symb = s.car();
+      symb = f_lisp.car(s);
       if (!(symb instanceof LispSymbol))
     	  throw new LispValueNotASymbolException(symb);
       LispSymbol symbol = (LispSymbol)symb;
@@ -356,7 +356,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 			   " conflicts with existing symbol " +
 			   getSymbol(name) + " in " + this.f_name);
 
-      s = s.cdr();
+      s = f_lisp.cdr(s);
     }
 
     // Return T
@@ -377,12 +377,12 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
     LispValue symb;
 
     while (s != f_lisp.NIL) {
-      symb = s.car();
+      symb = f_lisp.car(s);
       if (!(symb instanceof LispSymbol))
     	  throw new LispValueNotASymbolException(symb);
       
       f_shadowingSymbols.put((LispString)(((LispSymbol)symb).symbol_name()), (LispSymbol)symb);
-      s = s.cdr();
+      s = f_lisp.cdr(s);
     }
 
     // Return T
@@ -399,7 +399,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
     LispValue symb;
 
     while(s != f_lisp.NIL) {
-      symb = s.car();
+      symb = f_lisp.car(s);
       final LispString symb_name = (symb.basic_stringp()?((LispString)symb):((LispString)((LispSymbol)symb).symbol_name()));
       if(getSymbol(symb_name) == f_lisp.NIL) {
           final LispSymbol symbi = f_lisp.EVAL.intern(symb_name,this);
@@ -407,7 +407,7 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
       } else if(f_shadowingSymbols.get(symb_name) == f_lisp.NIL) {
           f_shadowingSymbols.put(symb_name,getSymbol(symb_name));
       }
-      s = s.cdr();
+      s = f_lisp.cdr(s);
     }
 
     // Return T
@@ -464,9 +464,9 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 
     while (!(p instanceof LispNil))
     {
-      if (pkg.eq(f_lisp.findPackage(p.car())) == f_lisp.T)
+      if (pkg.eq(f_lisp.findPackage(f_lisp.car(p))) == f_lisp.T)
         return true;
-      p = p.cdr();
+      p = f_lisp.cdr(p);
     }
     return false;
   }

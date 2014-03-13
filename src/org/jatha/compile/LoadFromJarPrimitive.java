@@ -47,7 +47,7 @@ public class LoadFromJarPrimitive extends LispPrimitive
   public void Execute(SECDMachine machine)
   {
     LispValue args    = machine.S.pop();
-    LispValue filename      = args.car();
+    LispValue filename      = f_lisp.car(args);
     LispValue containerURL  = args.second();
 
     machine.C.pop();  // Remove the opcode.

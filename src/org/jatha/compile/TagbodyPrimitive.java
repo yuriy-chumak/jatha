@@ -144,7 +144,7 @@ public class TagbodyPrimitive extends LispPrimitive
 
     // Put a progn around all of the progns and compile it.
     final LispValue all = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"),f_lisp.makeList(progns)));
-    final LispValue theCode = compiler.compileArgsLeftToRight(all,valueList,f_lisp.makeList(code.car()));
+    final LispValue theCode = compiler.compileArgsLeftToRight(all,valueList,f_lisp.makeList(f_lisp.car(code)));
 
     // Remove the list of legal tags
     compiler.getLegalTags().pop();
@@ -187,6 +187,6 @@ public class TagbodyPrimitive extends LispPrimitive
     if (DEBUG)
       System.out.println("\nEND TAGBODY -----------------------------------------");
 
-    return loadBindings.append(f_lisp.makeList(machine.TAG_B)).append(theCode).append(f_lisp.makeList(machine.TAG_E)).append(unloadBindings).append(code.cdr());
+    return loadBindings.append(f_lisp.makeList(machine.TAG_B)).append(theCode).append(f_lisp.makeList(machine.TAG_E)).append(unloadBindings).append(f_lisp.cdr(code));
   }
 }// TagbodyPrimitive

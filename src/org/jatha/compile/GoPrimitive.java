@@ -46,9 +46,9 @@ public class GoPrimitive extends LispPrimitive
 
   public void Execute(final SECDMachine machine) 
   {
-    final LispValue tag = machine.S.pop().car();
+    final LispValue tag = f_lisp.car(machine.S.pop());
     machine.S.assign(f_lisp.NIL);
-    final LispValue code = machine.B.gethash(tag).car();
+    final LispValue code = f_lisp.car(machine.B.gethash(tag));
 
     machine.E.assign(machine.X.value().first().first());
     machine.D.assign(machine.X.value().first().second());
@@ -59,7 +59,7 @@ public class GoPrimitive extends LispPrimitive
 
   public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code) throws CompilerException 
   {
-    final LispValue tag = args.car();
+    final LispValue tag = f_lisp.car(args);
     long nextVal = 0L;
 
     if(!compiler.isLegalTag(tag)) {

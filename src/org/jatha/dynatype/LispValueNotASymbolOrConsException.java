@@ -21,36 +21,14 @@
  *   hewett@cs.stanford.edu
  *
  */
-
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
-
-import java.util.Iterator;
-
-
-// @date    Thu Mar 27 13:35:07 1997
-/**
- * An abstract class for the CONS and NIL data types.
- *
- * @see LispValue
- * @see LispInteger
- * @see LispReal
- * @author  Micheal S. Hewett    hewett@cs.stanford.edu
- */
-public interface LispConsOrNil extends LispValue
+@SuppressWarnings("serial")
+public class LispValueNotASymbolOrConsException extends LispException
 {
-
-  /**
-   * Returns the first element of a list.
-   * CAR of NIL is NIL.
-   */
-  public LispValue car();
-
-  /**
-   * Returns all but the first element of a list.
-   * CDR of NIL is NIL.
-   */
-  public LispConsOrNil cdr();
-
+	public LispValueNotASymbolOrConsException()            { super();  }
+	public LispValueNotASymbolOrConsException(String s)    { super(s + " is not a SYMBOL OR CONS."); }
+	public LispValueNotASymbolOrConsException(LispValue v) { this(v.toString()); }
 }
+
+

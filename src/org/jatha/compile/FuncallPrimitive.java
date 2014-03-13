@@ -42,9 +42,9 @@ public class FuncallPrimitive extends LispPrimitive
     // The args list is an expression to be evaluated.
     // Need to quote the argument(s) because they have already been evaluated.
     // The EVAL will evaluate them again.
-    LispValue args   = machine.S.pop();
-    LispValue fn     = args.car();
-    LispValue fnArgs = args.cdr();
+    LispValue args   = machine.S.pop();  // todo: is it must be LispConsOrNil?
+    LispValue fn     = f_lisp.car(args);
+    LispValue fnArgs = f_lisp.cdr(args);
 
     machine.S.push(f_lisp.makeCons(fn, f_lisp.COMPILER.quoteList(fnArgs)));
 
