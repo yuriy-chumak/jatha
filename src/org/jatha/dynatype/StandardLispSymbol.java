@@ -377,8 +377,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return new StandardLispString(f_lisp, this.toString());
   }
 
-  public LispValue     symbolp() { return f_lisp.T; }
-
   public LispValue symbol_function() throws LispException
   {
     if (f_function == null)
@@ -388,7 +386,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return f_function;
   }
 
-  public LispValue symbol_name()
+  public LispString symbol_name()
   {
     return f_name;
   }

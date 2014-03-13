@@ -54,7 +54,7 @@ public interface LispPackage extends LispValue
    * Returns the external symbol with the given name
    * @param str a LispString corresponding to the symbol.
    */
-  LispValue getExternalSymbol(LispString str);
+  LispSymbol getExternalSymbol(LispString str);
 
   /**
    * Returns the symbol table for this package.
@@ -65,7 +65,7 @@ public interface LispPackage extends LispValue
    * Returns the symbol with the given name.
    * @param str
    */
-  LispValue getSymbol(LispString str);
+  LispSymbol getSymbol(LispString str);
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
   // date    Sun May 11 16:25:14 1997
@@ -80,7 +80,7 @@ public interface LispPackage extends LispValue
    * @param name
    * @param symbol
    */
-  LispValue addSymbol(LispString name, LispValue symbol);
+    void addSymbol(LispString name, LispSymbol symbol);
 
     /**
      * Returns a list of package names that this package uses. Contains either symbols or strings.

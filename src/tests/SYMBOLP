@@ -1,0 +1,10 @@
+;;;; LISP
+
+(require 'symbols)
+
+(symbolp 'elephant)
+(not (symbolp 12))
+(symbolp nil)
+(symbolp '())
+(symbolp :test)
+(not (symbolp "hello"))

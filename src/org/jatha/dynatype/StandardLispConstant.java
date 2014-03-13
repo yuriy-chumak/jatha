@@ -66,9 +66,9 @@ public class StandardLispConstant extends StandardLispSymbol implements LispCons
   }
 
   // Used for turning a symbol into a constant.
-  public StandardLispConstant(Jatha lisp, LispValue oldSymbol)
+  public StandardLispConstant(Jatha lisp, LispSymbol oldSymbol)
   {
-    super(lisp, (LispString)(oldSymbol.symbol_name()));
+    super(lisp, oldSymbol.symbol_name());
 
     if (oldSymbol.boundp() == f_lisp.T)
       f_value    = oldSymbol.symbol_value();

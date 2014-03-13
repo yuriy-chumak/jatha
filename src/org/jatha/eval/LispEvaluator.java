@@ -29,6 +29,7 @@ package org.jatha.eval;
 import org.jatha.Jatha;
 import org.jatha.dynatype.LispPackage;
 import org.jatha.dynatype.LispString;
+import org.jatha.dynatype.LispSymbol;
 import org.jatha.dynatype.LispValue;
 import org.jatha.dynatype.StandardLispInteger;
 import org.jatha.dynatype.StandardLispString;
@@ -89,7 +90,7 @@ public class LispEvaluator
   }
 
 
-  public LispValue intern(LispString symbolString)
+  public LispSymbol intern(LispString symbolString)
   {
     if (f_lisp.COLON.eql(symbolString.basic_elt(0)) != f_lisp.NIL)
       return intern((LispString)(symbolString.substring(new StandardLispInteger(f_lisp, 1))),
@@ -99,14 +100,14 @@ public class LispEvaluator
   }
 
 
-  public LispValue intern(LispString symbolString, LispPackage pkg)
+  public LispSymbol intern(LispString symbolString, LispPackage pkg)
   {
-    LispValue newSymbol;
+	  LispSymbol newSymbol;
 
     // First, check to see whether one exists already.
     newSymbol = pkg.getSymbol(symbolString);
 
-    if (newSymbol != f_lisp.NIL)    // Already there, don't add it again.
+    if (newSymbol != null)    // Already there, don't add it again.
     {
       // System.out.println("Package " + pkg + " already owns " + newSymbol);
       return newSymbol;
@@ -129,7 +130,7 @@ public class LispEvaluator
   // We need this for the startup when we create f_lisp.NIL and LispValue.T.
   // Actually, LispValue is always a LispSymbol, but because of NIL's strange
   // properties, we must make the type be LispValue.
-  public LispValue intern(LispString symbolString, LispValue symbol)
+  public LispSymbol intern(LispString symbolString, LispSymbol symbol)
   {
     return intern(symbolString, symbol, f_lisp.PACKAGE);
   }
@@ -137,7 +138,7 @@ public class LispEvaluator
   // We need this for the startup when we create f_lisp.NIL and LispValue.T.
   // Actually, LispValue is always a LispSymbol, but because of NIL's strange
   // properties, we must make the type be LispValue.
-  public LispValue intern(LispString symbolString, LispValue symbol,
+  public LispSymbol intern(LispString symbolString, LispSymbol symbol,
                           LispPackage pkg)
   {
     if (pkg == null)   // uninterned symbol
@@ -145,22 +146,23 @@ public class LispEvaluator
     else
     {
       symbol.setPackage(pkg);
-      return pkg.addSymbol(symbolString, symbol);
+      pkg.addSymbol(symbolString, symbol);
+      return symbol;
     }
   }
 
-  public LispValue intern(String str)
+  public LispSymbol intern(String str)
   {
     return intern(f_lisp.makeString(str));
   }
 
-  public LispValue intern(String str, LispPackage pkg)
+  public LispSymbol intern(String str, LispPackage pkg)
   {
     return intern(f_lisp.makeString(str), pkg);
   }
-  public LispValue internAndExport(String str, LispPackage pkg)
+  public LispSymbol internAndExport(String str, LispPackage pkg)
   {
-	  LispValue value = intern(f_lisp.makeString(str), pkg);
+	  LispSymbol value = intern(f_lisp.makeString(str), pkg);
 	  pkg.export(value);
 	  return value;
   }

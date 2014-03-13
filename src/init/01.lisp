@@ -1,6 +1,6 @@
 ;; General-purpose functions contributed by Jean-Pierre Gaillardin
 ;; May 2005.
-(require '(unsorted strings))
+(require '(symbols unsorted strings))
 (setq *package* (find-package "SYSTEM"))
 
 ;; Accessors 

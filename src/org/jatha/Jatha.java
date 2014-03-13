@@ -128,7 +128,7 @@ public class Jatha extends Object
    * @see org.jatha.dynatype.LispPackage
    */
   public LispPackage   PACKAGE;
-  public LispValue     PACKAGE_SYMBOL;  // ptr to *package*
+  public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -192,27 +192,27 @@ public class Jatha extends Object
   public static int            APROPOS_TAB = 30;
 
   // The '.' to represent a cons cell.
-  public LispValue DOT;
+  public LispSymbol DOT;
 
   // The list/symbol NIL.
   public LispConsOrNil NIL;
 
   // These are used in macros
-  public LispValue QUOTE;
-  public LispValue BACKQUOTE;
-  public LispValue LIST;
-  public LispValue APPEND;
-  public LispValue CONS;
-  public LispValue COMMA_FN;
-  public LispValue COMMA_ATSIGN_FN;
-  public LispValue COMMA_DOT_FN;
+  public LispSymbol QUOTE;
+  public LispSymbol BACKQUOTE;
+  public LispSymbol LIST;
+  public LispSymbol APPEND;
+  public LispSymbol CONS;
+  public LispSymbol COMMA_FN;
+  public LispSymbol COMMA_ATSIGN_FN;
+  public LispSymbol COMMA_DOT_FN;
 
   public LispValue COLON;
   public LispValue NEWLINE;
   public LispValue SPACE;
 
   // Used in CONCATENATE
-  public LispValue STRING;
+  public LispSymbol STRING;
 
   // Used in the compiler
   public LispInteger ZERO;
@@ -227,28 +227,29 @@ public class Jatha extends Object
   public LispConstant T;
 
   // Types
-  public LispValue ARRAY_TYPE;
-  public LispValue ATOM_TYPE;
-  public LispValue BIGNUM_TYPE;
-  public LispValue BOOLEAN_TYPE;
-  public LispValue CHARACTER_TYPE;
-  public LispValue COMPLEX_TYPE;
-  public LispValue CONS_TYPE;
-  public LispValue DOUBLE_FLOAT_TYPE;
-  public LispValue FLOAT_TYPE;
-  public LispValue FUNCTION_TYPE;
-  public LispValue HASHTABLE_TYPE;
-  public LispValue INTEGER_TYPE;
-  public LispValue MACRO_TYPE;
-  public LispValue NULL_TYPE;
-  public LispValue NUMBER_TYPE;
-  public LispValue PACKAGE_TYPE;
-  public LispValue PATHNAME_TYPE;
-  public LispValue REAL_TYPE;
-  public LispValue STREAM_TYPE;
-  public LispValue STRING_TYPE;
-  public LispValue SYMBOL_TYPE;
-  public LispValue VECTOR_TYPE;
+  // todo: move this into external lisp package
+  public LispSymbol ARRAY_TYPE;
+  public LispSymbol ATOM_TYPE;
+  public LispSymbol BIGNUM_TYPE;
+  public LispSymbol BOOLEAN_TYPE;
+  public LispSymbol CHARACTER_TYPE;
+  public LispSymbol COMPLEX_TYPE;
+  public LispSymbol CONS_TYPE;
+  public LispSymbol DOUBLE_FLOAT_TYPE;
+  public LispSymbol FLOAT_TYPE;
+  public LispSymbol FUNCTION_TYPE;
+  public LispSymbol HASHTABLE_TYPE;
+  public LispSymbol INTEGER_TYPE;
+  public LispSymbol MACRO_TYPE;
+  public LispSymbol NULL_TYPE;
+  public LispSymbol NUMBER_TYPE;
+  public LispSymbol PACKAGE_TYPE;
+  public LispSymbol PATHNAME_TYPE;
+  public LispSymbol REAL_TYPE;
+  public LispSymbol STREAM_TYPE;
+  public LispSymbol STRING_TYPE;
+  public LispSymbol SYMBOL_TYPE;
+  public LispSymbol VECTOR_TYPE;
 
   /**
    * This is used in apropos_print on StandardLispSymbol.
@@ -304,15 +305,16 @@ public class Jatha extends Object
     f_systemPackage = new StandardLispPackage(this, makeString("SYSTEM"));
     f_keywordPackage = new StandardLispPackage(this, makeString("KEYWORD"));
 
+    // NIL is special case - not a symbol but require be in system symbol table(?)
+    NIL = new StandardLispNIL(this, "NIL");
+    NIL.setPackage(f_systemPackage);
+    
     DOT = new StandardLispSymbol(this, ".");
     EVAL.intern(makeString("DOT"), DOT, f_systemPackage);
 
-    NIL = new StandardLispNIL(this, "NIL");
-    EVAL.intern(makeString("NIL"), NIL, f_systemPackage);
-
     QUOTE = new StandardLispSymbol(this, "QUOTE");
     EVAL.intern(makeString("QUOTE"), QUOTE, f_systemPackage);
-
+    
     BACKQUOTE = new StandardLispSymbol(this, "BACKQUOTE");
     EVAL.intern(makeString("BACKQUOTE"), BACKQUOTE, f_systemPackage);
 
@@ -481,10 +483,10 @@ public class Jatha extends Object
   LispValue prompt, userPrompt;
   LispValue packages = null;
 
-  LispValue STAR, STARSTAR, STARSTARSTAR;
-  LispValue MAX_LIST_LENGTH;  // obsolete.  Use PRINT_LENGTH instead
-  LispValue PRINT_LENGTH, PRINT_LEVEL;  // (mh) 24 March 2008
-  LispValue LOAD_VERBOSE;
+  LispSymbol STAR, STARSTAR, STARSTARSTAR;
+  LispSymbol MAX_LIST_LENGTH;  // obsolete.  Use PRINT_LENGTH instead
+  LispSymbol PRINT_LENGTH, PRINT_LEVEL;  // (mh) 24 March 2008
+  LispSymbol LOAD_VERBOSE;
 
   static  long      MAX_LIST_LENGTH_VALUE = 100000;
   static  long      PRINT_LENGTH_VALUE = 512;
@@ -1282,8 +1284,8 @@ public class Jatha extends Object
     if (packageName instanceof LispPackage)
       return packageName;
 
-    if (packageName.symbolp() == T)
-      packageName = packageName.symbol_name();
+    if (packageName instanceof LispSymbol)
+      packageName = ((LispSymbol)packageName).symbol_name();
 
     return findPackage(((LispString)(packageName)).getValue());
   }
@@ -1353,7 +1355,7 @@ public class Jatha extends Object
     // The symbols come out unsorted, but oh well.
 
     String matchStr = ((LispString)(str)).getValue().toUpperCase();
-    Iterator<LispValue>    iter;
+    Iterator<LispSymbol>    iter;
     LispValue   symb;
     LispString  sname;
     String      symbstr;
@@ -1365,7 +1367,7 @@ public class Jatha extends Object
       while (iter.hasNext())
       {
         symb     = (iter.next());
-        sname    = (LispString)(symb.symbol_name());
+        sname    = (LispString)((LispSymbol)symb).symbol_name();	// todo: add error for !symb instanceof LispSymbol
         symbstr  = sname.getValue().toUpperCase();
 
         if (symbstr.indexOf(matchStr) >= 0)

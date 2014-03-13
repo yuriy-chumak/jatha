@@ -31,6 +31,8 @@ import org.jatha.compile.*;
 
 // @date    Sat Feb  1 21:04:49 1997
 /**
+ * Landin's SECD Machine implementation
+ * 
  * The SECDMachine contains the registers and
  * basic functionality of the SECD machine.
  * It exports constants corresponding to each
@@ -41,23 +43,25 @@ import org.jatha.compile.*;
  * A modification to the standard SECD machine is
  * the new 'B' register that handles dynamic
  * binding.
+ * 
+ * http://webdocs.cs.ualberta.ca/~you/courses/325/Mynotes/Fun/SECD-slides.html
+ * http://akoub.narod.ru/funcbook/chapter4/c4.htm
  *
  * @see SECDop
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
 public class SECDMachine    // extends Abstract Machine !
 {
+	final Jatha f_lisp;
 
-  Jatha f_lisp = null;
+	public static boolean DEBUG = false;
 
-  public static boolean DEBUG = false;
+	// ------  Registers  --------------
+	public SECDRegister S = null;  // Stack register
+	public SECDRegister E = null;  // Environment register
+	public SECDRegister C = null;  // Control register
+	public SECDRegister D = null;  // Dump register
 
-  // ------  Registers  --------------
-
-  public SECDRegister S = null;  // Random names nobody will accidentally use
-  public SECDRegister E = null;  // These should be protected from user change.
-  public SECDRegister C = null;
-  public SECDRegister D = null;
   // The B register is for dynamic bindings.  It contains a hash table
   // that indexes on symbol name.  The value is a list of values,
   // the most recent value at the front of the list.
@@ -97,17 +101,20 @@ public class SECDMachine    // extends Abstract Machine !
   public SECDop TAG_E = null;
   public SECDop TEST = null;
 
-  public SECDMachine(Jatha lisp)
-  {
-    f_lisp = lisp;
+	public SECDMachine(final Jatha lisp)
+	{
+		f_lisp = lisp;
 
-    S = new SECDRegister(f_lisp, "S-05171955");  // Random names nobody will accidentally use
-    E = new SECDRegister(f_lisp, "E-06141957");  // These should be protected from user change.
-    C = new SECDRegister(f_lisp, "C-06151962");
-    D = new SECDRegister(f_lisp, "D-06071966");
-    X = new SECDRegister(f_lisp, "X-02324255");
-    B = new StandardLispHashTable(f_lisp, f_lisp.NIL, f_lisp.NIL,
-                                  f_lisp.NIL, f_lisp.NIL);
+		S = new SECDRegister(f_lisp, "S-05171955");  // Random names nobody will accidentally use
+		E = new SECDRegister(f_lisp, "E-06141957");  // These should be protected from user change.
+		C = new SECDRegister(f_lisp, "C-06151962");
+		D = new SECDRegister(f_lisp, "D-06071966");
+		X = new SECDRegister(f_lisp, "X-02324255");
+		
+		B = new StandardLispHashTable(f_lisp,
+				f_lisp.NIL, f_lisp.NIL,
+				f_lisp.NIL, f_lisp.NIL);
+		
     AP     = new opAP(f_lisp);
     BLK    = new opBLK(f_lisp);
     DAP    = new opDAP(f_lisp);
@@ -199,15 +206,15 @@ public class SECDMachine    // extends Abstract Machine !
     if (symbol.get_specialCount() > 0)
       return B.gethash(symbol).car();
     else
-      return symbol.symbol_value();
+      return ((LispSymbol)symbol).symbol_value();
   }
 
 
-  public LispValue Execute(LispValue code, LispValue globals)
-    throws CompilerException
-  {
-    LispValue opcode;
-
+  // Executor
+	public LispValue Execute(LispValue code, LispValue globals)
+			throws CompilerException
+	{
+		LispValue opcode;
 
     // System.out.print("\nExecuting code: ");
     // code.prin1();

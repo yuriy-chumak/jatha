@@ -154,11 +154,6 @@ public class LispCompiler
 		final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
 
 		// (require '(...)) 
-/*		Register(new LispPrimitive(f_lisp, "COMMENT", 0, Long.MAX_VALUE) {
-			public LispValue Execute(LispValue values) {
-				return f_lisp.T;
-			}
-		});*/
 		Register(new LispPrimitive(f_lisp, "REQUIRE", 1, Long.MAX_VALUE) { 
 			public LispValue Execute(LispValue values)
 					throws CompilerException
@@ -256,7 +251,52 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 
+		Register(new LispPrimitive(f_lisp, "SETQ", 2) {
+			// todo: refactor this
+			public void Execute(SECDMachine machine)
+			{
+			    LispValue val = machine.S.pop();
+			    LispValue sym = machine.S.pop();
 
+			    if (sym.basic_listp())   // local variable
+			      machine.LD.setComponentAt(sym, machine.E.value(), val);
+
+			    else if (sym.specialP())  // special variable
+			      machine.special_set(sym, val);
+
+			    else  // global variable
+			      sym.setf_symbol_value(val);
+
+			    machine.S.push(val);
+			    machine.C.pop();
+			}
+			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
+			                             LispValue valueList, LispValue code)
+					throws CompilerException
+			{
+				
+				// 13 Dec 2005 (mh)
+				// SETQ is not compiling correctly (noticed by Ola Bini).
+				// Also, SET is not compiling correctly.  They are always modifying the
+				// global value of the symbol, not the local value.  Fixed it by passing in
+				// the index instead of the symbol name if it is known to have a binding.
+				
+				LispValue lookupVal = compiler.indexAndAttribute(args.first(), valueList);
+				
+				if (lookupVal.second() instanceof LispNil)  // SETQ of a global var
+				return
+						f_lisp.makeCons(machine.LDC,
+				                f_lisp.makeCons(args.first(),
+				                		compiler.compile(args.second(), valueList, code)));
+				
+				else  // SETQ of a local var, inside a LET or something like that.
+				return	f_lisp.makeCons(machine.LDC,
+								f_lisp.makeCons(lookupVal.second(),
+										compiler.compile(args.second(), valueList, code)));
+			}
+		}, SYSTEM_PKG);
+		
+		
 		Register(new ComplexLispPrimitive(f_lisp, "+", 0, Long.MAX_VALUE) {
 			public LispValue Execute(LispValue args) {
 				if (args == f_lisp.NIL)
@@ -679,9 +719,9 @@ public class LispCompiler
     else if (expr == f_lisp.T)
       return(f_lisp.makeCons(machine.T, code));
 
-    else if ((expr.symbolp() == f_lisp.NIL)      // Self-evaluating atom
+    else if (! (expr instanceof LispSymbol)      // Self-evaluating atom
             || (expr.keywordp() == f_lisp.T))
-      return(f_lisp.makeCons(machine.LDC, f_lisp.makeCons(expr, code)));
+      return (f_lisp.makeCons(machine.LDC, f_lisp.makeCons(expr, code)));
 
     else   /* A symbol.  Get its value */
     {
@@ -775,7 +815,7 @@ public class LispCompiler
           if ((defn == f_lisp.NIL) || (defn == null))
           {
             if (function instanceof LispSymbol)
-              throw new UndefinedFunctionException(((LispString)(function.symbol_name())).toString());
+              throw new UndefinedFunctionException(((LispString)(((LispSymbol)function).symbol_name())).toString());
             else
               throw new UndefinedFunctionException(function.toString());
           }
@@ -1056,8 +1096,8 @@ public class LispCompiler
 
   public boolean specialFormP(LispValue fn)
   {
-    if ((fn.symbolp() == f_lisp.T)
-            &&    ((fn == AND)
+    if ((fn instanceof LispSymbol)
+        &&    ((fn == AND)
             || (fn == DEFMACRO)
             || (fn == DEFUN)
             || (fn == IF)
@@ -1139,7 +1179,7 @@ public class LispCompiler
       executableCode = (((LispFunction)fn).getCode()).second();
 
     if (!((LispPrimitive)executableCode).validArgumentList(args))
-      throw new ArgumentCountMismatchException(((LispString)fn.symbol_name()).getValue(),
+      throw new ArgumentCountMismatchException(((LispString)((LispSymbol)fn).symbol_name()).getValue(),
                                                ((LispPrimitive)executableCode).parameterCountString(),
                                                ((LispInteger)(args.length())).getLongValue());
 
@@ -1296,12 +1336,12 @@ public class LispCompiler
   }
 
   //##JPG  method added, compile DEFMACRO, April 2005
-  //
+  // todo: change name to LispSymbol
    LispValue compileDefmacro(SECDMachine machine, LispValue name, LispValue argsAndBody,
          LispValue valueList, LispValue code)
       throws CompilerException
   {
-      LispValue tempNew = f_lisp.EVAL.intern("%%%" + name.symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM"));
+      LispValue tempNew = f_lisp.EVAL.intern("%%%" + ((LispSymbol)name).symbol_name().toStringSimple(), (LispPackage)f_lisp.findPackage("SYSTEM"));
       compileDefun(machine,tempNew,argsAndBody,valueList,code); // TODO, fix an ew method for doing this.
     //  ##JPG
     // for compilation of recursive macros, we need to know if the symbol under compilation is a

@@ -28,6 +28,7 @@ package org.jatha.compile;
 
 import org.jatha.Jatha;
 import org.jatha.dynatype.LispPackage;
+import org.jatha.dynatype.LispSymbol;
 import org.jatha.dynatype.LispValue;
 import org.jatha.machine.SECDMachine;
 
@@ -45,9 +46,10 @@ public class Macroexpand1Primitive extends LispPrimitive {
     
     public void Execute(final SECDMachine machine) {
         final LispValue form = machine.S.pop();
-        final LispValue carForm = form.car();
+        final LispValue carForm = form.car();	// todo: check for LispSymbol
+        
         if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
-            machine.S.push(f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + carForm.symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(form.cdr()))));
+            machine.S.push(f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(form.cdr()))));
         } else {
             machine.S.push(form);
         }

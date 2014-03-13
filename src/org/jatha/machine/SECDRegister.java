@@ -27,7 +27,6 @@ package org.jatha.machine;
 import org.jatha.dynatype.*;
 import org.jatha.Jatha;
 
-
 // @date    Mon Feb  3 19:02:37 1997
 /**
  * SECDRegister is essentially a Stack, with
@@ -43,14 +42,16 @@ import org.jatha.Jatha;
  */
 public class SECDRegister extends StandardLispSymbol
 {
-  protected LispValue f_registerSymbol = null;
+  protected LispSymbol f_registerSymbol = null;
   
 
   public SECDRegister(Jatha lisp, String name)
   {
     super(lisp, name);
+    
     long rand = (long)(Math.rint(Math.random() * 1000.0));
     f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
+    
     assign(lisp.NIL);
   }
 

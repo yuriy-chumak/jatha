@@ -177,12 +177,10 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
       throw new LispConstantRedefinedException(name.getValue());
   }
 
-  public LispValue     symbol_name()    { return name;  }
+  public LispString    symbol_name()    { return name;  }
   public LispValue     symbol_package() { return pack;  }
   public LispValue     symbol_plist()   { return plist; }
   public LispValue     symbol_value()   { return value; }
-
-  public LispValue     symbolp()                 { return f_lisp.T;   }
 
   public LispValue     subst(LispValue oldValue, LispValue newValue)
   { return f_lisp.NIL; }

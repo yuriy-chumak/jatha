@@ -34,92 +34,73 @@ import org.jatha.Jatha;
  * This defines a hash table containing LispSymbol class elements.  They are
  * indexed by LispString class elements.
  */
-public class SymbolTable extends TreeMap<String, LispValue>
+public class SymbolTable extends TreeMap<String, LispSymbol>
 {
-  public static final long serialVersionUID = 1L;
+	public static final long serialVersionUID = 1L;
   
-  // Changed from HashMap to TreeMap, 10 May 2005 (mh), v2.5.0
-  
-  public static final int   HASH_TABLE_DEFAULT_SIZE        = 4096;
-  public static final float HASH_TABLE_DEFAULT_LOAD_FACTOR = (float) 0.8;
+	// Changed from HashMap to TreeMap, 10 May 2005 (mh), v2.5.0
+	public static final int   HASH_TABLE_DEFAULT_SIZE        = 4096;
+	public static final float HASH_TABLE_DEFAULT_LOAD_FACTOR = (float) 0.8;
 
-  private Jatha f_lisp = null;
+	final Jatha f_lisp;
 
+	public SymbolTable(final Jatha lisp)
+	{
+		super(); // HASH_TABLE_DEFAULT_SIZE, HASH_TABLE_DEFAULT_LOAD_FACTOR);
+		f_lisp = lisp;
+	}
 
-  public SymbolTable(Jatha lisp)
-  {
-    super(); // HASH_TABLE_DEFAULT_SIZE, HASH_TABLE_DEFAULT_LOAD_FACTOR);
-    f_lisp = lisp;
-  }
+	public SymbolTable(final Jatha lisp, int defaultSize)
+	{
+		super(); // defaultSize, HASH_TABLE_DEFAULT_LOAD_FACTOR);
+		f_lisp = lisp;
+	}
 
-  public SymbolTable(Jatha lisp, int defaultSize)
-  {
-    super(); // defaultSize, HASH_TABLE_DEFAULT_LOAD_FACTOR);
-    f_lisp = lisp;
- }
+	public SymbolTable(final Jatha lisp, int initialSize, float loadFactor)
+	{
+		super(); // initialSize, loadFactor);
+		f_lisp = lisp;
+	}
 
-  public SymbolTable(Jatha lisp, int initialSize, float loadFactor)
-  {
-    super(); // initialSize, loadFactor);
-    f_lisp = lisp;
-  }
+	// Use the Hashtable methods PUT and GET.
+	// The 'value' is supposed to always be a symbol,
+	// but because NIL is both a Symbol and a List, we
+	// must make the type be 'LispValue' instead of
+	// 'LispSymbol'.
+	public synchronized LispSymbol put(LispString key, LispSymbol value)
+	{
+		assert value != null;
+		
+		super.put(key.getValue(), value);
+		return value;
+	}
 
-  // Use the Hashtable methods PUT and GET.
-  // The 'value' is supposed to always be a symbol,
-  // but because NIL is both a Symbol and a List, we
-  // must make the type be 'LispValue' instead of
-  // 'LispSymbol'.
-  public synchronized LispValue put(LispString key, LispValue value)
-  {
-    try {
-      super.put(key.getValue(), value);   // Index by the Java String.
-      return value;
-    }
-    catch (NullPointerException e)
-    {
-      System.err.println("NullPointerException for " + key + "/" +
-          value + " in SymbolTable.put.");
-      return null;
-    }
-  }
-
-  // Returns NIL if the entry is not there.
-  public synchronized LispValue get(LispString key)
-  {
-    Object val = super.get(key.getValue());   // Index by the Java String
-
-    if (val == null)
-      return f_lisp.NIL;
-    else
-      return (LispValue) val;
-  }
+	// Returns NIL if the entry is not there.
+	public synchronized LispSymbol get(LispString key)
+	{
+		return super.get(key.getValue());
+	}
 
 
-  // This is useful when a symbol is declared a constant.
-  // The old value (a symbol) will be removed and the new
-  // constant will take its place.
-  public synchronized LispValue replace(LispString key, LispValue value)
-  {
-    super.remove(key.getValue());
+	// This is useful when a symbol is declared a constant.
+	// The old value (a symbol) will be removed and the new
+	// constant will take its place.
+	// returns previously associated symbol
+	public synchronized LispSymbol replace(LispString key, LispSymbol value)
+	{
+		assert value != null;
+		
+		//  If the map previously contained a mapping for the key, the old value is replaced.
+		return super.put(key.getValue(), value);
+	}
 
-    put(key, value);
-
-    return value;
-  }
-
-
-  // date created: Mon Aug  5 11:34:45 2002
-  // created by:   Micheal S. Hewett    hewett@smi.stanford.edu
-  /**
-   * Returns an Iterator across the symbols of the SymbolTable.
-   * Each symbol is a string.
-   *
-   */
-  public Iterator keys()
-  {
-    return this.keySet().iterator();
-  }
-
-
-
+	/**
+	 * Returns an Iterator across the symbols of the SymbolTable.
+	 * Each symbol is a string.
+	 *
+	 */
+	public Iterator<String> keys()
+	{
+		return this.keySet().iterator();
+	}
 }

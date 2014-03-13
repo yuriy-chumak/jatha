@@ -54,5 +54,20 @@ public interface LispSymbol extends LispAtom
   void setExternal(boolean b);
 
 
+  /**
+   * Assigns a value to a symbol.
+   */
+  public LispValue setq(LispValue newValue);
+
+  /**
+   * Returns the value of a symbol.
+   */
+  public LispValue symbol_value() throws LispException;
+
+  /**
+   * Returns a string containing the name of a symbol.
+   */
+  public LispString symbol_name();
+
 }
 

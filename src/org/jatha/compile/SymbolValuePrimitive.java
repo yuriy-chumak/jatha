@@ -25,6 +25,9 @@
 package org.jatha.compile;
 
 import org.jatha.Jatha;
+import org.jatha.dynatype.LispSymbol;
+import org.jatha.dynatype.LispValue;
+import org.jatha.dynatype.LispValueNotASymbolException;
 import org.jatha.machine.*;
 
 
@@ -37,8 +40,12 @@ public class SymbolValuePrimitive extends LispPrimitive
 
   public void Execute(SECDMachine machine)
   {
-    machine.S.push(machine.S.pop().symbol_value());
+	  LispValue sym = machine.S.pop();
+	  if (!(sym instanceof LispSymbol))
+	    	throw new LispValueNotASymbolException(sym);
+	  LispSymbol symbol = (LispSymbol)sym;
+	  
+    machine.S.push(symbol.symbol_value());
     machine.C.pop();
   }
 }
-

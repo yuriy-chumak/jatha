@@ -160,8 +160,8 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 
     if (pname == null) {
         f_name = f_lisp.NIL;
-    } else if(pname instanceof LispSymbol) {
-        f_name = pname.symbol_name();
+    } else if (pname instanceof LispSymbol) {
+        f_name = ((LispSymbol)pname).symbol_name();
     } else {
         f_name = pname;
     }
@@ -226,64 +226,62 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
     }
 
     private LispString getAsString(final LispValue inp) {
-        return (LispString)((inp.basic_symbolp()) ? inp.symbol_name() : inp);
+    	// todo: check for LispSymbol
+        return (LispString)((inp.basic_symbolp()) ? ((LispSymbol)inp).symbol_name() : inp);
     }
 
-  // Returns either NIL or the symbol.
-  // Searches this package only for external symbols matching
-  // the string.
-  public LispValue getExternalSymbol(LispString str)
-  {
-    LispValue symbol = f_symbolTable.get(str);
+	// Returns either NIL or the symbol.
+	// Searches this package only for external symbols matching
+	// the string.
+	public LispSymbol getExternalSymbol(LispString str)
+	{
+		LispSymbol symbol = f_symbolTable.get(str);
 
-    if ((symbol != f_lisp.NIL) && ((LispSymbol)symbol).externalP()) {
-      return symbol;
-    } else
-      return f_lisp.NIL;
-  }
+		if ((symbol != null) && symbol.externalP())
+			return symbol;
 
-  /**
-   * Stores a new symbol in this package.
-   * The lookup key is a LispString giving the print name.
-   * The value is a LispSymbol - or LispNil.
-   */
-  public LispValue addSymbol(LispString name, LispValue symbol)
-  {
-    f_symbolTable.put(name, symbol);
-    return symbol;
-  }
+		return null;
+	}
+
+	/**
+	 * Stores a new symbol in this package.
+	 * The lookup key is a LispString giving the print name.
+	 * The value is a LispSymbol - or LispNil.
+	 */
+	public void addSymbol(LispString name, LispSymbol symbol)
+	{
+		f_symbolTable.put(name, symbol);
+	}
 
 
-  // Returns either NIL or the symbol.
-  // Searches this package and recursively searches external
-  // symbols of packages used by this package.
+	// Returns either NIL or the symbol.
+	// Searches this package and recursively searches external
+	// symbols of packages used by this package.
+	public LispSymbol getSymbol(LispString str)
+	{
+		LispSymbol symbol = f_shadowingSymbols.get(str);
 
-  public LispValue getSymbol(LispString str)
-  {
-    LispValue symbol = f_shadowingSymbols.get(str);
+		if (symbol != null)
+			return symbol;
 
-    if (symbol != f_lisp.NIL)
-      return symbol;
+		symbol = f_symbolTable.get(str);
+		if (symbol != null)
+			return symbol;
 
-    symbol = f_symbolTable.get(str);
+		// ELSE - search used packages
+		LispValue p = f_uses;
+		while (p != f_lisp.NIL)
+		{
+			symbol = ((LispPackage)(f_lisp.findPackage(p.car()))).getExternalSymbol(str);
+			if (symbol != null)
+				return symbol;
+			else
+				p = p.cdr();
+		}
 
-    if (symbol != f_lisp.NIL)
-      return symbol;
-
-    // ELSE - search used packages
-    LispValue p = f_uses;
-    while (p != f_lisp.NIL)
-    {
-      symbol = ((LispPackage)(f_lisp.findPackage(p.car()))).getExternalSymbol(str);
-      if (symbol != f_lisp.NIL)
-	return symbol;
-      else
-	p = p.cdr();
-    }
-
-    // If all fails, return NIL.
-    return f_lisp.NIL;
-  }
+		// If all fails, return null.
+		return null;
+	}
 
 /* ------------------  LISP methods   ------------------------------ */
 
@@ -336,8 +334,8 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
    */
   public LispValue lisp_import(LispValue symbols)
   {
-    if (!symbols.basic_consp())
-      symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
+	  if (!symbols.basic_consp())
+		  symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
     LispValue  s = symbols;
@@ -346,12 +344,17 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
     while (s != f_lisp.NIL)
     {
       symb = s.car();
-      if (getSymbol((LispString)(symb.symbol_name())) == f_lisp.NIL)
-	f_symbolTable.put((LispString)(symb.symbol_name()), symb);
+      if (!(symb instanceof LispSymbol))
+    	  throw new LispValueNotASymbolException(symb);
+      LispSymbol symbol = (LispSymbol)symb;
+      LispString name = (LispString)(symbol.symbol_name());
+      
+      if (getSymbol(name) == null)
+    	  f_symbolTable.put(name, symbol);
       else
-	System.err.println(";; * WARNING: Attempt to import " + symb +
+    	  System.err.println(";; * WARNING: Attempt to import " + symb +
 			   " conflicts with existing symbol " +
-			   getSymbol((LispString)(symb.symbol_name())) + " in " + this.f_name);
+			   getSymbol(name) + " in " + this.f_name);
 
       s = s.cdr();
     }
@@ -375,7 +378,10 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 
     while (s != f_lisp.NIL) {
       symb = s.car();
-      f_shadowingSymbols.put((LispString)(symb.symbol_name()), symb);
+      if (!(symb instanceof LispSymbol))
+    	  throw new LispValueNotASymbolException(symb);
+      
+      f_shadowingSymbols.put((LispString)(((LispSymbol)symb).symbol_name()), (LispSymbol)symb);
       s = s.cdr();
     }
 
@@ -394,10 +400,10 @@ public class StandardLispPackage extends StandardLispValue implements LispPackag
 
     while(s != f_lisp.NIL) {
       symb = s.car();
-      final LispString symb_name = (symb.basic_stringp()?((LispString)symb):((LispString)symb.symbol_name()));
+      final LispString symb_name = (symb.basic_stringp()?((LispString)symb):((LispString)((LispSymbol)symb).symbol_name()));
       if(getSymbol(symb_name) == f_lisp.NIL) {
-          final LispValue symbi = f_lisp.EVAL.intern(symb_name,this);
-          f_shadowingSymbols.put(symb_name,symbi);
+          final LispSymbol symbi = f_lisp.EVAL.intern(symb_name,this);
+          f_shadowingSymbols.put(symb_name, symbi);
       } else if(f_shadowingSymbols.get(symb_name) == f_lisp.NIL) {
           f_shadowingSymbols.put(symb_name,getSymbol(symb_name));
       }

@@ -819,9 +819,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue setf_symbol_value(LispValue newValue)
   { throw new LispValueNotASymbolException("The argument to SETF-SYMBOL-VALUE"); }
 
-  public LispValue setq(LispValue newValue)
-  { throw new LispValueNotASymbolException("The argument to SETQ"); }
-
   public LispValue     seventh      ()
   { throw new LispValueNotASequenceException("The first argument to SEVENTH"); }
 
@@ -1072,22 +1069,14 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue substring(LispValue start, LispValue end)
   { throw new LispValueNotASequenceException("The operand of substring"); }
 
-  public LispValue     symbolp      ()     { return f_lisp.NIL; }
-
   public LispValue     symbol_function() throws LispException
   { throw new LispValueNotASymbolException("The argument to SYMBOL_FUNCTION");  }
-
-  public LispValue     symbol_name()
-  { throw new LispValueNotASymbolException("The argument to SYMBOL_NAME");  }
 
   public LispValue     symbol_package()
   { throw new LispValueNotASymbolException("The argument to SYMBOL_PACKAGE");  }
 
   public LispValue     symbol_plist()
   { throw new LispValueNotASymbolException("The argument to SYMBOL_PLIST");  }
-
-  public LispValue     symbol_value() throws LispException
-  { throw new LispValueNotASymbolException("The argument to SYMBOL_VALUE");  }
 
   /**
    * Tangent trigonometric function.  Argument is in radians.

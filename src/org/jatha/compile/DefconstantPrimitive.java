@@ -38,27 +38,31 @@ public class DefconstantPrimitive extends LispPrimitive
 
   public void Execute(SECDMachine machine)
   {
-    LispValue val  = machine.S.pop();
-    LispValue sym  = machine.S.pop();
+    final LispValue val  = machine.S.pop();
+    final LispValue sym  = machine.S.pop();
 
+    if (!(sym instanceof LispSymbol))
+    	throw new LispValueNotASymbolException(sym);
+    final LispSymbol symbol = (LispSymbol)sym;
+    
     // Assign the value.
     if (sym.boundp() == f_lisp.T)
     {
-      System.err.println("Warning: Constant " + sym
-			 + " being redefined from " + sym.symbol_value()
+      System.err.println("Warning: Constant " + symbol
+			 + " being redefined from " + symbol.symbol_value()
 			 + " to " + val);
     }
-    sym.setf_symbol_value(val);
+    symbol.setf_symbol_value(val);
 
     // Make it a constant
-    LispValue newSymbol = new StandardLispConstant(f_lisp, sym);
-    f_lisp.SYMTAB.replace((LispString)(sym.symbol_name()), newSymbol);
+    LispSymbol newSymbol = new StandardLispConstant(f_lisp, symbol);
+    f_lisp.SYMTAB.replace((LispString)(symbol.symbol_name()), newSymbol);
 
     // Declare the symbol as Special
     newSymbol.set_special(true);
 
     // Return the symbol
-    machine.S.push(sym);
+    machine.S.push(symbol);
 
     machine.C.pop();  // Pop the DEFCONSTANT
   }

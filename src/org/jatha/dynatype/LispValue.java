@@ -38,6 +38,31 @@ import org.jatha.Jatha;
  * User: hewett
  * Date: Nov 7, 2003
  * Time: 2:49:43 PM
+ * 
+ * LispValue
+ *   \------ LispArray
+ *   \------ LispAtom
+ *             \----- LispCharacter
+ *             \----- LispHashTable
+ *             \----- LispNumber
+ *                      \------- LispInteger
+ *                                 \-------- LispBignum
+ *                      \------- LispComplex
+ *                      \------- LispReal
+ *             \----- LispString
+ *             \----- LispSymbol
+ *                      \------- LispConstant
+ *                                 \--------- LispKeyword
+ *   \------ LispConsOrNil
+ *             \---------- LispCons
+ *             \---------- LispNil
+ *   \------ LispForeignObject
+ *             \-------------- LispJavaObject
+ *   \------ LispFunction
+ *             \--------- LispMacro
+ *   \------- LispPackage
+ *   \
+ *   
  */
 public interface LispValue extends Comparable<LispValue>
 {
@@ -705,11 +730,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue setf_symbol_value(LispValue newValue);
 
   /**
-   * Assigns a value to a symbol.
-   */
-  public LispValue setq(LispValue newValue);
-
-  /**
    * Converts a String, Symbol or Character to a string.
    */
   public LispValue string();
@@ -877,19 +897,9 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue substring(LispValue start, LispValue end);
 
   /**
-   * Returns T if the object is a symbol.
-   */
-  public LispValue symbolp();
-
-  /**
    * Returns the function assigned to a symbol.
    */
   public LispValue symbol_function() throws LispException;
-
-  /**
-   * Returns a string containing the name of a symbol.
-   */
-  public LispValue symbol_name();
 
   /**
    * Returns the package of a symbol.
@@ -900,11 +910,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns the property list of a symbol.
    */
   public LispValue symbol_plist();
-
-  /**
-   * Returns the value of a symbol.
-   */
-  public LispValue symbol_value() throws LispException;
 
   /**
    * Returns the third element of a list or NIL if the list

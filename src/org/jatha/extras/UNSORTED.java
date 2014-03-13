@@ -149,7 +149,6 @@ public class UNSORTED implements Registrar {
     compiler.Register(new SetfSymbolFunctionPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new SetfSymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new SetfSymbolValuePrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SetqPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new SquareRootPrimitive(f_lisp),SYSTEM_PKG);
     
 	compiler.Register(new LispPrimitive(f_lisp, "STRING", 1) {
@@ -165,12 +164,6 @@ public class UNSORTED implements Registrar {
     
 
 	compiler.Register(new SubstPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolpPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolFunctionPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolNamePrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolPackagePrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolPlistPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new SymbolValuePrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new TagbodyPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new ZeropPrimitive(f_lisp),SYSTEM_PKG);
 
