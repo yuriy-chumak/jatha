@@ -177,7 +177,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public boolean basic_functionp() { return false; }
   public boolean basic_keywordp()  { return false; }
   public int     basic_length()    { throw new LispValueNotAListException("The argument to basic_length"); }
-  public boolean basic_listp()     { return false; }
   public boolean basic_macrop()    { return false; }
   public boolean basic_numberp()   { return false; }
   public boolean basic_stringp()   { return false; }

@@ -262,7 +262,7 @@ public class LispCompiler
 			    LispValue val = machine.S.pop();
 			    LispValue sym = machine.S.pop();
 
-			    if (sym.basic_listp())   // local variable
+			    if (sym instanceof LispConsOrNil)   // local variable
 			      machine.LD.setComponentAt(sym, machine.E.value(), val);
 
 			    else if (sym.specialP())  // special variable
@@ -1497,7 +1497,7 @@ public class LispCompiler
     if (code.basic_functionp())
       code = ((LispFunction)code).getCode();
 
-    return (code.basic_listp() && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
+    return (code instanceof LispConsOrNil && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
                                    (LispPackage)(code.getLisp().findPackage("KEYWORD")))));
   }
 
@@ -1509,7 +1509,7 @@ public class LispCompiler
    */
   public boolean isMacroCode(LispValue code)
   {
-    return code.basic_listp() && (f_lisp.car(code) == MACRO);
+    return code instanceof LispConsOrNil && (f_lisp.car(code) == MACRO);
   }
 
 	// init

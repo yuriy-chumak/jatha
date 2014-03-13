@@ -131,11 +131,6 @@ public interface LispValue extends Comparable<LispValue>
   public int basic_length();
 
   /**
-   * Returns Java true if the object is a CONS cell or NIL.
-   */
-  public boolean basic_listp();
-
-  /**
    * Returns Java true if the object is a macro.
    */
   public boolean basic_macrop();

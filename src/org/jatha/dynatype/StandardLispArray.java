@@ -254,7 +254,7 @@ public class StandardLispArray extends StandardLispValue implements LispArray
   {
     // Either the arguments are given as a list in the first argument, or 
     // are given as the rest of the arguments.
-    int index = f_lisp.car(args).basic_listp() 
+    int index = f_lisp.car(args) instanceof LispConsOrNil
             ? indexFromLocation(f_lisp.car(args)) : indexFromLocation(args);
     return lookup(index);
   }

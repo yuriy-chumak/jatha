@@ -76,7 +76,7 @@ public class TagbodyPrimitive extends LispPrimitive
       final LispValue val = iter.next();
       if(val.basic_symbolp()) {
         tags.put(val,new Integer(progns.size()));
-      } else if(val.basic_listp()) {
+      } else if (val instanceof LispConsOrNil) {
         progns.add(val);
       }
     }

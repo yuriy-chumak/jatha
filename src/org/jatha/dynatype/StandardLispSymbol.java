@@ -306,7 +306,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   {
     LispValue returnValue;
 
-    if (f_value.basic_listp())
+    if (f_value instanceof LispConsOrNil)
     {
       returnValue     = f_lisp.car(f_value);
       setf_symbol_value(f_lisp.cdr(f_value));
@@ -319,7 +319,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   public LispValue     push         (LispValue newValue)
   {
-    if (f_value.basic_listp())
+    if (f_value instanceof LispConsOrNil)
     {
       setf_symbol_value(new StandardLispCons(f_lisp, newValue, f_value));
       return newValue;

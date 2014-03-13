@@ -52,8 +52,6 @@ public abstract class StandardLispConsOrNil extends StandardLispValue  implement
   }
 
 
-  public boolean basic_listp()  { return true; }
-
   // ------ LISP methods  ----------
 
   public LispValue butlast()
