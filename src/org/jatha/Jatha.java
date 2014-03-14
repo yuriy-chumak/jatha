@@ -1898,15 +1898,15 @@ public class Jatha extends Object
      */
 	public LispValue car(LispValue arg)
 	{
-		if (arg instanceof LispConsOrNil)
+//		if (arg instanceof LispConsOrNil)
 			return ((LispConsOrNil)arg).car();
-		throw new LispValueNotAConsException(arg);
+//		throw new LispValueNotAConsException(arg);
 	}
 	public LispValue cdr(LispValue arg) 
 	{
-		if (arg instanceof LispConsOrNil)
+//		if (arg instanceof LispConsOrNil)
 			return ((LispConsOrNil)arg).cdr();
-		throw new LispValueNotAConsException(arg);
+//		throw new LispValueNotAConsException(arg);
 	}
 
   /**

@@ -15,15 +15,16 @@
 (defun f-backquote (expr)
   (if (null expr) nil 
     (if (atom expr) (list 'quote expr)
-       (if (eq (car expr) :COMMA) (second expr)  
-         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+      (if (eq (car expr) :COMMA) (second expr)  
+        (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
             (list 'append (second (car expr)) (f-backquote (cdr expr))) 
-         (combine-exprs (f-backquote (car expr)) 
+        (combine-exprs (f-backquote (car expr)) 
             (f-backquote (cdr expr)) expr) )))))
 
 (defmacro backquote (expr)
    (f-backquote expr))
 
+; http://clhs.lisp.se/Body/m_push.htm
 (defmacro push (n x) `(setq ,x (cons ,n ,x)))
 
 ;; ------------------------------------------------
