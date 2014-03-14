@@ -5,7 +5,12 @@ import org.jatha.Registrar;
 import org.jatha.compile.*;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispConsOrNil;
+import org.jatha.dynatype.LispNumber;
 import org.jatha.dynatype.LispPackage;
+import org.jatha.dynatype.LispSymbol;
+import org.jatha.dynatype.LispValueNotAConsException;
+import org.jatha.dynatype.LispValueNotANumberException;
+import org.jatha.dynatype.LispValueNotASymbolException;
 import org.jatha.compile.LispPrimitive;
 import org.jatha.dynatype.LispValue;
 import org.jatha.machine.SECDMachine;
@@ -51,16 +56,23 @@ public class UNSORTED implements Registrar {
 		}, SYSTEM_PKG);
 		
 		// Additional embedded primitives for perfomance improvement
-/*		compiler.Register(new LispPrimitive(f_lisp, "1+", 1) {
+		compiler.Register(new LispPrimitive(f_lisp, "1+", 1) {
 			public LispValue Execute(LispValue arg) {
-				return arg.add(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
+				if (arg instanceof LispNumber)
+					return ((LispNumber)arg).add(f_lisp.ONE);
+				
+				throw new LispValueNotANumberException(arg);
 			}
 		}, SYSTEM_PKG);
 		compiler.Register(new LispPrimitive(f_lisp, "1-", 1) {
 			public LispValue Execute(LispValue arg) {
-				return arg.sub(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
+				if (arg instanceof LispNumber)
+					return ((LispNumber)arg).sub(f_lisp.ONE);
+				
+				throw new LispValueNotANumberException(arg);
+//				return arg.sub(f_lisp.makeCons(f_lisp.ONE, f_lisp.NIL));
 			}
-		}, SYSTEM_PKG);*/
+		}, SYSTEM_PKG);
 		
 		
 		compiler.Register(new ComplexLispPrimitive(f_lisp, "MIN", 1, Long.MAX_VALUE) {
@@ -75,8 +87,6 @@ public class UNSORTED implements Registrar {
 		}, SYSTEM_PKG);
 		
 		// More complex functions
-		
-		
     compiler.Register(new AppendPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new ApplyPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new AproposPrimitive(f_lisp),SYSTEM_PKG);
@@ -156,7 +166,6 @@ public class UNSORTED implements Registrar {
     compiler.Register(new Prin1Primitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new PrincPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new PrintPrimitive(f_lisp),SYSTEM_PKG);
-    compiler.Register(new PushPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new RadiansToDegreesPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new RassocPrimitive(f_lisp),SYSTEM_PKG);
     compiler.Register(new ReciprocalPrimitive(f_lisp),SYSTEM_PKG);

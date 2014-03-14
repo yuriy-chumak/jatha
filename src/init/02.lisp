@@ -24,6 +24,8 @@
 (defmacro backquote (expr)
    (f-backquote expr))
 
+(defmacro push (n x) `(setq ,x (cons ,n ,x)))
+
 ;; ------------------------------------------------
 ;; COND
 ;; ------------------------------------------------
@@ -69,4 +71,4 @@ may have evaluated to multiple values."
 ;;  `(prog1 (car ,l) (setq ,l (cdr ,l))))
 
 
-(export '(backquote cond prog1 prog2))
+(export '(backquote push cond prog1 prog2))

@@ -710,56 +710,52 @@ public class LispCompiler
   }
 
 
-  LispValue compileAtom(SECDMachine machine, LispValue expr, LispValue valueList, LispValue code)
-  {
-    if (DEBUG)
-    {
-      System.out.print("\nCompile Atom: " + expr);
-      System.out.print(" of type " + expr.getClass().getName());
-      System.out.flush();
-    }
+	LispValue compileAtom(SECDMachine machine, LispValue expr, LispValue valueList, LispValue code)
+	{
+		if (DEBUG)
+		{
+			System.out.print("\nCompile Atom: " + expr);
+			System.out.print(" of type " + expr.getClass().getName());
+			System.out.flush();
+		}
 
-    if (expr == f_lisp.NIL)
-      return(f_lisp.makeCons(machine.NIL, code));
-    else if (expr == f_lisp.T)
-      return(f_lisp.makeCons(machine.T, code));
+		if (expr == f_lisp.NIL)
+			return cons(machine.NIL, code);
+		
+		if (expr == f_lisp.T)
+			return cons(machine.T, code);
 
-    else if (! (expr instanceof LispSymbol)      // Self-evaluating atom
-            || (expr.keywordp() == f_lisp.T))
-      return (f_lisp.makeCons(machine.LDC, f_lisp.makeCons(expr, code)));
+		if (expr.keywordp() == f_lisp.T)
+			return cons(machine.LDC, cons(expr, code));
+		
+		if (expr instanceof LispSymbol) {
+			//LispValue varIndex = index(expr, valueList);
+			//##JPG use indexAndAttributes() instead of index
+			LispValue varIdxAndAttributes = indexAndAttribute(expr, valueList);
+			LispValue paramAttribute = f_lisp.car(varIdxAndAttributes);
+			LispValue varIndex = f_lisp.car(f_lisp.cdr(varIdxAndAttributes));
 
-    else   /* A symbol.  Get its value */
-    {
-      //LispValue varIndex = index(expr, valueList);
-      //##JPG use indexAndAttributes() instead of index
-      LispValue varIdxAndAttributes = indexAndAttribute(expr, valueList);
-      LispValue paramAttribute = f_lisp.car(varIdxAndAttributes);
-      LispValue varIndex = f_lisp.car(f_lisp.cdr(varIdxAndAttributes));
+			if (varIndex == f_lisp.NIL)
+			{
+				/* Not a local variable, maybe it's global */
+				if (!expr.specialP() && WarnAboutSpecialsP)
+					System.err.print("\n;; ** Warning - " + expr.toString() + " assumed special.\n");
 
-      if (varIndex == f_lisp.NIL)
-      {
-        /* Not a local variable, maybe it's global */
-        if (!expr.specialP() && WarnAboutSpecialsP)
-          System.err.print("\n;; ** Warning - " + expr.toString() + " assumed special.\n");
-
-        return (f_lisp.makeCons(machine.LD_GLOBAL,
-                                f_lisp.makeCons(expr, code)));
-//	 else
-//	   throw new UndefinedVariableException(((LispString)(expr.symbol_name())).getValue());
-      }
-      else  /* Found the symbol.  Is it bound? */
-      {
-        //##JPG opcode LDR instead of LD for variable arguments
-        // note : paramAttribute can only be nil or &rest
-        LispValue loadOpCode = (paramAttribute == AMP_REST) ? machine.LDR : machine.LD;
-        return(f_lisp.makeCons(loadOpCode, f_lisp.makeCons(varIndex, code)));
-      }
-      /*
-      return (f_lisp.makeCons(machine.LD,
-      f_lisp.makeCons(varIndex, code)));
-      */
-    }
-  }
+				return cons(machine.LD_GLOBAL, cons(expr, code));
+//			 else
+//			   throw new UndefinedVariableException(((LispString)(expr.symbol_name())).getValue());
+		      }
+		      else  /* Found the symbol.  Is it bound? */
+		      {
+		        //##JPG opcode LDR instead of LD for variable arguments
+		        // note : paramAttribute can only be nil or &rest
+		        LispValue loadOpCode = (paramAttribute == AMP_REST) ? machine.LDR : machine.LD;
+		        return(f_lisp.makeCons(loadOpCode, f_lisp.makeCons(varIndex, code)));
+		      }
+		}
+		
+		return cons(machine.LDC, cons(expr, code));
+	}
 
   LispValue compileList(SECDMachine machine, LispValue expr, LispValue valueList, LispValue code)
     throws CompilerException
@@ -1015,11 +1011,11 @@ public class LispCompiler
     // the special vars get compiled after that and just
     // before the Lambda is compiled.
     LispValue ret =
-            compileApp(machine, localVals, valueList,
-                       compileSpecialBind(machine, specialVars, specialVals, valueList,
-                                          compileLambda(machine, body, f_lisp.makeCons(localVars, valueList),
-                                                        f_lisp.makeCons(machine.AP,
-                                                                                  compileSpecialUnbind(machine, specialVars, code)))));
+    		compileApp(machine, localVals, valueList,
+    				compileSpecialBind(machine, specialVars, specialVals, valueList,
+    						compileLambda(machine, body, cons(localVars, valueList),
+    								cons(machine.AP,
+    										compileSpecialUnbind(machine, specialVars, code)))));
     return ret;
     // (code.car() == machine.RTN) ?
     // f_lisp.makeCons(machine.DAP, code.cdr())
@@ -1546,5 +1542,9 @@ public class LispCompiler
 	public static boolean is_null(LispValue value)
 	{
 		return (value instanceof LispNil);
+	}
+	public LispCons cons(LispValue car, LispValue cdr)
+	{
+		return f_lisp.makeCons(car, cdr);
 	}
 }

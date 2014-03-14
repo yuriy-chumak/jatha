@@ -104,7 +104,6 @@ public abstract class SECDop extends LispPrimitive
 
   public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
   {
-	  // we have no pair (Integer, Integer) but instead we have (Integer, (Integer, Nil))! 
     long i, j;
 
     i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
