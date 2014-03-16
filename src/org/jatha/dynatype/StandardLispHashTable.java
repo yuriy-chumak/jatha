@@ -44,15 +44,14 @@ import org.jatha.Jatha;
  */
 public class StandardLispHashTable extends StandardLispValue implements LispHashTable
 {
-
-
-/* ------------------  Public variables   ------------------------------ */
-  /**
-   * Use this value to create an EQ hash table.
-   *
-   *
-   */
-  LispValue EQ = null;
+	/* ------------------  Public variables   ------------------------------ */
+	
+	/**
+	 * Use this value to create an EQ hash table.
+	 *
+	 *
+	 */
+	LispValue EQ = null;
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
   // date    Mon Feb 24 22:52:39 1997

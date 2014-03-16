@@ -42,51 +42,36 @@ import org.jatha.Jatha;
  */
 public class SECDRegister extends StandardLispSymbol
 {
-  protected LispSymbol f_registerSymbol = null;
-  
+	protected LispSymbol f_registerSymbol = null;
 
-  public SECDRegister(Jatha lisp, String name)
-  {
-    super(lisp, name);
+
+	public SECDRegister(final Jatha lisp, String name)
+	{
+		super(lisp, name);
     
-    long rand = (long)(Math.rint(Math.random() * 1000.0));
-    f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
+		long rand = (long)(Math.rint(Math.random() * 1000.0));
+		f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
     
-    assign(lisp.NIL);
-  }
+		assign(lisp.NIL);
+	}
 
-  public LispValue pop()
-  {
-    return f_registerSymbol.pop();
-  }
+	public LispValue pop()
+	{
+		return f_registerSymbol.pop();
+	}
 
-  public LispValue push(LispValue val)
-  {
-    return f_registerSymbol.push(val);
-  }
+	public LispValue push(LispValue val)
+	{
+		return f_registerSymbol.push(val);
+	}
 
-  /**
-   * Assign sets the value of a register.
-   *
-   * @param newValue
-   */
-  public void assign(LispValue newValue)
-  {
-    f_registerSymbol.setq(newValue);
-  }
+	public void assign(LispValue newValue)
+	{
+		f_registerSymbol.setf_symbol_value(newValue);
+	}
 
-  /**
-   * Returns the value of a register.
-   *
-   * @return LispValue
-   */
-  public LispValue value()
-  {
-    return f_registerSymbol.symbol_value();
-  }
-
-
-
+	public LispValue value()
+	{
+		return f_registerSymbol.symbol_value();
+	}
 }
-
-

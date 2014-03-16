@@ -280,7 +280,7 @@ public class LispCompiler
 					if (requires.contains(name))
 						return;
 					try {
-						Registrar registrar = (Registrar)ClassLoader.getSystemClassLoader().loadClass(
+						Registrar registrar = (Registrar)LispCompiler.this.getClass().getClassLoader().loadClass(
 								"org.jatha.extras." + name
 								).newInstance();
 						registrar.Register(LispCompiler.this);

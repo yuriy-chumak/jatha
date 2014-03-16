@@ -140,7 +140,6 @@ public class SECDMachine    // extends Abstract Machine !
     TAG_B  = new opTAG_B(f_lisp);
     TAG_E  = new opTAG_E(f_lisp);
     TEST   = new opTEST(f_lisp);
-
  }
 
 
@@ -248,10 +247,10 @@ public class SECDMachine    // extends Abstract Machine !
           System.err.println("remaining code is " + C.value().toString());
       }
       else
-//      try {
+      try {
     	  ((LispPrimitive)opcode).Execute(this);
-//      }
-/*      catch (ClassCastException ce) {
+      }
+      catch (LispException ce) {
     	  String error = ce.getMessage();
     	  int p = error.indexOf("org.jatha.dynatype.Lisp");
     	  if (p < 0)
@@ -262,7 +261,7 @@ public class SECDMachine    // extends Abstract Machine !
     		  throw new LispValueNotANumberException(opcode + " argument");
     	  
     	  throw ce;
-      }*/
+      }
 
       try {
         opcode = f_lisp.car(C.value());  // Each opcode pops the C register as necessary

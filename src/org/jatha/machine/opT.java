@@ -39,20 +39,19 @@ import org.jatha.Jatha;
  */
 class opT extends SECDop
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  public opT(Jatha lisp)
-  {
-    super(lisp, "CONST_T");
-  }
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opT(final Jatha lisp)
+	{
+		super(lisp, "CONST_T");
+	}
 
-
-  public void Execute(SECDMachine machine)
-  {
-    machine.S.push(f_lisp.T);
-    machine.C.pop();
-  }
+	public void Execute(SECDMachine machine)
+	{
+		machine.S.push(f_lisp.T);
+		machine.C.pop();
+	}
 }

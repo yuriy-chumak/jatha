@@ -1,0 +1,15 @@
+;;; lisp
+(progn
+(defun quadratic-roots-2 (A B C)
+  (cond ((= A 0) (string "Not a quadratic equation."))
+    (t
+    (let ((D (- (* B B) (* 4 A C))))
+      (cond ((= D 0) (concatenate 'string "x = " (/ (+ (- B) (sqrt D)) (* 2 A))))
+        (t
+        (cons (concatenate 'string "x1 = " (/ (+ (- B) (sqrt D)) (* 2 A)))
+              (concatenate 'string "x2 = " (/ (- (- B) (sqrt D)) (* 2 A))))))))))
+t)
+
+(let ((xx (quadratic-roots-2 2 4 -6))) 
+  (and (string-equal (car xx) "x1 = 1")
+       (string-equal (cdr xx) "x2 = -3")))

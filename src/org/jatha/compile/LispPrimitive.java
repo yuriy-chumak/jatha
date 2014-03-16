@@ -174,12 +174,14 @@ public abstract class LispPrimitive extends StandardLispValue
     };
   }
 
-  public LispPrimitive(Jatha lisp, String fnName, long minArgs) {
-	    super(lisp);
-	    minNumberOfArgs     = minArgs;
-	    maxNumberOfArgs     = minArgs;
-	    functionName        = fnName;
-	    functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
+	public LispPrimitive(Jatha lisp, String fnName, long minArgs)
+	{
+		super(lisp);
+		
+		minNumberOfArgs     = minArgs;
+		maxNumberOfArgs     = minArgs;
+		functionName        = fnName;
+		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
 	    
 	    initConstants();
 	    

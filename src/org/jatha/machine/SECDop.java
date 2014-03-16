@@ -43,6 +43,7 @@ package org.jatha.machine;
 
 import org.jatha.Jatha;
 import org.jatha.compile.LispPrimitive;
+import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispConsOrNil;
 import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
@@ -58,33 +59,34 @@ import org.jatha.dynatype.LispValue;
  */
 public abstract class SECDop extends LispPrimitive
 {
+	/**
+	 * @see SECDMachine
+	 */
+	public SECDop(final Jatha lisp, String opName)
+	{
+		super(lisp, opName);
+	}
 
-  /**
-   * @see SECDMachine
-   */
-  public  SECDop(Jatha lisp, String opName)
-  {
-    super(lisp, opName);
-  }
-
-  /**
-   * The output of this function is printed when the
-   * instruction needs to be printed.
-   */
-  public String toString()
-  {
-    return "SECD." + functionName;
-  }
+	/**
+	 * The output of this function is printed when the
+	 * instruction needs to be printed.
+	 */
+	public String toString()
+	{
+		return "SECD." + functionName;
+	}
 
 
-  /* --- Utility routines --- */
-  public LispValue loc(long y, LispValue z)
-  {
-    if (y == 1)
-      return(f_lisp.car(z));
-    else
-      return loc(y-1, f_lisp.cdr(z));
-  }
+	/* --- Utility routines --- */
+	public LispValue loc(long y, LispValue z)
+	{
+		assert z instanceof LispCons; // todo: move LispCons type to variable declaration
+		
+		if (y == 1)
+			return(f_lisp.car(z));
+		else
+			return loc(y-1, f_lisp.cdr(z));
+	}
 
 
   /**
@@ -102,25 +104,25 @@ public abstract class SECDop extends LispPrimitive
   }
 
 
-  public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
-  {
-    long i, j;
+	public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
+	{
+		assert ij_indexes instanceof LispCons;	// ?
+	  
+		long i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
+		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
-    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
+		return loc(j, loc(i, valueList));
+	}
 
-    return loc(j, loc(i, valueList));
-  }
+	public void setComponentAt(LispValue ij_indexes, LispValue valueList, LispValue newValue)
+	{
+		assert ij_indexes instanceof LispCons;	// ?
 
-  public void setComponentAt(LispValue ij_indexes, LispValue valueList, LispValue newValue)
-  {
-    long i, j;
+		long i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
+		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
-    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
-
-    setLoc(j, loc(i, valueList), newValue);
-  }
+		setLoc(j, loc(i, valueList), newValue);
+	}
 }
 
 // The individual opcodes are in separate files.

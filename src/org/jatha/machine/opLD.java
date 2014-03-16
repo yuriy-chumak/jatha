@@ -52,11 +52,11 @@ class opLD extends SECDop
   }
 
 
-  public void Execute(SECDMachine machine)
-  {
-    LispValue indexes;
+	public void Execute(SECDMachine machine)
+	{
+		LispValue indexes;
 
-    indexes = machine.C.value().second();
+		indexes = machine.C.value().second();
     /*
     System.err.println("----DEBUG----");
     System.err.println(machine.E.value());

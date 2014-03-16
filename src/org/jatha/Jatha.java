@@ -936,6 +936,7 @@ public class Jatha extends Object
     }
     catch (Exception e) {
       System.err.println("Unknown error: " + e.getMessage());
+      e.printStackTrace();
       return makeString(e.getMessage());
     }
 
@@ -1898,9 +1899,9 @@ public class Jatha extends Object
      */
 	public LispValue car(LispValue arg)
 	{
-//		if (arg instanceof LispConsOrNil)
+		if (arg instanceof LispConsOrNil)
 			return ((LispConsOrNil)arg).car();
-//		throw new LispValueNotAConsException(arg);
+		throw new LispValueNotAConsException(arg);
 	}
 	public LispValue cdr(LispValue arg) 
 	{
