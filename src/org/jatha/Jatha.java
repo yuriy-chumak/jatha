@@ -168,7 +168,7 @@ public class Jatha extends Object
   public LispSymbol DOT;
 
   // The list/symbol NIL.
-  public LispConsOrNil NIL;
+  public LispList NIL;
 
   // These are used in macros
   public LispSymbol QUOTE;
@@ -1466,7 +1466,7 @@ public class Jatha extends Object
      * @param use a list of package names to use. may be strings or symbols.
      * @return Jatha.PACKAGE
      */
-    public LispValue makePackage(final LispValue name, final LispValue nickNames, final LispConsOrNil use) {
+    public LispValue makePackage(final LispValue name, final LispValue nickNames, final LispList use) {
         LispValue firstPkg = findPackage(name);
         if(NIL != firstPkg) {
             throw new LispAlreadyDefinedPackageException(((LispString)name.string()).getValue());
@@ -1514,11 +1514,11 @@ public class Jatha extends Object
 	 * @see LispValue
 	 *
 	 */
-	public LispConsOrNil makeList(Collection<LispValue> elements)
+	public LispList makeList(Collection<LispValue> elements)
 	{
 		// Use array so as to iterate from the end to the beginning.
 		Object[] elArray = elements.toArray();
-		LispConsOrNil result = NIL;
+		LispList result = NIL;
 
 		for (int i = elArray.length - 1; i >= 0; i--)
 			result = new StandardLispCons(this, (LispValue)(elArray[i]), result);
@@ -1535,9 +1535,9 @@ public class Jatha extends Object
 	 * Returns NIL if no arguments are passed.
 	 * makeList(NIL) returns (NIL) - a list containing NIL.
 	 */
-	public LispConsOrNil makeList(LispValue... parts)
+	public LispList makeList(LispValue... parts)
 	{
-		LispConsOrNil result = NIL;
+		LispList result = NIL;
 		for (int i = parts.length-1 ; i >= 0; i--)
 			result = new StandardLispCons(this, parts[i], result);
 		return result;
@@ -1551,7 +1551,7 @@ public class Jatha extends Object
    * Note that this operation is expensive in terms of storage.
    */
 
-  public LispConsOrNil makeAppendList(Collection<LispValue> elements)
+  public LispList makeAppendList(Collection<LispValue> elements)
   {
     if (elements.size() == 0)
       return NIL;
@@ -1563,7 +1563,7 @@ public class Jatha extends Object
       result = result.append(o);
     }
 
-    return (LispConsOrNil) result;
+    return (LispList) result;
   }
 
 
@@ -1573,7 +1573,7 @@ public class Jatha extends Object
    * The result is one list.
    */
 
-  public LispConsOrNil makeNconcList(Collection<LispValue> elements)
+  public LispList makeNconcList(Collection<LispValue> elements)
   {
     if (elements.size() == 0)
       return NIL;
@@ -1585,7 +1585,7 @@ public class Jatha extends Object
       result = result.nconc(o);
     }
 
-    return (LispConsOrNil) result;
+    return (LispList) result;
   }
 
 
@@ -1848,14 +1848,14 @@ public class Jatha extends Object
      */
 	public LispValue car(LispValue arg)
 	{
-		if (arg instanceof LispConsOrNil)
-			return ((LispConsOrNil)arg).car();
+		if (arg instanceof LispList)
+			return ((LispList)arg).car();
 		throw new LispValueNotAConsException(arg);
 	}
 	public LispValue cdr(LispValue arg) 
 	{
 //		if (arg instanceof LispConsOrNil)
-			return ((LispConsOrNil)arg).cdr();
+			return ((LispList)arg).cdr();
 //		throw new LispValueNotAConsException(arg);
 	}
 

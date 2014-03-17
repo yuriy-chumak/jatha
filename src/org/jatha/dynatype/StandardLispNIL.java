@@ -39,18 +39,21 @@ import org.jatha.exception.LispConstantRedefinedException;
 // a symbol, it causes some programming difficulties.  Using this resolves
 // those problems.
 
-public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
+public class StandardLispNIL extends StandardLispList implements LispNil
 {
+	
+	public LispValue     car()                       { return f_lisp.NIL; }
+	public LispValue     cdr()                       { return f_lisp.NIL; }
+	
+	
+	
+	// =-( unsorted )-=========================================	
+	
   private  LispString name;
   private  LispValue  value;
   private  LispValue  plist;
   private  LispValue  function = null;
   private  LispValue  pack = null;   // its package
-
-  public StandardLispNIL()
-  {
-    super();
-  }
 
   public StandardLispNIL(Jatha lisp, String symbolName)
   {
@@ -136,8 +139,6 @@ public class StandardLispNIL extends StandardLispConsOrNil implements LispNil
   public LispValue     assoc(LispValue index)      { return f_lisp.NIL; }
   public LispValue     boundp()                    { return f_lisp.T;   }
   public LispValue     butlast()                   { return f_lisp.NIL; }
-  public LispValue     car()                       { return f_lisp.NIL; }
-  public LispValue     cdr()                       { return f_lisp.NIL; }
   public LispValue     copy_list()                 { return f_lisp.NIL; }
   public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
 

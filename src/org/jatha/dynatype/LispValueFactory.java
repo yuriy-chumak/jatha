@@ -85,11 +85,11 @@ public class LispValueFactory
    *
    * @deprecated  Use the same method on the Jatha class instead
    */
-  public static LispConsOrNil makeList(Jatha lisp, Collection elements)
+  public static LispList makeList(Jatha lisp, Collection elements)
   {
     // Use array so as to iterate from the end to the beginning.
     Object[] elArray = elements.toArray();
-    LispConsOrNil result  = lisp.NIL;
+    LispList result  = lisp.NIL;
 
     for (int i=elArray.length-1; i>= 0; i--)
       result = new StandardLispCons(lisp, (LispValue)(elArray[i]), result);
@@ -144,7 +144,7 @@ public class LispValueFactory
    * Note that this operation is expensive in terms of storage.
    * @deprecated  Use the same method on the Jatha class instead
    */
-  public static LispConsOrNil makeAppendList(Jatha lisp, Collection elements)
+  public static LispList makeAppendList(Jatha lisp, Collection elements)
   {
     if (elements.size() == 0)
       return lisp.NIL;
@@ -156,7 +156,7 @@ public class LispValueFactory
       result = result.append(o);
     }
 
-    return (LispConsOrNil)result;
+    return (LispList)result;
   }
 
 
@@ -166,7 +166,7 @@ public class LispValueFactory
    * The result is one list.
    * @deprecated  Use the same method on the Jatha class instead
    */
-  public static LispConsOrNil makeNconcList(Jatha lisp, Collection elements)
+  public static LispList makeNconcList(Jatha lisp, Collection elements)
   {
     if (elements.size() == 0)
       return lisp.NIL;
@@ -178,7 +178,7 @@ public class LispValueFactory
       result = result.nconc(o);
     }
 
-    return (LispConsOrNil)result;
+    return (LispList)result;
   }
 
 

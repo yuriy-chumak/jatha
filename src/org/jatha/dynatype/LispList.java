@@ -26,25 +26,24 @@ package org.jatha.dynatype;
 
 // @date    Thu Mar 27 13:35:07 1997
 /**
- * An abstract class for the CONS and NIL data types.
+ * An abstract class for the LIST data type.
  *
  * @see LispValue
  * @see LispInteger
  * @see LispReal
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public interface LispConsOrNil extends LispValue
+public interface LispList extends LispValue
 {
+	/**
+	 * Returns the first element of a list.
+	 * CAR of NIL is NIL.
+	 */
+	public LispValue car();
 
-  /**
-   * Returns the first element of a list.
-   * CAR of NIL is NIL.
-   */
-  public LispValue car();
-
-  /**
-   * Returns all but the first element of a list.
-   * CDR of NIL is NIL.
-   */
-  public LispValue cdr();
+	/**
+	 * Returns all but the first element of a list.
+	 * CDR of NIL is NIL.
+	 */
+	public LispValue cdr();
 }

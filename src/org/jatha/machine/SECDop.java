@@ -44,7 +44,7 @@ package org.jatha.machine;
 import org.jatha.Jatha;
 import org.jatha.compile.LispPrimitive;
 import org.jatha.dynatype.LispCons;
-import org.jatha.dynatype.LispConsOrNil;
+import org.jatha.dynatype.LispList;
 import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
 

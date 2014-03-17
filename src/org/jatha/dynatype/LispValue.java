@@ -41,24 +41,19 @@ import org.jatha.exception.LispException;
  * Time: 2:49:43 PM
  * 
  * LispValue
- *   \------ LispArray (?) (removed)
  *   \------ LispAtom
- *             \----- LispCharacter (temporary removed)
- *             \----- LispHashTable (removed)
+ *             \----- LispCharacter
  *             \----- LispNumber
  *                      \------- LispInteger
  *                                 \-------- LispBignum
- *                      \------- LispComplex (temporary removed)
  *                      \------- LispReal
  *             \----- LispString
  *             \----- LispSymbol
  *                      \------- LispConstant
- *                                 \--------- LispKeyword (removed)
+ *                                 \--------- LispKeyword
  *   \------ LispConsOrNil
  *             \---------- LispCons
  *             \---------- LispNil
- *   \------ LispForeignObject (removed)
- *             \-------------- LispJavaObject (removed)
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
@@ -67,6 +62,11 @@ import org.jatha.exception.LispException;
  */
 public interface LispValue extends Comparable<LispValue>
 {
+	// =-( unsorted )-=========================================	
+	
+	
+	
+	
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
 
   public Jatha getLisp();

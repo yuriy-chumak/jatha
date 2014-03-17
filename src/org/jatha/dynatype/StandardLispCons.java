@@ -38,52 +38,58 @@ import java.util.List;
 
 //-------------------------------  LispCons  --------------------------------
 
-public class StandardLispCons extends StandardLispConsOrNil implements LispCons
+public class StandardLispCons extends StandardLispList implements LispCons
 {
-  public static final long serialVersionUID = 1L;
-  
-  public static boolean DEBUG = false;
-  
-  protected LispValue carCell;
-  protected LispValue cdrCell;
+	public static final long serialVersionUID = 1L;
+	public static boolean DEBUG = false;
 
-  public StandardLispCons()
-  {
-    super();
-  }
+	protected LispValue carCell;
+	protected LispValue cdrCell;
 
-  // change theCdr to LispConsOrNil
-  public  StandardLispCons(Jatha lisp, LispValue theCar, LispValue theCdr)
-  {
-    super(lisp);
-    if (theCar == null)
-    {
-      System.err.println("** LispCons: attempting to create a CONS when CAR=null.  Substituting NIL");
-      if (DEBUG)
-        showStackTrace();
-      theCar = lisp.NIL;
-    }
-    carCell = theCar;
+	// change theCdr to LispConsOrNil
+	public  StandardLispCons(Jatha lisp, LispValue theCar, LispValue theCdr)
+	{
+		super(lisp);
+		if (theCar == null) {
+			System.err.println("** LispCons: attempting to create a CONS when CAR=null.  Substituting NIL");
+			if (DEBUG)
+				showStackTrace();
+			theCar = lisp.NIL;
+		}
+		carCell = theCar;
 
-    if (theCdr == null)
-    {
-      System.err.println("** LispCons: attempting to create a CONS when CDR=null.  Substituting NIL");
-      if (DEBUG)
-        showStackTrace();
-      theCdr = lisp.NIL;
-    }
-    cdrCell = theCdr;
-  }
+		if (theCdr == null) {
+			System.err.println("** LispCons: attempting to create a CONS when CDR=null.  Substituting NIL");
+			if (DEBUG)
+				showStackTrace();
+			theCdr = lisp.NIL;
+		}
+		cdrCell = theCdr;
+	}
 
-
-  public  StandardLispCons(Jatha lisp)
-  {
-    super(lisp);
-    carCell = f_lisp.NIL;
-    cdrCell = f_lisp.NIL;
-  }
+	public  StandardLispCons(Jatha lisp)
+	{
+		super(lisp);
+		carCell = f_lisp.NIL;
+		cdrCell = f_lisp.NIL;
+	}
 
 
+	public LispValue car() { return carCell; }
+	public LispValue setf_car(LispValue newCar) 
+	{ 
+		carCell = newCar;
+		return carCell; 
+	}
+	  
+	public LispValue cdr() { return cdrCell; }
+	public LispValue setf_cdr(LispValue newCdr) 
+	{ 
+		cdrCell = newCdr; 
+		return cdrCell; 
+	}
+	
+// =-( unsorted )-=========================================	
   public void internal_princ(PrintStream os)
   {
     os.print("(");
@@ -326,23 +332,6 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
     return f_lisp.NIL;
   }
 
-  public LispValue car() { return carCell; }
-  
-  public LispValue setf_car(LispValue newCar) 
-  { 
-    carCell = newCar;
-    return carCell; 
-  }
-  
-  public LispValue cdr() { return cdrCell; }
-  
-//todo: change argument to LispConsOrNil
-  public LispValue setf_cdr(LispValue newCdr) 
-  { 
-    cdrCell = (LispConsOrNil)newCdr; 
-    return cdrCell; 
-  }
-
   public LispValue     copy_list    ()
   {
     return f_lisp.makeCons(car(), cdr().copy_list());
@@ -447,7 +436,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
   public LispValue pop()
   {
     LispValue result = carCell;
-    if (cdrCell instanceof LispConsOrNil)
+    if (cdrCell instanceof LispList)
     {
       carCell = f_lisp.car(cdrCell);
       cdrCell = f_lisp.cdr(cdrCell);
@@ -511,7 +500,7 @@ public class StandardLispCons extends StandardLispConsOrNil implements LispCons
   { carCell = newCar; return this; };
   //todo: change argument to LispConsOrNil
   public LispValue     rplacd(LispValue  newCdr)
-  { cdrCell = (LispConsOrNil)newCdr; return this; };
+  { cdrCell = (LispList)newCdr; return this; };
 
   public LispValue subst(LispValue newValue, LispValue oldValue)
   {

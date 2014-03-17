@@ -40,11 +40,6 @@ public class StandardLispString extends StandardLispAtom implements LispString
   private  String str;
 
   // -----  Constructors  -----
-  public StandardLispString()
-  {
-    super();
-  }
-
   public StandardLispString(Jatha lisp, String strName)
   {
     super(lisp);

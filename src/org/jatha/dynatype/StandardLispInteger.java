@@ -41,11 +41,6 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
 
   // ---  Constructors  ---
 
-  public StandardLispInteger()
-  {
-    super();
-  }
-
   public StandardLispInteger(Jatha lisp, long theValue)
   {
     super(lisp);

@@ -43,12 +43,6 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
 
   // ----- Constructors  ------------
-
-  public StandardLispCharacter()
-  {
-    super();
-  }
-
   public StandardLispCharacter(Jatha lisp, char theChar)
   {
     super(lisp);

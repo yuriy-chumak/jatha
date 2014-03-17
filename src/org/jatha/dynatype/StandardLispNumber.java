@@ -45,12 +45,6 @@ import java.util.Iterator;
  */
 abstract public class StandardLispNumber extends StandardLispAtom implements LispNumber
 {
-
-  public StandardLispNumber()
-  {
-    super();
-  }
-
   public StandardLispNumber(Jatha lisp)
   {
     super(lisp);
@@ -192,7 +186,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     //System.err.println("Checking max of " + this + " and " + args);
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)
@@ -247,7 +241,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)
@@ -351,7 +345,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)
@@ -462,7 +456,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)
@@ -561,7 +555,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     // Keep a pointer into the arglist because we may
@@ -679,7 +673,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)

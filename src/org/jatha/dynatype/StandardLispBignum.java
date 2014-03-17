@@ -45,11 +45,6 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
   // ---  Constructors  ---
 
-  public StandardLispBignum()
-  {
-    super();
-  }
-
   public StandardLispBignum(Jatha lisp, BigInteger  theValue)
   {
     super(lisp);
@@ -323,7 +318,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
     // Make sure the argument is a list of numbers.
     arglist = args;
-    if (! (arglist instanceof LispConsOrNil))
+    if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
     while (arglist != f_lisp.NIL)

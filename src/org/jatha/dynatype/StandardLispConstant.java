@@ -38,12 +38,6 @@ import org.jatha.exception.LispConstantRedefinedException;
 public class StandardLispConstant extends StandardLispSymbol implements LispConstant
 {
   // CONSTRUCTORS
-
-  public StandardLispConstant()
-  {
-    super();
-  }
-
   public StandardLispConstant(Jatha lisp, String symbolName)
   {
     super(lisp, symbolName);

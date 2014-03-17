@@ -134,13 +134,6 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 
 
 /* ------------------  Constructors   ------------------------------ */
-
-  public StandardLispHashTable()
-  {
-    super();
-  }
-
-
   /**
    * Creates an eql hash table with default sizes
    * and rehash thresholds.  The defaults are from

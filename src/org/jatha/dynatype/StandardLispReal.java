@@ -41,12 +41,6 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
   public void internal_prin1(PrintStream os) { os.print(f_value); }
   public void internal_princ(PrintStream os) { os.print(f_value); }
 
-  public StandardLispReal()
-  {
-    super();
-    f_value = 0.0;
-  }
-
   public StandardLispReal(Jatha lisp, double theValue)
   {
     super(lisp);

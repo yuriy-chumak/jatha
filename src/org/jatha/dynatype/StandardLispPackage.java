@@ -69,7 +69,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 	protected LispValue f_name;     // A Lisp String
 	protected LispValue f_nicknames;// List of Lisp Strings
 
-	protected LispConsOrNil f_uses;     // List of packages used by this one.
+	protected LispList f_uses;     // List of packages used by this one.
 
   /* ------------------  CONSTRUCTORS   ------------------------------ */
 
@@ -116,7 +116,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
   }
 
   public StandardLispPackage(Jatha lisp, LispValue name, LispValue nicknames,
-                             LispConsOrNil usesList)
+                             LispList usesList)
   {
     this(lisp, name, nicknames, usesList, null);
   }
@@ -133,7 +133,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * @param symtab a symbol table to use for this package.
    */
   public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
-		                 LispConsOrNil puses, SymbolTable symtab)
+		                 LispList puses, SymbolTable symtab)
   {
       this(lisp, pname, pnicknames, puses, symtab, null);
   }
@@ -151,7 +151,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    *
    */
   public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
-		                 LispConsOrNil puses, SymbolTable symtab, final SymbolTable shadows)
+		                 LispList puses, SymbolTable symtab, final SymbolTable shadows)
   {
     super(lisp);
 
@@ -306,14 +306,14 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
       symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
 
     // For every symbol, declare it external
-    LispConsOrNil s = (LispConsOrNil)symbols;
+    LispList s = (LispList)symbols;
     while (s != f_lisp.NIL)
     {
         if (f_lisp.car(s) instanceof LispSymbol) {
             ((LispSymbol)(f_lisp.car(s))).setExternal(true); // Should handle error here.
         }
 
-      s = (LispConsOrNil)f_lisp.cdr(s);
+      s = (LispList)f_lisp.cdr(s);
     }
 
     return f_lisp.T;
@@ -447,7 +447,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
     return f_uses;
   }
 
-  public void setUses(final LispConsOrNil uses) {
+  public void setUses(final LispList uses) {
     this.f_uses = uses;
   }
 

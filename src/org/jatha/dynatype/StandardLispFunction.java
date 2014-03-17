@@ -49,13 +49,6 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
 
 
 /* ------------------  Constructors   ------------------------------ */
-
-  public StandardLispFunction()
-  {
-    super();
-  }
-
-
   /**
    * Creates a function with no content - not recommended.
    */

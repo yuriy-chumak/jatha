@@ -69,12 +69,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected Map f_documentation;
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
-
-  public StandardLispSymbol()
-  {
-    super();
-  }
-
   public StandardLispSymbol(Jatha lisp, String symbolName)
   {
     this(lisp, new StandardLispString(lisp, symbolName));
@@ -306,7 +300,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   {
     LispValue returnValue;
 
-    if (f_value instanceof LispConsOrNil)
+    if (f_value instanceof LispList)
     {
       returnValue     = f_lisp.car(f_value);
       setf_symbol_value(f_lisp.cdr(f_value));
@@ -319,7 +313,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   public LispValue     push         (LispValue newValue)
   {
-    if (f_value instanceof LispConsOrNil)
+    if (f_value instanceof LispList)
     {
       setf_symbol_value(new StandardLispCons(f_lisp, newValue, f_value));
       return newValue;

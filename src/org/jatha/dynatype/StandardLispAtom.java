@@ -41,12 +41,6 @@ import org.jatha.Jatha;
  */
 abstract public class StandardLispAtom extends StandardLispValue implements LispAtom
 {
-
-  public StandardLispAtom()
-  {
-    super();
-  }
-
   public StandardLispAtom(Jatha lisp)
   {
     super(lisp);

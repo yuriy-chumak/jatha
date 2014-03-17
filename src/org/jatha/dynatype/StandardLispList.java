@@ -32,25 +32,19 @@ import java.util.Iterator;
 
 // @date    Thu Mar 27 13:35:07 1997
 /**
- * An abstract class for the CONS and NIL data types.
+ * An abstract class for the LIST data type.
  *
  * @see LispValue
  * @see LispInteger
  * @see LispReal
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public abstract class StandardLispConsOrNil extends StandardLispValue  implements LispConsOrNil
+public abstract class StandardLispList extends StandardLispValue  implements LispList
 {
-  public StandardLispConsOrNil()
-  {
-    super();
-  }
-
-
-  public StandardLispConsOrNil(Jatha lisp)
-  {
-    super(lisp);
-  }
+	public StandardLispList(Jatha lisp)
+	{
+		super(lisp);
+	}
 
 
   // ------ LISP methods  ----------

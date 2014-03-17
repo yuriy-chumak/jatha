@@ -92,7 +92,7 @@ public interface LispPackage extends LispCons
      *
      * @param uses the uses of this package
      */
-    void setUses(final LispConsOrNil uses);
+    void setUses(final LispList uses);
 
     void setNicknames(final LispValue nicknames);
 }

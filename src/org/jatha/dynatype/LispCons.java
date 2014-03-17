@@ -30,8 +30,11 @@ package org.jatha.dynatype;
 
 //-------------------------------  LispCons  --------------------------------
 
-public interface LispCons extends LispConsOrNil
+public interface LispCons extends LispList
 {
-
+	/**
+	 * Returns all but the first element of a list.
+	 * CDR of NIL is NIL.
+	 */
+//	public LispValue second();
 }
-

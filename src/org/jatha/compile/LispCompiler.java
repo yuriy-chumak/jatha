@@ -360,7 +360,7 @@ public class LispCompiler
 			    LispValue val = machine.S.pop();
 			    LispValue sym = machine.S.pop();
 
-			    if (sym instanceof LispConsOrNil)   // local variable
+			    if (sym instanceof LispList)   // local variable
 			      machine.LD.setComponentAt(sym, machine.E.value(), val);
 
 			    else if (sym.specialP())  // special variable
@@ -1520,7 +1520,7 @@ public class LispCompiler
     if (code.basic_functionp())
       code = ((LispFunction)code).getCode();
 
-    return (code instanceof LispConsOrNil && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
+    return (code instanceof LispList && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
                                    (LispPackage)(code.getLisp().findPackage("KEYWORD")))));
   }
 
@@ -1532,7 +1532,7 @@ public class LispCompiler
    */
   public boolean isMacroCode(LispValue code)
   {
-    return code instanceof LispConsOrNil && (f_lisp.car(code) == MACRO);
+    return code instanceof LispList && (f_lisp.car(code) == MACRO);
   }
 
 	// init
@@ -1540,15 +1540,15 @@ public class LispCompiler
 	{
 		Register(new LispPrimitive(f_lisp, "CAR", 1) {
 			public LispValue Execute(LispValue arg) {
-				if (arg instanceof LispConsOrNil)
-					return ((LispConsOrNil)arg).car();
+				if (arg instanceof LispList)
+					return ((LispList)arg).car();
 				throw new LispValueNotAConsException(arg);
 			}
 		}, pkg);
 		Register(new LispPrimitive(f_lisp, "CDR", 1) {
 			public LispValue Execute(LispValue arg) {
-				if (arg instanceof LispConsOrNil)
-					return ((LispConsOrNil)arg).cdr();
+				if (arg instanceof LispList)
+					return ((LispList)arg).cdr();
 				throw new LispValueNotAConsException(arg); 
 			}
 		}, pkg);
