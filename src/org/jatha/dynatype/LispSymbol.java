@@ -24,6 +24,8 @@
 
 package org.jatha.dynatype;
 
+import org.jatha.exception.LispException;
+
 
 
 

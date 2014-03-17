@@ -32,6 +32,7 @@ import org.jatha.dynatype.LispString;
 import org.jatha.dynatype.LispSymbol;
 import org.jatha.dynatype.LispValue;
 import org.jatha.dynatype.StandardLispInteger;
+import org.jatha.dynatype.StandardLispKeyword;
 import org.jatha.dynatype.StandardLispString;
 
 
@@ -118,7 +119,7 @@ public class LispEvaluator
       {
         String newString = symbolString.toStringSimple().toUpperCase();
         // Symbols must be uppercase
-        newSymbol = f_lisp.makeKeyword(new StandardLispString(f_lisp, newString));
+        newSymbol = new StandardLispKeyword(f_lisp, new StandardLispString(f_lisp, newString));
       }
       else
         newSymbol = f_lisp.makeSymbol(symbolString);

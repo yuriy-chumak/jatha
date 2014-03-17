@@ -42,49 +42,6 @@
  *  This file contains the function definitions to perform all the
  *  operations involving these values.
  *
- *  Classes:
- *
- *     LispException
- *       LispConstantRedefinedException
- *       LispIndexOutOfRangeException
- *       LispUnboundVariableException
- *       LispUndefinedFunctionException
- *       LispUndefinedPackageException
- *
- *       LispValueNotAnAtomException
- *       LispValueNotAFunctionException
- *       LispValueNotAnIntegerException
- *       LispValueNotAListException
- *       LispValueNotANumberException
- *       LispValueNotASequenceException
- *       LispValueNotASymbolException
- *
- *     LispValue
- *	     LispConsOrNil                 (abstract)
- *         LispCons
- *         LispNil
- *       LispAtom                      (abstract)
- *         LispCharacter
- *         LispNumber                  (abstract)
- *           LispInteger
- *           LispReal
- *         LispString
- *         LispSymbol
- *           LispConstant
- *             LispKeyword
- *       LispStructure      (NYI)
- *       LispHashTable
- *       LispForeignObject             (abstract)
- *         LispJavaObject
- *           JavaConnection     (NYI)
- *           JavaInetAddress    (NYI)
- *           JavaServerSocket   (NYI)
- *           JavaSocket         (NYI)
- *           JavaURL            (NYI)
- *           JavaURLEncoder     (NYI)
- *
- *
- *     LispValueFactory
  *
  *  All operations are defined on LispValue (e.g. '+') so that you can
  *  legally (in Java) add any two values but at runtime you will get
@@ -103,10 +60,11 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
-
 import java.util.List;
 import java.util.RandomAccess;
+
 import org.jatha.Jatha;
+import org.jatha.exception.*;
 
 
 

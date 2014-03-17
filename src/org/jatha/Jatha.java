@@ -44,37 +44,9 @@ import java.util.Iterator;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
-import org.jatha.compile.CompilerException;
+import org.jatha.exception.*;
 import org.jatha.compile.LispCompiler;
-import org.jatha.dynatype.LispAlreadyDefinedPackageException;
-import org.jatha.dynatype.LispAtom;
-import org.jatha.dynatype.LispBignum;
-import org.jatha.dynatype.LispCons;
-import org.jatha.dynatype.LispConsOrNil;
-import org.jatha.dynatype.LispConstant;
-import org.jatha.dynatype.LispException;
-import org.jatha.dynatype.LispInteger;
-import org.jatha.dynatype.LispKeyword;
-import org.jatha.dynatype.LispNil;
-import org.jatha.dynatype.LispNumber;
-import org.jatha.dynatype.LispPackage;
-import org.jatha.dynatype.LispReal;
-import org.jatha.dynatype.LispString;
-import org.jatha.dynatype.LispSymbol;
-import org.jatha.dynatype.LispUndefinedFunctionException;
-import org.jatha.dynatype.LispValue;
-import org.jatha.dynatype.LispValueNotAConsException;
-import org.jatha.dynatype.StandardLispBignum;
-import org.jatha.dynatype.StandardLispCharacter;
-import org.jatha.dynatype.StandardLispCons;
-import org.jatha.dynatype.StandardLispConstant;
-import org.jatha.dynatype.StandardLispInteger;
-import org.jatha.dynatype.StandardLispKeyword;
-import org.jatha.dynatype.StandardLispNIL;
-import org.jatha.dynatype.StandardLispPackage;
-import org.jatha.dynatype.StandardLispReal;
-import org.jatha.dynatype.StandardLispString;
-import org.jatha.dynatype.StandardLispSymbol;
+import org.jatha.dynatype.*;
 import org.jatha.eval.LispEvaluator;
 import org.jatha.machine.SECDMachine;
 import org.jatha.read.LispParser;
@@ -1771,29 +1743,6 @@ public class Jatha extends Object
   public LispSymbol makeConstant(LispString symbolName)
   {
     return new StandardLispConstant(this, symbolName);
-  }
-
-
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Thu Feb 20 12:20:57 1997
-  /**
-   * Creates a LispKeyword (a type of Symbol that evaluates
-   * to itself).  This method does <b>not</b> intern the symbol.
-   *
-   * @see LispKeyword
-   * @see LispConstant
-   * @see LispSymbol
-   * @see LispValue
-   * @return LispSymbol
-   */
-  public LispSymbol makeKeyword(String symbolName)
-  {
-    return new StandardLispKeyword(this, symbolName);
-  }
-
-  public LispSymbol makeKeyword(LispString symbolName)
-  {
-    return new StandardLispKeyword(this, symbolName);
   }
 
 

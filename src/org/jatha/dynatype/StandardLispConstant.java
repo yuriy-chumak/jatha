@@ -24,6 +24,7 @@
 package org.jatha.dynatype;
 
 import org.jatha.Jatha;
+import org.jatha.exception.LispConstantRedefinedException;
 
 // See LispValue.java for documentation
 

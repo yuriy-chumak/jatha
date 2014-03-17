@@ -21,30 +21,16 @@
  *   hewett@cs.stanford.edu
  *
  */
+package org.jatha.exception;
 
-package org.jatha.compile;
-
-import org.jatha.Jatha;
-import org.jatha.dynatype.*;
-import org.jatha.exception.CompilerException;
-import org.jatha.machine.*;
-
-// todo: move to the primitive
-// todo: rename as LispPrimitiveWithVariableNumerOfArgs
-public abstract class ComplexLispPrimitive extends LispPrimitive
-{
-	public ComplexLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
-		super(lisp, fnName, minArgs, maxArgs);
-	}
-
-	// Unlimited number of evaluated args.
-	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
-			LispValue valueList, LispValue code)
-			throws CompilerException
-	{
-		return
-				compiler.compileArgsLeftToRight(args, valueList,
-						f_lisp.makeCons(machine.LIS,
-								f_lisp.makeCons(args.length(), code)));
-	}
+/**
+ * <p>An exception that should be thrown when trying to create a package that already exists.</p>
+ *
+ * @author <a href="mailto:Ola.Bini@itc.ki.se">Ola Bini</a>
+ * @version $Revision: 1.2 $
+ */
+public class LispAlreadyDefinedPackageException extends LispException {
+  public LispAlreadyDefinedPackageException()          { super();  }
+  public LispAlreadyDefinedPackageException(final String s)  { super(s + " is already a defined package.");  }
 }
+

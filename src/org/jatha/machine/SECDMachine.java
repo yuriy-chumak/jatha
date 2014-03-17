@@ -26,6 +26,7 @@ package org.jatha.machine;
 
 import org.jatha.Jatha;
 import org.jatha.dynatype.*;
+import org.jatha.exception.*;
 import org.jatha.compile.*;
 
 

@@ -25,6 +25,7 @@
 package org.jatha.dynatype;
 
 import org.jatha.Jatha;
+import org.jatha.exception.*;
 
 import java.io.*;
 import java.util.ArrayList;

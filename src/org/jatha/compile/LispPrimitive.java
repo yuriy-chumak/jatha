@@ -28,8 +28,9 @@ import java.io.*;
 
 import org.jatha.Jatha;
 import org.jatha.dynatype.*;
+import org.jatha.exception.CompilerException;
+import org.jatha.exception.UndefinedFunctionException;
 import org.jatha.machine.*;
-
 
 // @date    Fri Jan 31 17:31:40 1997
 /**

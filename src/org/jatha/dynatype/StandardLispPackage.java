@@ -27,6 +27,7 @@ package org.jatha.dynatype;
 import java.io.*;
 
 import org.jatha.Jatha;
+import org.jatha.exception.LispValueNotASymbolException;
 import org.jatha.util.SymbolTable;
 
 

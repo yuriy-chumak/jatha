@@ -26,6 +26,7 @@ package org.jatha.dynatype;
 import java.io.PrintStream;
 
 import org.jatha.Jatha;
+import org.jatha.exception.LispConstantRedefinedException;
 
 
 // See LispValue.java for documentation

@@ -30,7 +30,7 @@ import java.math.BigInteger;
 import java.util.regex.Pattern;
 import org.jatha.dynatype.*;
 import org.jatha.Jatha;
-import org.jatha.compile.CompilerException;
+import org.jatha.exception.*;
 
 
 /**

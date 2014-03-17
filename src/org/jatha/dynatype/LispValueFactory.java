@@ -348,29 +348,6 @@ public class LispValueFactory
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
   //* @date    Thu Feb 20 12:20:57 1997
   /**
-   * Creates a LispKeyword (a type of Symbol that evaluates
-   * to itself).  This method does <b>not</b> intern the symbol.
-   *
-   * @see LispKeyword
-   * @see LispConstant
-   * @see LispSymbol
-   * @see LispValue
-   * @return LispSymbol
-   * @deprecated  Use the same method on the Jatha class instead
-   */
-  public static LispSymbol      makeKeyword  (Jatha lisp, String      symbolName)
-  { return new StandardLispKeyword(lisp, symbolName); }
-
-  /**
-   * @deprecated  Use the same method on the Jatha class instead
-   */
-  public static LispSymbol      makeKeyword  (Jatha lisp, LispString  symbolName)
-  { return new StandardLispKeyword(lisp, symbolName); }
-
-
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Thu Feb 20 12:20:57 1997
-  /**
    * Creates a LispNil (the funny symbol/cons that is the LISP NIL).
    * This method does <b>not</b> intern the symbol.
    *

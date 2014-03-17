@@ -27,6 +27,7 @@ import java.io.PrintStream;
 import java.util.Iterator;
 
 import org.jatha.Jatha;
+import org.jatha.exception.*;
 
 // See LispValue.java for documentation
 
@@ -191,7 +192,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue position(LispValue element)
   {
-    // element must be a character
+/*    // element must be a character
     if (element instanceof LispCharacter)
     {
       int elt = ((LispCharacter)element).getCharacterValue();
@@ -202,7 +203,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       else
         return f_lisp.makeInteger(index);
     }
-    else
+    else*/
       throw new LispValueNotACharacterException("The argument to POSITION (" + element + ")");
   }
 

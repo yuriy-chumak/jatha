@@ -21,30 +21,14 @@
  *   hewett@cs.stanford.edu
  *
  */
+package org.jatha.exception;
 
-package org.jatha.compile;
+//--------------------------  LispException  ---------------------------------
 
-import org.jatha.Jatha;
-import org.jatha.dynatype.*;
-import org.jatha.exception.CompilerException;
-import org.jatha.machine.*;
-
-// todo: move to the primitive
-// todo: rename as LispPrimitiveWithVariableNumerOfArgs
-public abstract class ComplexLispPrimitive extends LispPrimitive
+@SuppressWarnings("serial")
+public class LispException extends RuntimeException
 {
-	public ComplexLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
-		super(lisp, fnName, minArgs, maxArgs);
-	}
-
-	// Unlimited number of evaluated args.
-	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
-			LispValue valueList, LispValue code)
-			throws CompilerException
-	{
-		return
-				compiler.compileArgsLeftToRight(args, valueList,
-						f_lisp.makeCons(machine.LIS,
-								f_lisp.makeCons(args.length(), code)));
-	}
+	public LispException()         { super();  }
+	public LispException(String s) { super(s); }
 }
+

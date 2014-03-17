@@ -26,9 +26,9 @@ package org.jatha.dynatype;
 
 import java.util.Map;
 import java.util.HashMap;
-
 import java.io.*;
 
+import org.jatha.exception.*;
 import org.jatha.read.*;
 import org.jatha.Jatha;
 

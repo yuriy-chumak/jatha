@@ -27,9 +27,10 @@ import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.util.Collection;
 import java.util.Iterator;
-
 import java.util.List;
+
 import org.jatha.Jatha;
+import org.jatha.exception.LispException;
 
 /**
  * LispValueInterface defines the root of the Interfaces that define
@@ -40,24 +41,24 @@ import org.jatha.Jatha;
  * Time: 2:49:43 PM
  * 
  * LispValue
- *   \------ LispArray
+ *   \------ LispArray (?) (removed)
  *   \------ LispAtom
- *             \----- LispCharacter
- *             \----- LispHashTable
+ *             \----- LispCharacter (temporary removed)
+ *             \----- LispHashTable (removed)
  *             \----- LispNumber
  *                      \------- LispInteger
  *                                 \-------- LispBignum
- *                      \------- LispComplex
+ *                      \------- LispComplex (temporary removed)
  *                      \------- LispReal
  *             \----- LispString
  *             \----- LispSymbol
  *                      \------- LispConstant
- *                                 \--------- LispKeyword
+ *                                 \--------- LispKeyword (removed)
  *   \------ LispConsOrNil
  *             \---------- LispCons
  *             \---------- LispNil
- *   \------ LispForeignObject
- *             \-------------- LispJavaObject
+ *   \------ LispForeignObject (removed)
+ *             \-------------- LispJavaObject (removed)
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
