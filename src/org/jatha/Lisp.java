@@ -143,7 +143,7 @@ public class Lisp
    * JATHA is a pointer to the Applet.
    */
 
-  public static int            APROPOS_TAB = 30;
+  public static int APROPOS_TAB = 30;
 
   // The '.' to represent a cons cell.
   public LispSymbol DOT;
@@ -153,18 +153,19 @@ public class Lisp
   // The symbol T
   public LispConstant T;
 
-  // These are used in macros
-  public LispSymbol QUOTE;
+	// These are used in macros
+	public LispSymbol QUOTE;
+	public LispSymbol MACRO;
+	public LispSymbol PRIMITIVE;
+  
   public LispSymbol BACKQUOTE;
+  public LispSymbol CONS;
   public LispSymbol LIST;
   public LispSymbol APPEND;
-  public LispSymbol CONS;
   public LispSymbol COMMA_FN;
   public LispSymbol COMMA_ATSIGN_FN;
   public LispSymbol COMMA_DOT_FN;
   
-  public LispSymbol MACRO;
-  public LispSymbol PRIMITIVE;
 
   public LispValue COLON;
   public LispValue NEWLINE;
@@ -269,8 +270,7 @@ public class Lisp
     DOT = new StandardLispSymbol(this, ".");
     intern(makeString("DOT"), DOT, f_systemPackage);
 
-    QUOTE = new StandardLispSymbol(this, "QUOTE");
-    intern(makeString("QUOTE"), QUOTE, f_systemPackage);
+    QUOTE = internAndExport("QUOTE", f_systemPackage);
     
     BACKQUOTE = new StandardLispSymbol(this, "BACKQUOTE");
     intern(makeString("BACKQUOTE"), BACKQUOTE, f_systemPackage);
@@ -1686,7 +1686,11 @@ public class Lisp
 		long i = ((LispInteger)(car(ij))).getLongValue();
 		long j = ((LispInteger)(cdr(ij))).getLongValue();
 		
-		return nth(j, (LispCons)Lisp.nth(i, arg));
+		arg = (LispCons)Lisp.nth(i, arg);
+		while (--j > 0)
+			arg = (LispCons)arg.cdr();
+		
+		return arg;
 	}
 	
 	public static LispValue cddr(LispValue arg)

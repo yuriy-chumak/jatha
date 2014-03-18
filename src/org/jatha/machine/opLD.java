@@ -54,14 +54,13 @@ class opLD extends SECDop
 
 	public void Execute(SECDMachine machine)
 	{
-		LispValue indexes;
-
 		LispCons value = (LispCons)machine.C.value();
-
-		indexes = value.second();
+		LispCons ij = (LispCons)value.second();
+		LispCons valueList = (LispCons)machine.E.value();
+		LispCons r = (LispCons)Lisp.nth(ij, valueList);
 		
-		machine.S.push(getComponentAt(indexes, machine.E.value()));
-
+		machine.S.push(r.car());
+		
 		machine.C.pop();
 		machine.C.pop();
 	}

@@ -107,10 +107,11 @@ public class LispCompiler
 		final LispPackage keyPkg = f_lisp.KEYWORD;
 		final LispPackage SYSTEM_PKG = (LispPackage)(f_lisp.findPackage("SYSTEM"));
 
-		QUOTE      = f_lisp.internAndExport("QUOTE",   SYSTEM_PKG);
-		AMP_REST   = f_lisp.internAndExport("&REST", SYSTEM_PKG);
+		QUOTE      = f_lisp.QUOTE;
 		MACRO      = f_lisp.MACRO;
 		PRIMITIVE  = f_lisp.PRIMITIVE;
+		
+		AMP_REST   = f_lisp.internAndExport("&REST", SYSTEM_PKG);
 		SETQ       = f_lisp.internAndExport("SETQ", SYSTEM_PKG);
     //    sysPkg.export(BLOCK);
     //    WHEN       = f_lisp.EVAL.intern("WHEN");
@@ -324,9 +325,13 @@ public class LispCompiler
 					throws CompilerException
 			{
 				final LispValue tag = ((LispList)args).car();
+				final LispValue cdr = ((LispList)args).cdr();
+				
 				compiler.getLegalBlocks().push(tag);
-				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.intern("PROGN"), ((LispList)args).cdr()));
-				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList, f_lisp.makeCons(machine.BLK, f_lisp.makeCons(tag, code)));
+				final LispValue fullCode = list(cons(PROGN, cdr));
+				final LispValue compiledCode = compiler.compileArgsLeftToRight(
+						fullCode, valueList, cons(machine.BLK,
+						                          cons(tag, code)));
 				compiler.getLegalBlocks().pop();
 				return compiledCode;
 			}
@@ -347,8 +352,7 @@ public class LispCompiler
 		
 		Register(CONS = new LispPrimitive2(f_lisp, "CONS") {
 			public LispValue Execute(LispValue a, LispValue b) {
-				return
-				f_lisp.makeCons(a, b);
+				return cons(a, b);
 			}
 		}, SYSTEM_PKG);
 		Register(new LispPrimitiveC(f_lisp, "LIST", 0) {
@@ -382,29 +386,27 @@ public class LispCompiler
 		Register(new LispPrimitive0(f_lisp, "EXIT") {
 			protected LispValue Execute() {
 				System.exit(0);
-				return f_lisp.T;
+				return f_lisp.T; // no exit, actually
 			}
 		}, SYSTEM_PKG);
 		
 		// 
 		Register(new LispPrimitive1(f_lisp, "ATOM") {
 			protected LispValue Execute(LispValue arg) {
-				return
-				f_lisp.makeBool(is_atom(arg));
+				return bool(is_atom(arg));
 			}
 		}, SYSTEM_PKG);
 		Register(new LispPrimitive1(f_lisp, "NULL") {
 			protected LispValue Execute(LispValue arg) {
-				return
-				f_lisp.makeBool(is_null(arg));
+				return bool(is_null(arg));
 			}
 		}, SYSTEM_PKG);
 		
 		Register(new LispPrimitive2(f_lisp, "EQ") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				if (is_atom(a) && is_atom(b))
-					return f_lisp.makeBool(a == b);
-				return f_lisp.NIL;
+					return bool(a == b);
+				return Lisp.NIL;
 			}
 		}, SYSTEM_PKG);
 		Register(new LispPrimitive2(f_lisp, "EQL") {
@@ -414,7 +416,7 @@ public class LispCompiler
 		}, SYSTEM_PKG);
 		Register(new LispPrimitive1(f_lisp, "NOT") {
 			protected LispValue Execute(LispValue a) {
-				return f_lisp.makeBool(is_null(a));
+				return bool(is_null(a));
 			}
 		}, SYSTEM_PKG);
 
@@ -427,19 +429,10 @@ public class LispCompiler
 
 			    if (sym instanceof LispCons) {   // local variable
 			    	LispCons ij = (LispCons)sym;
-			    	LispValue valueList = machine.E.value();
+			    	LispCons valueList = (LispCons)machine.E.value();
 			    	LispValue newValue = val;
 			    	
-//			    	values = Lisp.nth(ij, valueList);
-
-					long i = ((LispInteger)(ij.car())).getLongValue();
-					long j = ((LispInteger)(ij.cdr())).getLongValue();
-
-					LispCons values = (LispCons)Lisp.nth(i, (LispCons)valueList);
-					while (--j > 0)
-						values = (LispCons)values.cdr();
-					// do we need to add car() ???
-					values.rplaca(newValue);
+			    	Lisp.nth(ij, valueList).rplaca(newValue);
 			    }
 
 			    else if (sym.specialP())  // special variable
@@ -1462,9 +1455,9 @@ public class LispCompiler
     return
             f_lisp.makeList(PROGN,
               f_lisp.makeList(SETQ, dummyVar, f_lisp.car(args)),
-              f_lisp.makeList(IF, dummyVar,
-                compileAndAux(dummyVar, f_lisp.cdr(args)),
-                f_lisp.NIL));
+                f_lisp.makeList(IF, dummyVar,
+                  compileAndAux(dummyVar, f_lisp.cdr(args)),
+                    f_lisp.NIL));
   }
 
 
@@ -1773,6 +1766,13 @@ public class LispCompiler
 	public final LispCons cons(LispValue car, LispValue cdr)
 	{
 		return f_lisp.makeCons(car, cdr);
+	}
+	public final LispList list(LispValue... parts)
+	{
+		LispList result = Lisp.NIL;
+		for (int i = parts.length-1 ; i >= 0; i--)
+			result = new StandardLispCons(f_lisp, parts[i], result);
+		return result;
 	}
 	public LispValue car(LispValue value)
 	{
