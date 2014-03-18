@@ -802,7 +802,7 @@ public class LispParser
   public LispValue tokenToLispValue(String token)
   {
     LispValue newCell = null;
-    LispValue keywordPackage = f_lisp.findPackage("KEYWORD");
+    LispValue keywordPackage = f_lisp.KEYWORD;
 
     if (T_token_p(token))
       newCell = f_lisp.T;
@@ -887,13 +887,13 @@ public class LispParser
           System.err.println(";; *** ERROR: " + packageStr + ":" + token +
                              " is not an external symbol in " + packageStr +
                              ".\n;; *** Creating new symbol in current package.");
-        newCell = f_lisp.EVAL.intern(token, (LispPackage) f_lisp.PACKAGE_SYMBOL.symbol_value());
+        newCell = f_lisp.intern(token, (LispPackage) f_lisp.PACKAGE_SYMBOL.symbol_value());
       }
       // keywords must always be uppercase.
       else if (pkg == keywordPackage)
-        newCell = f_lisp.EVAL.intern(token.toUpperCase(), (LispPackage)pkg);
+        newCell = f_lisp.intern(token.toUpperCase(), (LispPackage)pkg);
       else if (pkg != null)
-        newCell = f_lisp.EVAL.intern(token, (LispPackage) pkg);
+        newCell = f_lisp.intern(token, (LispPackage) pkg);
       else
         newCell= f_lisp.makeSymbol(token);
     }
@@ -1119,8 +1119,8 @@ public class LispParser
   {
     LispValue temp, exit;
 
-    exit = f_lisp.EVAL.intern("EXIT");
-    temp = f_lisp.EVAL.intern("*TEMP*");
+    exit = f_lisp.intern("EXIT");
+    temp = f_lisp.intern("*TEMP*");
 
     System.out.println("Run (EXIT) to stop.");
     try {

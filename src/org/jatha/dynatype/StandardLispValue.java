@@ -574,7 +574,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     length       ()
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
 
-  public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
+//  public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }

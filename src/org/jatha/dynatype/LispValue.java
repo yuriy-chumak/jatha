@@ -500,7 +500,7 @@ public interface LispValue extends Comparable<LispValue>
    * Creates a CONS cell and assigns the original object
    * to the CAR and NIL to the CDR.
    */
-  public LispValue list();
+//  public LispValue list();
 
   /**
    * Returns the tail of the list starting at the

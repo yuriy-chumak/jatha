@@ -79,18 +79,6 @@ public abstract class SECDop extends LispPrimitive0
 		return "SECD." + functionName;
 	}
 
-
-	/* --- Utility routines --- */
-	public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
-	{
-		assert ij_indexes instanceof LispCons;	// ?
-	  
-		long i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
-
-		return Lisp.nth(j, (LispCons)Lisp.nth(i, (LispCons)valueList));
-	}
-
 	protected LispValue Execute()
 			throws CompilerException
 	{

@@ -102,17 +102,10 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public void initializeConstants()
   {
 
-    EQ = f_lisp.EVAL.intern("EQ-HASH-TABLE",
-                            (LispPackage)(f_lisp.findPackage("KEYWORD")));
-
-    EQL = f_lisp.EVAL.intern("EQL-HASH-TABLE",
-                             (LispPackage)(f_lisp.findPackage("KEYWORD")));
-
-    EQUAL = f_lisp.EVAL.intern("EQUAL-HASH-TABLE",
-                               (LispPackage)(f_lisp.findPackage("KEYWORD")));
-
-    EQUALP = f_lisp.EVAL.intern("EQUALP-HASH-TABLE",
-                                (LispPackage)(f_lisp.findPackage("KEYWORD")));
+    EQ     = f_lisp.intern("EQ-HASH-TABLE",    f_lisp.KEYWORD);
+    EQL    = f_lisp.intern("EQL-HASH-TABLE",   f_lisp.KEYWORD);
+    EQUAL  = f_lisp.intern("EQUAL-HASH-TABLE", f_lisp.KEYWORD);
+    EQUALP = f_lisp.intern("EQUALP-HASH-TABLE",f_lisp.KEYWORD);
 
     DEFAULT_TYPE             = EQL;
   }
@@ -320,7 +313,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
    */
   public LispValue hash_table_rehash_threshold () { return new StandardLispReal(f_lisp, 1.0); }
 
-  public LispValue hash_table_test () { return f_lisp.EVAL.intern("EQL"); }
+  public LispValue hash_table_test () { return f_lisp.intern("EQL"); }
 
   public LispValue type_of      ()  { return f_lisp.HASHTABLE_TYPE; }
   public LispValue typep(LispValue type)
