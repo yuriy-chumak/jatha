@@ -85,6 +85,8 @@ public class LispCompiler
   LispValue DUMMY_FUNCTION; // used for recursive definions
   LispValue DUMMY_MACRO;    // used for recursive definions
   
+  LispPrimitive CONS;
+  
 	Map<LispValue, Compiler> SpecialOperators = null;
 	interface Compiler {
 		public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code)
@@ -252,7 +254,7 @@ public class LispCompiler
 
 		// (require '(pkg1 pkg2 ...)) or (require 'package)
 		Register(new LispPrimitive(f_lisp, "REQUIRE", 1, Long.MAX_VALUE) { 
-			public LispValue Execute(LispValue values)
+			public LispValue Execute_(LispValue values)
 					throws CompilerException
 			{
 				if (values instanceof LispSymbol) {
@@ -300,7 +302,7 @@ public class LispCompiler
 		// http://jtra.cz/stuff/lisp/sclr/index.html
 		// http://habrahabr.ru/post/65791/
 		// Basic simple functions
-		Register(new LispPrimitive(f_lisp, "QUOTE", 1) {
+		Register(new LispPrimitive1(f_lisp, "QUOTE") {
 			@Override
 			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
 							LispValue args, LispValue valueList, LispValue code)
@@ -317,6 +319,10 @@ public class LispCompiler
 				System.err.println(LispFunctionNameString() + " was compiled - shouldn't have been.");
 				machine.C.pop();
 			}
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				return null;
+			}
 		}, SYSTEM_PKG);
     	// "inline" primitives (for perfomance purposes)
 		Register(new InlineLispPrimitive(f_lisp, "BLOCK", 1, Long.MAX_VALUE) {
@@ -332,7 +338,7 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		
-		Register(new LispPrimitive(f_lisp, "CONS", 2) {
+		Register(CONS = new LispPrimitive2(f_lisp, "CONS") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				return
 				f_lisp.makeCons(a, b);
@@ -361,40 +367,46 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);*/
 
+		Register(new LispPrimitive0(f_lisp, "EXIT") {
+			protected LispValue Execute() {
+				System.exit(0);
+				return f_lisp.T;
+			}
+		}, SYSTEM_PKG);
 		
 		// 
-		Register(new LispPrimitive(f_lisp, "ATOM", 1) {
-			public LispValue Execute(LispValue arg) {
+		Register(new LispPrimitive1(f_lisp, "ATOM") {
+			protected LispValue Execute(LispValue arg) {
 				return
 				f_lisp.makeBool(is_atom(arg));
 			}
 		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "NULL", 1) {
-			public LispValue Execute(LispValue arg) {
+		Register(new LispPrimitive1(f_lisp, "NULL") {
+			protected LispValue Execute(LispValue arg) {
 				return
 				f_lisp.makeBool(is_null(arg));
 			}
 		}, SYSTEM_PKG);
 		
-		Register(new LispPrimitive(f_lisp, "EQ", 2) {
+		Register(new LispPrimitive2(f_lisp, "EQ") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				if (is_atom(a) && is_atom(b))
 					return f_lisp.makeBool(a == b);
 				return f_lisp.NIL;
 			}
 		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "EQL", 2) {
+		Register(new LispPrimitive2(f_lisp, "EQL") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				return a.eql(b);
 			}
 		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "NOT", 1) {
-			public LispValue Execute(LispValue a) {
+		Register(new LispPrimitive1(f_lisp, "NOT") {
+			protected LispValue Execute(LispValue a) {
 				return f_lisp.makeBool(is_null(a));
 			}
 		}, SYSTEM_PKG);
 
-		Register(new LispPrimitive(f_lisp, "SETQ", 2) {
+		Register(new LispPrimitive2(f_lisp, "SETQ") {
 			// todo: refactor this
 			public void Execute(SECDMachine machine)
 			{
@@ -402,16 +414,19 @@ public class LispCompiler
 			    LispValue sym = machine.S.pop();
 
 			    if (sym instanceof LispCons) {   // local variable
-			    	LispCons ij_indexes = (LispCons)sym;
+			    	LispCons ij = (LispCons)sym;
 			    	LispValue valueList = machine.E.value();
 			    	LispValue newValue = val;
+			    	
+//			    	values = Lisp.nth(ij, valueList);
 
-					long i = ((LispInteger)(ij_indexes.car())).getLongValue();
-					long j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
+					long i = ((LispInteger)(ij.car())).getLongValue();
+					long j = ((LispInteger)(ij.cdr())).getLongValue();
 
 					LispCons values = (LispCons)Lisp.nth(i, (LispCons)valueList);
 					while (--j > 0)
 						values = (LispCons)values.cdr();
+					// do we need to add car() ???
 					values.rplaca(newValue);
 			    }
 
@@ -448,11 +463,16 @@ public class LispCompiler
 								f_lisp.makeCons(lookupVal.second(),
 										compiler.compile(args.second(), valueList, code)));
 			}
+			@Override
+			protected LispValue Execute(LispValue arg1, LispValue arg2)
+					throws CompilerException {
+				return null;
+			}
 		}, SYSTEM_PKG);
 		
 		// move to "math" ?
 		Register(new ComplexLispPrimitive(f_lisp, "+", 0, Long.MAX_VALUE) {
-			public LispValue Execute(LispValue args) {
+			public LispValue Execute_(LispValue args) {
 				if (args == f_lisp.NIL)
 					return f_lisp.ZERO;
 				LispValue x = f_lisp.car(args);
@@ -463,7 +483,7 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		Register(new ComplexLispPrimitive(f_lisp, "-", 1, Long.MAX_VALUE) {
-			public LispValue Execute(LispValue args) {
+			public LispValue Execute_(LispValue args) {
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).sub(f_lisp.cdr(args));
@@ -472,7 +492,7 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		Register(new ComplexLispPrimitive(f_lisp, "*", 0, Long.MAX_VALUE) {
-			public LispValue Execute(LispValue args) {
+			public LispValue Execute_(LispValue args) {
 				if (args == f_lisp.NIL)
 					return f_lisp.ONE;
 				LispValue x = f_lisp.car(args);
@@ -483,7 +503,7 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		Register(new ComplexLispPrimitive(f_lisp, "/", 1, Long.MAX_VALUE) {
-			public LispValue Execute(LispValue args) {
+			public LispValue Execute_(LispValue args) {
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).div(f_lisp.cdr(args));
@@ -495,20 +515,55 @@ public class LispCompiler
 		registerAccessorFunctions(SYSTEM_PKG);
 //		registerStringFunctions(SYSTEM_PKG);
 		
-		Register(new EqualNumericPrimitive(f_lisp));
-		Register(new AppendPrimitive(f_lisp));
+		Register(new ComplexLispPrimitive(f_lisp, "=", 2, Long.MAX_VALUE) {
+			public LispValue Execute_(LispValue args) {
+			    if (args == f_lisp.NIL)
+			        return f_lisp.T;
+			      else
+			      {
+			        // There should be at least 2 arguments.
+			        LispValue first = args.first();
+			        args = Lisp.cdr(args);
+			        for (Iterator<LispValue> iterator = args.iterator(); iterator.hasNext();)
+			        {
+			          LispValue arg = iterator.next();
+			          if (first.equalNumeric(arg) == Lisp.NIL)
+			          {
+			            return Lisp.NIL;
+			          }
+			        }
+			        return f_lisp.T;
+			      }
+			}			
+		});
+		Register(new ComplexLispPrimitive(f_lisp, "APPEND", 0, Long.MAX_VALUE) {
+			// First argument should be 'STRING
+			// Apply concatenate to the next argument.
+			public LispValue Execute_(LispValue args) {
+				return appendArgs(args);
+			}
+			  // This is right-recursive so it only copies each arg once.
+			  // The last arg is not copied, of course.
+			  LispValue appendArgs(LispValue args)
+			  {
+			    if (f_lisp.cdr(args) == f_lisp.NIL)
+			      return f_lisp.car(args);
+			    else
+			      return f_lisp.car(args).append(appendArgs(f_lisp.cdr(args)));
+			  }
+		}, SYSTEM_PKG);
 		
 		
 		// TEMPORARY for TESTS (maybe need to set permanent)
-		Register(new LispPrimitive(f_lisp, "CONSP", 1) {
-			public LispValue Execute(LispValue a) {
+		Register(new LispPrimitive1(f_lisp, "CONSP") {
+			protected LispValue Execute(LispValue a) {
 				if (a instanceof LispCons)
 					return f_lisp.T;
 				return f_lisp.NIL;
 			}
 		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "CONSTANTP", 1) {
-			public LispValue Execute(LispValue a) {
+		Register(new LispPrimitive1(f_lisp, "CONSTANTP") {
+			protected LispValue Execute(LispValue a) {
 				if (a instanceof LispConstant)
 					return f_lisp.T;
 				return f_lisp.NIL;
@@ -516,13 +571,13 @@ public class LispCompiler
 		}, SYSTEM_PKG);
 
 	
-		Register(new LispPrimitive(f_lisp, "STRING", 1) {
-			public LispValue Execute(LispValue a) {
+		Register(new LispPrimitive1(f_lisp, "STRING") {
+			protected LispValue Execute(LispValue a) {
 				return a.string();
 			}
 		}, SYSTEM_PKG);
-		Register(new LispPrimitive(f_lisp, "STRING-EQUAL", 2) {
-			public LispValue Execute(LispValue a, LispValue b) {
+		Register(new LispPrimitive2(f_lisp, "STRING-EQUAL") {
+			protected LispValue Execute(LispValue a, LispValue b) {
 				return a.stringEqual(b);
 			}
 		}, SYSTEM_PKG);
@@ -537,7 +592,7 @@ public class LispCompiler
 		Register(new ComplexLispPrimitive(f_lisp, "CONCATENATE", 1, Long.MAX_VALUE) {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
-			public LispValue Execute(LispValue args) {
+			public LispValue Execute_(LispValue args) {
 				LispValue concatType = Lisp.car(args);
 				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
 					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
@@ -566,12 +621,71 @@ public class LispCompiler
 		}, SYSTEM_PKG);
 		
 		
-		Register(new LispPrimitive(f_lisp, "SQRT", 1) {
-			public LispValue Execute(LispValue a) {
+		Register(new LispPrimitive1(f_lisp, "SQRT") {
+			protected LispValue Execute(LispValue a) {
 				return a.sqrt();
 			}
 		}, SYSTEM_PKG);
 		
+		Register(new LispPrimitive1(f_lisp, "PRINT") {
+			protected LispValue Execute(LispValue a) {
+				return a.print();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive2(f_lisp, "SET") {
+			protected LispValue Execute(LispValue arg1, LispValue arg2) {
+				return arg1.setf_symbol_value(arg2);
+			}
+		}, SYSTEM_PKG);
+		
+		Register(new LispPrimitive1(f_lisp, "MACROEXPAND") {
+			protected LispValue Execute(LispValue form) {
+		        LispValue now = expand(form);
+		        LispValue lastOne = form;
+		        while(now != lastOne && now instanceof LispCons && !(now == f_lisp.NIL)) {
+		            lastOne = now;
+		            now = expand(now);
+		        }
+				return now;
+			}
+		    private LispValue expand(final LispValue form) {
+		        final LispValue carForm = f_lisp.car(form); // todo: check for LispSymbol
+		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
+		            return f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form))));
+		        } else {
+		            return form;
+		        }
+		    }
+
+		    private LispValue quoteList(final LispValue intern) {
+		        LispValue ret = f_lisp.NIL;
+		        for(final java.util.Iterator iter = intern.iterator();iter.hasNext();) {
+		            final LispValue curr = (LispValue)iter.next();
+		            ret = f_lisp.makeCons(f_lisp.makeList(f_lisp.QUOTE,curr),ret);
+		        }
+		        return ret.nreverse();
+		    }
+			
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive1(f_lisp, "MACROEXPAND-1") {
+			protected LispValue Execute(LispValue form) {
+		        final LispValue carForm = f_lisp.car(form);	// todo: check for LispSymbol
+		        
+		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
+		            return (f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form)))));
+		        } else {
+		            return (form);
+		        }
+			}
+		    private LispValue quoteList(final LispValue intern) {
+		        LispValue ret = f_lisp.NIL;
+		        for(final java.util.Iterator iter = intern.iterator();iter.hasNext();) {
+		            final LispValue curr = (LispValue)iter.next();
+		            ret = f_lisp.makeCons(f_lisp.makeList(f_lisp.QUOTE,curr),ret);
+		        }
+		        return ret.nreverse();
+		    }
+		}, SYSTEM_PKG);
 		
 	}
 	
@@ -991,7 +1105,7 @@ public class LispCompiler
                                 f_lisp.makeCons(machine.LDFC,
                                                 f_lisp.makeCons(function,
                                                                 f_lisp.makeCons(machine.NIL,
-                                                                                f_lisp.makeCons(new ConsPrimitive(f_lisp),
+                                                                                f_lisp.makeCons(CONS,
                                                                                                 compileLambda(machine, expr,  f_lisp.makeCons(
                                                                                                     f_lisp.makeCons(function, f_lisp.NIL),
                                                                                                     valueList),
@@ -1024,7 +1138,7 @@ public class LispCompiler
                                    f_lisp.makeCons(machine.LDFC,
                                                    f_lisp.makeCons(function,
                                                                    f_lisp.makeCons(machine.NIL,
-                                                                                 f_lisp.makeCons(new ConsPrimitive(f_lisp),
+                                                                                 f_lisp.makeCons(CONS,
                                                                                                  compileLambda(machine, expr,
                                                                                                                f_lisp.makeCons(f_lisp.makeCons(function, f_lisp.NIL),
                                                                                                                                valueList),
@@ -1217,7 +1331,7 @@ public class LispCompiler
       return
               compile(f_lisp.car(args), valueList,
                       compileApp(machine, f_lisp.cdr(args), valueList,
-                                 f_lisp.makeCons(new ConsPrimitive(f_lisp), code)));
+                                 f_lisp.makeCons(CONS, code)));
   }
 
 
@@ -1233,7 +1347,7 @@ public class LispCompiler
     {
       for (int i = list.size() - 1; i >= 0; i--)
       {
-        code = f_lisp.makeCons(new ConsPrimitive(f_lisp), code);
+        code = f_lisp.makeCons(CONS, code);
       }
     }
     code = f_lisp.makeCons(machine.NIL, code);
@@ -1597,22 +1711,24 @@ public class LispCompiler
 	// init
 	private void registerAccessorFunctions(LispPackage pkg)
 	{
-		Register(new LispPrimitive(f_lisp, "CAR", 1) {
-			public LispValue Execute(LispValue arg) {
+		Register(new LispPrimitive1(f_lisp, "CAR") {
+			@Override
+			protected LispValue Execute(LispValue arg) {
 				if (arg instanceof LispList)
 					return ((LispList)arg).car();
 				throw new LispValueNotAConsException(arg);
 			}
 		}, pkg);
-		Register(new LispPrimitive(f_lisp, "CDR", 1) {
-			public LispValue Execute(LispValue arg) {
+		Register(new LispPrimitive1(f_lisp, "CDR") {
+			@Override
+			protected LispValue Execute(LispValue arg) {
 				if (arg instanceof LispList)
 					return ((LispList)arg).cdr();
 				throw new LispValueNotAConsException(arg); 
 			}
 		}, pkg);
-		Register(new LispPrimitive(f_lisp, "ELT", 2) {
-			public LispValue Execute(LispValue list, LispValue n) {
+		Register(new LispPrimitive2(f_lisp, "ELT") {
+			protected LispValue Execute(LispValue list, LispValue n) {
 				return list.elt(n);
 			}
 		}, pkg);

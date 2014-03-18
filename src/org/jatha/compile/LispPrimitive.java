@@ -61,8 +61,8 @@ public abstract class LispPrimitive extends StandardLispValue
 	public static LispValue s_PRIMITIVE_TAG = null;
   
 	// Fields
-	private long minNumberOfArgs;
-	private long maxNumberOfArgs;
+	protected long minNumberOfArgs;
+	protected long maxNumberOfArgs;
 
 	/**
 	 * the <tt>functionName</tt> is part of the string that
@@ -168,7 +168,7 @@ public abstract class LispPrimitive extends StandardLispValue
 			{
 				LispValue arg1 = machine.S.pop();
 		    
-				machine.S.push(LispPrimitive.this.Execute(arg1));
+				machine.S.push(LispPrimitive.this.Execute_(arg1));
 				machine.C.pop();
 			}
 		};
@@ -195,7 +195,7 @@ public abstract class LispPrimitive extends StandardLispValue
 			{
 			    LispValue arg1 = machine.S.pop();
 			    
-				machine.S.push(LispPrimitive.this.Execute(arg1));
+				machine.S.push(LispPrimitive.this.Execute_(arg1));
 				machine.C.pop();
 			}
 		  };
@@ -209,7 +209,7 @@ public abstract class LispPrimitive extends StandardLispValue
 			    LispValue arg2 = machine.S.pop();
 			    LispValue arg1 = machine.S.pop();
 
-			    machine.S.push(LispPrimitive.this.Execute(arg1, arg2));
+			    machine.S.push(LispPrimitive.this.Execute_(arg1, arg2));
 			    machine.C.pop();
 			}
 		  };
@@ -352,13 +352,13 @@ public abstract class LispPrimitive extends StandardLispValue
 //	todo: restore this after code refactoring
 //	public abstract LispValue Execute(LispValue arg)
 //			throws CompilerException;
-	public LispValue Execute(LispValue arg)
+	public LispValue Execute_(LispValue arg)
 	throws CompilerException
 	{
 		// todo: assert for arg count as 1
 		throw new UndefinedFunctionException();
 	}
-	public LispValue Execute(LispValue arg1, LispValue arg2)
+	public LispValue Execute_(LispValue arg1, LispValue arg2)
 	throws CompilerException
 	{
 		// todo: assert for arg count as 2

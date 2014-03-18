@@ -41,9 +41,10 @@ import org.jatha.exception.LispConstantRedefinedException;
 
 public class StandardLispNIL extends StandardLispList implements LispNil
 {
+	public StandardLispNIL() { }
 	
-	public LispValue     car()                       { return f_lisp.NIL; }
-	public LispValue     cdr()                       { return f_lisp.NIL; }
+	public LispValue car() { return f_lisp.NIL; }
+	public LispValue cdr() { return f_lisp.NIL; }
 	
 	
 	
