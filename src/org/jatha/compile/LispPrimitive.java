@@ -52,18 +52,8 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
-	abstract class Evaluator {
-		public abstract void Execute(SECDMachine machine)
-				throws CompilerException;
-	}
-	Evaluator evaluator = null;
-	
 	public static LispValue s_PRIMITIVE_TAG = null;
   
-	// Fields
-	protected long minNumberOfArgs;
-	protected long maxNumberOfArgs;
-
 	/**
 	 * the <tt>functionName</tt> is part of the string that
 	 * gets printed when the instruction appears in a printed list.
@@ -151,77 +141,14 @@ public abstract class LispPrimitive extends StandardLispValue
 	 * @param minArgs      The minimum number of Arguments to this function.
 	 * @param maxArgs      The maximum number of Arguments to this function.
 	 */
-	public LispPrimitive(final Lisp lisp, String fnName, long minArgs, long maxArgs)
+	public LispPrimitive(final Lisp lisp, String fnName)
 	{
 		super(lisp);
-		minNumberOfArgs     = minArgs;
-		maxNumberOfArgs     = maxArgs;
 		functionName        = fnName;
 		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
     
 		initConstants();
-
-		evaluator = new Evaluator() {
-			@Override
-			public void Execute(SECDMachine machine)
-				throws CompilerException
-			{
-				LispValue arg1 = machine.S.pop();
-		    
-				machine.S.push(LispPrimitive.this.Execute_(arg1));
-				machine.C.pop();
-			}
-		};
 	}
-
-	public LispPrimitive(Lisp lisp, String fnName, long minArgs)
-	{
-		super(lisp);
-		
-		minNumberOfArgs     = minArgs;
-		maxNumberOfArgs     = minArgs;
-		functionName        = fnName;
-		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
-	    
-	    initConstants();
-	    
-	  switch ((int)minArgs) {
-	  case 0:
-	  case 1:
-		  evaluator = new Evaluator() {
-			@Override
-			public void Execute(SECDMachine machine)
-					throws CompilerException
-			{
-			    LispValue arg1 = machine.S.pop();
-			    
-				machine.S.push(LispPrimitive.this.Execute_(arg1));
-				machine.C.pop();
-			}
-		  };
-		  break;
-	  case 2:
-		  evaluator = new Evaluator() {
-			@Override
-			public void Execute(SECDMachine machine)
-					throws CompilerException
-			{
-			    LispValue arg2 = machine.S.pop();
-			    LispValue arg1 = machine.S.pop();
-
-			    machine.S.push(LispPrimitive.this.Execute_(arg1, arg2));
-			    machine.C.pop();
-			}
-		  };
-		  break;
-	  default:
-		  break;
-	  }
-  }
-
-  public LispPrimitive(Lisp lisp, String fnName) { // Abstract machine ops have no args
-	  this(lisp, fnName, 0);
-  }
 
   public String    LispFunctionNameString() { return functionName; }
   public LispValue LispFunctionNameSymbol() { return functionNameSymbol; }
@@ -238,13 +165,7 @@ public abstract class LispPrimitive extends StandardLispValue
    * @param numberOfArguments  usually the result of args.length()
    * @return boolean
    */
-  boolean validArgumentLength(LispValue numberOfArguments)
-  {
-    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
-
-    return ((minNumberOfArgs <= numArgs)
-	    && (numArgs <= maxNumberOfArgs));
-  }
+  abstract boolean validArgumentLength(LispValue numberOfArguments);
 
 
   /**
@@ -278,17 +199,7 @@ public abstract class LispPrimitive extends StandardLispValue
    * @see LispCompiler
    * @return a Java string denoting the length of the expected argument list.
    */
-  public String parameterCountString()
-  {
-    String result = Long.toString(minNumberOfArgs);
-
-    if (maxNumberOfArgs == Long.MAX_VALUE)
-      result += "...";
-    else if (maxNumberOfArgs != minNumberOfArgs)
-      result += " " + maxNumberOfArgs;
-
-    return result;
-  }
+  abstract public String parameterCountString();
 
 
   /**
@@ -343,22 +254,23 @@ public abstract class LispPrimitive extends StandardLispValue
    * @see org.jatha.compile.LispCompiler
    * @param machine   The abstract machine instance.
    */
-	public void Execute(SECDMachine machine)
+	public void Execute(SECDMachine machine) // todo: make abstract
 			throws CompilerException
 	{
-		evaluator.Execute(machine);
+		System.err.println(LispFunctionNameString() + " was compiled - shouldn't have been.");
+		machine.C.pop();
 	}
 
 //	todo: restore this after code refactoring
 //	public abstract LispValue Execute(LispValue arg)
 //			throws CompilerException;
-	public LispValue Execute_(LispValue arg)
+	public LispValue Execute_(LispValue arg) // todo: remove this
 	throws CompilerException
 	{
 		// todo: assert for arg count as 1
 		throw new UndefinedFunctionException();
 	}
-	public LispValue Execute_(LispValue arg1, LispValue arg2)
+	public LispValue Execute_(LispValue arg1, LispValue arg2) // todo: remove this
 	throws CompilerException
 	{
 		// todo: assert for arg count as 2

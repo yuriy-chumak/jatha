@@ -29,13 +29,39 @@ import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
 
-// todo: move to the primitive
-// todo: rename as LispPrimitiveWithVariableNumerOfArgs
-public abstract class ComplexLispPrimitive extends LispPrimitive
+// primitive with variable count of arguments
+public abstract class LispPrimitiveC extends LispPrimitive
 {
-	public ComplexLispPrimitive(Lisp lisp, String fnName, long minArgs, long maxArgs) {
-		super(lisp, fnName, minArgs, maxArgs);
+	// Fields
+	protected long minNumberOfArgs;
+	protected long maxNumberOfArgs;
+
+	public LispPrimitiveC(Lisp lisp, String fnName, long minArgs) {
+		super(lisp, fnName);
+		minNumberOfArgs = minArgs;
+		maxNumberOfArgs = Long.MAX_VALUE;
 	}
+	
+	  boolean validArgumentLength(LispValue numberOfArguments)
+	  {
+	    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
+
+	    return ((minNumberOfArgs <= numArgs)
+		    && (numArgs <= maxNumberOfArgs));
+	  }
+	  public String parameterCountString()
+	  {
+	    String result = Long.toString(minNumberOfArgs);
+
+	    if (maxNumberOfArgs == Long.MAX_VALUE)
+	      result += "...";
+	    else if (maxNumberOfArgs != minNumberOfArgs)
+	      result += " " + maxNumberOfArgs;
+
+	    return result;
+	  }
+	  
+	
 
 	// Unlimited number of evaluated args.
 	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
@@ -44,7 +70,21 @@ public abstract class ComplexLispPrimitive extends LispPrimitive
 	{
 		return
 				compiler.compileArgsLeftToRight(args, valueList,
-						f_lisp.makeCons(machine.LIS,
-								f_lisp.makeCons(args.length(), code)));
+						cons(machine.LIS,
+						     cons(args.length(), code)));
 	}
+	
+	public void Execute(SECDMachine machine)
+			throws CompilerException
+	{
+	    LispValue arg1 = machine.S.pop();
+	    
+	    LispValue result = this.Execute(arg1);
+	    
+		machine.S.push(result);
+		machine.C.pop();
+	}
+	
+	protected abstract LispValue Execute(LispValue arg)
+			throws CompilerException;
 }

@@ -43,10 +43,13 @@ package org.jatha.machine;
 
 import org.jatha.Lisp;
 import org.jatha.compile.LispPrimitive;
+import org.jatha.compile.LispPrimitive0;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispList;
 import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
+import org.jatha.exception.CompilerException;
+import org.jatha.exception.LispAssertionException;
 
 
 // @date    Sat Feb  1 21:05:03 1997
@@ -57,7 +60,7 @@ import org.jatha.dynatype.LispValue;
  * @see org.jatha.compile.LispPrimitive
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public abstract class SECDop extends LispPrimitive
+public abstract class SECDop extends LispPrimitive0
 {
 	/**
 	 * @see SECDMachine
@@ -86,5 +89,11 @@ public abstract class SECDop extends LispPrimitive
 		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
 		return Lisp.nth(j, (LispCons)Lisp.nth(i, (LispCons)valueList));
+	}
+
+	protected LispValue Execute()
+			throws CompilerException
+	{
+		throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been."); 
 	}
 }

@@ -42,7 +42,7 @@ public abstract class LispPrimitive0 extends LispPrimitive
 	 */
 	public LispPrimitive0(final Lisp lisp, String fnName)
 	{
-		super(lisp, fnName, 0, 0);
+		super(lisp, fnName);
 	}
 	
 	public void Execute(SECDMachine machine)

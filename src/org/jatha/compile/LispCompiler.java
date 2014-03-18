@@ -253,8 +253,8 @@ public class LispCompiler
 		final LispPackage SYSTEM_PKG = (LispPackage)f_lisp.findPackage("SYSTEM");
 
 		// (require '(pkg1 pkg2 ...)) or (require 'package)
-		Register(new LispPrimitive(f_lisp, "REQUIRE", 1, Long.MAX_VALUE) { 
-			public LispValue Execute_(LispValue values)
+		Register(new LispPrimitiveC(f_lisp, "REQUIRE", 1) { 
+			protected LispValue Execute(LispValue values)
 					throws CompilerException
 			{
 				if (values instanceof LispSymbol) {
@@ -313,19 +313,13 @@ public class LispCompiler
 				            cons(args.first(), code));
 			}
 			@Override
-			public void Execute(SECDMachine machine)
-					throws CompilerException
-			{
-				System.err.println(LispFunctionNameString() + " was compiled - shouldn't have been.");
-				machine.C.pop();
-			}
-			@Override
 			protected LispValue Execute(LispValue arg) throws CompilerException {
-				return null;
+				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
 			}
 		}, SYSTEM_PKG);
+
     	// "inline" primitives (for perfomance purposes)
-		Register(new InlineLispPrimitive(f_lisp, "BLOCK", 1, Long.MAX_VALUE) {
+		Register(new LispPrimitiveC(f_lisp, "BLOCK", 1) {
 			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
 					throws CompilerException
 			{
@@ -336,6 +330,19 @@ public class LispCompiler
 				compiler.getLegalBlocks().pop();
 				return compiledCode;
 			}
+
+			@Override
+			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
+							LispValue args, LispValue valueList, LispValue code)
+					throws CompilerException
+			{
+				return CompileArgs(compiler, machine, args, valueList, code);
+			}
+
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
+			}
 		}, SYSTEM_PKG);
 		
 		Register(CONS = new LispPrimitive2(f_lisp, "CONS") {
@@ -344,14 +351,19 @@ public class LispCompiler
 				f_lisp.makeCons(a, b);
 			}
 		}, SYSTEM_PKG);
-		Register(new InlineLispPrimitive(f_lisp, "LIST", 0, Long.MAX_VALUE) {
-			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+		Register(new LispPrimitiveC(f_lisp, "LIST", 0) {
+			@Override
+			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
+							LispValue args, LispValue valueList, LispValue code)
 					throws CompilerException
 			{
-				return compiler.compileArgsLeftToRight(args, valueList,
-						f_lisp.makeCons(machine.LIS,
-								f_lisp.makeCons(args.length(), code)));
+				return CompileArgs(compiler, machine, args, valueList, code);
 			}
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
+			}
+			
 		}, SYSTEM_PKG);
 		/*compiler.Register(new InlineLispPrimitive(f_lisp, "LIST*", 1, Long.MAX_VALUE) {
 			LispValue CONS = new ConsPrimitive(f_lisp);
@@ -466,13 +478,13 @@ public class LispCompiler
 			@Override
 			protected LispValue Execute(LispValue arg1, LispValue arg2)
 					throws CompilerException {
-				return null;
+				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
 			}
 		}, SYSTEM_PKG);
 		
 		// move to "math" ?
-		Register(new ComplexLispPrimitive(f_lisp, "+", 0, Long.MAX_VALUE) {
-			public LispValue Execute_(LispValue args) {
+		Register(new LispPrimitiveC(f_lisp, "+", 0) {
+			protected LispValue Execute(LispValue args) {
 				if (args == f_lisp.NIL)
 					return f_lisp.ZERO;
 				LispValue x = f_lisp.car(args);
@@ -482,8 +494,8 @@ public class LispCompiler
 				throw new LispValueNotANumberException(x);
 			}
 		}, SYSTEM_PKG);
-		Register(new ComplexLispPrimitive(f_lisp, "-", 1, Long.MAX_VALUE) {
-			public LispValue Execute_(LispValue args) {
+		Register(new LispPrimitiveC(f_lisp, "-", 1) {
+			protected LispValue Execute(LispValue args) {
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).sub(f_lisp.cdr(args));
@@ -491,8 +503,8 @@ public class LispCompiler
 				throw new LispValueNotANumberException(x);
 			}
 		}, SYSTEM_PKG);
-		Register(new ComplexLispPrimitive(f_lisp, "*", 0, Long.MAX_VALUE) {
-			public LispValue Execute_(LispValue args) {
+		Register(new LispPrimitiveC(f_lisp, "*", 0) {
+			protected LispValue Execute(LispValue args) {
 				if (args == f_lisp.NIL)
 					return f_lisp.ONE;
 				LispValue x = f_lisp.car(args);
@@ -502,8 +514,8 @@ public class LispCompiler
 				throw new LispValueNotANumberException(x);
 			}
 		}, SYSTEM_PKG);
-		Register(new ComplexLispPrimitive(f_lisp, "/", 1, Long.MAX_VALUE) {
-			public LispValue Execute_(LispValue args) {
+		Register(new LispPrimitiveC(f_lisp, "/", 1) {
+			protected LispValue Execute(LispValue args) {
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).div(f_lisp.cdr(args));
@@ -515,8 +527,8 @@ public class LispCompiler
 		registerAccessorFunctions(SYSTEM_PKG);
 //		registerStringFunctions(SYSTEM_PKG);
 		
-		Register(new ComplexLispPrimitive(f_lisp, "=", 2, Long.MAX_VALUE) {
-			public LispValue Execute_(LispValue args) {
+		Register(new LispPrimitiveC(f_lisp, "=", 2) {
+			protected LispValue Execute(LispValue args) {
 			    if (args == f_lisp.NIL)
 			        return f_lisp.T;
 			      else
@@ -536,10 +548,10 @@ public class LispCompiler
 			      }
 			}			
 		});
-		Register(new ComplexLispPrimitive(f_lisp, "APPEND", 0, Long.MAX_VALUE) {
+		Register(new LispPrimitiveC(f_lisp, "APPEND", 0) {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
-			public LispValue Execute_(LispValue args) {
+			protected LispValue Execute(LispValue args) {
 				return appendArgs(args);
 			}
 			  // This is right-recursive so it only copies each arg once.
@@ -589,10 +601,10 @@ public class LispCompiler
 		 * and concatenated to the end.
 		 * This returns a new LispString.
 		 */
-		Register(new ComplexLispPrimitive(f_lisp, "CONCATENATE", 1, Long.MAX_VALUE) {
+		Register(new LispPrimitiveC(f_lisp, "CONCATENATE", 1) {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
-			public LispValue Execute_(LispValue args) {
+			protected LispValue Execute(LispValue args) {
 				LispValue concatType = Lisp.car(args);
 				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
 					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
