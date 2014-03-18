@@ -41,7 +41,8 @@ import java.util.Iterator;
  */
 public abstract class StandardLispList extends StandardLispValue  implements LispList
 {
-	public StandardLispList(Lisp lisp)
+	public StandardLispList() {}
+	public StandardLispList(Lisp lisp) // todo: remove this
 	{
 		super(lisp);
 	}

@@ -157,7 +157,7 @@ public class Lisp
   public LispSymbol DOT;
 
   // The list/symbol NIL.
-  public LispList NIL;
+  public static LispList NIL = new StandardLispNIL();
   // The symbol T
   public LispConstant T;
 
@@ -267,8 +267,7 @@ public class Lisp
     f_keywordPackage = new StandardLispPackage(this, makeString("KEYWORD"));
 
     // NIL is special case - not a symbol but require be in system symbol table(?)
-    NIL = new StandardLispNIL(this, "NIL");
-    NIL.setPackage(f_systemPackage);
+//	NIL.setPackage(f_systemPackage);
     
     DOT = new StandardLispSymbol(this, ".");
     EVAL.intern(makeString("DOT"), DOT, f_systemPackage);
@@ -1675,28 +1674,29 @@ public class Lisp
   
 
 	/**
-	 * Temporary for change arg.car to the f_lisp.car(arg) for
-	 * move "car" and "cdr" functions into LispConsOrNil from LispValue
+	 * This functions does not generate LispExceptions and assumes that all
+	 * agruments are correct
 	 */
 	public static LispValue car(LispValue arg)
 	{
-		assert arg instanceof LispList;
 		return ((LispList)arg).car();
-//		throw new LispValueNotAConsException(arg);
 	}
 	public static LispValue cdr(LispValue arg) 
 	{
-		assert arg instanceof LispList;
 		return ((LispList)arg).cdr();
-//		throw new LispValueNotAConsException(arg);
 	}
-	public static LispValue nth(long y, LispCons z)
+	public static LispValue nth(long i, LispCons arg)
 	{
-//		assert z instanceof LispCons; // todo: move LispCons type to variable declaration
+		while (--i > 0)
+			arg = (LispCons)arg.cdr();
+		return arg.car();
+	}
+	public static LispValue nth(LispCons ij, LispCons arg)
+	{
+		long i = ((LispInteger)(car(ij))).getLongValue();
+		long j = ((LispInteger)(cdr(ij))).getLongValue();
 		
-		while (--y > 0)
-			z = (LispCons)z.cdr();
-		return z.car();
+		return nth(j, (LispCons)Lisp.nth(i, arg));
 	}
 	
 	public static LispValue cddr(LispValue arg)
