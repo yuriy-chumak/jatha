@@ -64,33 +64,44 @@ import org.jatha.util.SymbolTable;
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  *
  */
-public class Jatha extends Object
+public class Lisp
 {
-  private static boolean DEBUG = false;
+	private static boolean DEBUG = false;
 
-  // 1.2a 14 May 1997
-  // 1.3a 03 Oct 2002
-  // 1.3b 01 January 2003
-  private String VERSION_NAME     = "Jatha";
-  private int    VERSION_MAJOR    = 2;
-  private int    VERSION_MINOR    = 9;
-  private int    VERSION_MICRO    = 0;
-  private String VERSION_TYPE     = "";
-  private String VERSION_DATE     = "25 Jul 2009";
-  private String VERSION_URL      = "http://jatha.sourceforge.net/";
+	private String VERSION_NAME     = "Jatha";
+	private int    VERSION_MAJOR    = 3;
+	private int    VERSION_MINOR    = 0;
+	private int    VERSION_MICRO    = 1;
+	private String VERSION_TYPE     = "";
+	private String VERSION_DATE     = "1 Feb 2014";
+	private String VERSION_URL      = "https://github.com/yuriy-chumak/jatha";
   
-  private boolean useConsole = true;
+	private boolean useConsole = true;
 
 
-   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
-   // @date    Thu Feb  6 09:26:00 1997
-   // @version 1.0
-   /**
-   * EVAL is a pointer to a LISP evaluator.
-   * Used for evaluating LISP expressions in Java code.
-   *
-   */
-  public LispEvaluator EVAL;
+	/**
+	 * PARSER is a pointer to the main parser
+	 * used by Jatha.  Others may be instantiated to
+	 * deal with String or Stream input.
+	 *
+	 * @see org.jatha.read.LispParser
+	 *
+	 */
+	public LispParser    PARSER;
+	
+	/**
+	 * COMPILER is a pointer to a LispCompiler.
+	 *
+	 * @see org.jatha.compile.LispCompiler
+	 */
+	public LispCompiler  COMPILER;
+	
+	/**
+	 * EVAL is a pointer to a LISP evaluator.
+	 * Used for evaluating LISP expressions in Java code.
+	 *
+	 */
+	public LispEvaluator EVAL;
 
   // * @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // * @date    Thu Feb  6 09:26:00 1997
@@ -127,34 +138,12 @@ public class Jatha extends Object
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
   /**
-   * COMPILER is a pointer to a LispCompiler.
-   *
-   * @see org.jatha.compile.LispCompiler
-   */
-  public LispCompiler  COMPILER;
-
-  // @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // @date    Thu Feb  6 09:26:00 1997
-  /**
    * SYSTEM_INFO is a pointer to the Runtime object
    * for this Applet.
    *
    * @see java.lang.Runtime
    */
   public final Runtime  SYSTEM_INFO  = Runtime.getRuntime();
-
-  // @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // @date    Thu Feb  6 09:26:00 1997
-  /**
-   * PARSER is a pointer to the main parser
-   * used by Jatha.  Others may be instantiated to
-   * deal with String or Stream input.
-   *
-   * @see org.jatha.read.LispParser
-   *
-   */
-  public LispParser    PARSER;
-
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -169,6 +158,8 @@ public class Jatha extends Object
 
   // The list/symbol NIL.
   public LispList NIL;
+  // The symbol T
+  public LispConstant T;
 
   // These are used in macros
   public LispSymbol QUOTE;
@@ -195,9 +186,6 @@ public class Jatha extends Object
   // Math constants
   public LispNumber PI;
   public LispNumber E;
-
-  // The symbol T
-  public LispConstant T;
 
   // Types
   // todo: move this into external lisp package
@@ -457,13 +445,11 @@ public class Jatha extends Object
   LispValue packages = null;
 
   LispSymbol STAR, STARSTAR, STARSTARSTAR;
-  LispSymbol MAX_LIST_LENGTH;  // obsolete.  Use PRINT_LENGTH instead
-  LispSymbol PRINT_LENGTH, PRINT_LEVEL;  // (mh) 24 March 2008
   LispSymbol LOAD_VERBOSE;
 
-  static  long      MAX_LIST_LENGTH_VALUE = 100000;
-  static  long      PRINT_LENGTH_VALUE = 512;
-  static  long      PRINT_LEVEL_VALUE  = 15;  // is this big enough?  Emacs uses 4 and 512 for level and length
+  public static long MAX_LIST_LENGTH_VALUE = 100000;
+  public static long PRINT_LENGTH_VALUE = 512;
+  public static long PRINT_LEVEL_VALUE  = 15;  // is this big enough?  Emacs uses 4 and 512 for level and length
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
 
@@ -471,7 +457,7 @@ public class Jatha extends Object
   /**
    * Create a new Jatha that does not use the GUI, does use the console for I/O and does not display help.
    */
-  public Jatha()
+  public Lisp()
   {
 	  super();
 	  
@@ -534,94 +520,6 @@ public class Jatha extends Object
     System.exit(0);
   }
 
-  /**
-   * Returns the value of *MAX-LIST-LENGTH*.
-   * This value is only used to prevent runaway list processing.
-   */
-  public LispInteger getMaxListLength()
-  {
-    return (LispInteger)(MAX_LIST_LENGTH.symbol_value());
-  }
-
-
-  /**
-   * Sets the value of *MAX-LIST-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public void setMaxListLength(long newLength)
-  {
-    MAX_LIST_LENGTH.setf_symbol_value(new StandardLispInteger(this, newLength));
-  }
-
-
-  /**
-   * Sets the value of *MAX-LIST-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public  void setMaxListLength(LispNumber newLength)
-  {
-    MAX_LIST_LENGTH.setf_symbol_value(new StandardLispInteger(this, (long)(newLength.getDoubleValue())));
-  }
-
-  /**
-   * Returns the value of *PRINT-LENGTH*.
-   * This value is only used to prevent runaway list processing.
-   */
-  public LispInteger getPrintLength()
-  {
-    return (LispInteger)(PRINT_LENGTH.symbol_value());
-  }
-
-
-  /**
-   * Sets the value of *PRINT-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public void setPrintLength(long newLength)
-  {
-    PRINT_LENGTH.setf_symbol_value(new StandardLispInteger(this, newLength));
-  }
-
-
-  /**
-   * Sets the value of *PRINT-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public  void setPrintLength(LispNumber newLength)
-  {
-    PRINT_LENGTH.setf_symbol_value(new StandardLispInteger(this, (long)(newLength.getDoubleValue())));
-  }
-
-  /**
-   * Returns the value of *PRINT-LENGTH*.
-   * This value is only used to prevent runaway list processing.
-   */
-  public LispInteger getPrintLevel()
-  {
-    return (LispInteger)(PRINT_LEVEL.symbol_value());
-  }
-
-  /**
-   * Sets the value of *PRINT-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public void setPrintLevel(long newLength)
-  {
-    PRINT_LEVEL.setf_symbol_value(new StandardLispInteger(this, newLength));
-  }
-
-
-  /**
-   * Sets the value of *PRINT-LENGTH*.
-   * This vlaue is only used to prevent runaway list processing.
-   */
-  public  void setPrintLevel(LispNumber newLength)
-  {
-    PRINT_LEVEL.setf_symbol_value(new StandardLispInteger(this, (long)(newLength.getDoubleValue())));
-  }
-
-
-
   public void init()
   {
 
@@ -664,17 +562,6 @@ public class Jatha extends Object
     STAR.setf_symbol_value(NIL);
     STARSTAR.setf_symbol_value(NIL);
     STARSTARSTAR.setf_symbol_value(NIL);
-
-    MAX_LIST_LENGTH = EVAL.intern("*MAX-LIST-LENGTH*",f_systemPackage);
-    MAX_LIST_LENGTH.setf_symbol_value(new StandardLispInteger(this, MAX_LIST_LENGTH_VALUE));
-    PRINT_LENGTH = EVAL.intern("*PRINT-LENGTH*",f_systemPackage);
-    PRINT_LENGTH.setf_symbol_value(new StandardLispInteger(this, PRINT_LENGTH_VALUE));
-    PRINT_LEVEL  = EVAL.intern("*PRINT-LEVEL*",f_systemPackage);
-    PRINT_LEVEL.setf_symbol_value(new StandardLispInteger(this, PRINT_LEVEL_VALUE));
-
-    f_systemPackage.export(MAX_LIST_LENGTH);
-    f_systemPackage.export(PRINT_LENGTH);
-    f_systemPackage.export(PRINT_LEVEL);
 
     // Defines global variables, etc.  Should only be called once.
     EVAL.init();
@@ -1308,62 +1195,6 @@ public class Jatha extends Object
 
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // @date    Wed May 14 18:45:22 1997
-  /**
-   * Prints out all symbols in the given package, or in
-   * all packages (if pkg is NIL) that match the given string.
-   * Matching is *NOT* case-sensitive and the string may
-   * match a portion of the symbol name.
-   *
-   * @param str - a LispString to match
-   * @param pkg - either NIL or a package
-   */
-  public LispValue apropos(LispValue str, LispValue pkg)
-  {
-    // Write to a string and return it.
-    StringWriter sout = new StringWriter();
-    PrintWriter  out  = new PrintWriter(sout);
-
-    out.println();
-
-    if (pkg == NIL)
-      pkg = allPackages();
-    else if (pkg instanceof LispPackage)
-      pkg = makeList(pkg);
-
-    // Loop through the packages, printing all symbols that match.
-    // The symbols come out unsorted, but oh well.
-
-    String matchStr = ((LispString)(str)).getValue().toUpperCase();
-    Iterator<LispSymbol>    iter;
-    LispValue   symb;
-    LispString  sname;
-    String      symbstr;
-
-    while (pkg != NIL)
-    {
-      iter = ((LispPackage)(this.car(pkg))).getSymbolTable().values().iterator();
-
-      while (iter.hasNext())
-      {
-        symb     = (iter.next());
-        sname    = (LispString)((LispSymbol)symb).symbol_name();	// todo: add error for !symb instanceof LispSymbol
-        symbstr  = sname.getValue().toUpperCase();
-
-        if (symbstr.indexOf(matchStr) >= 0)
-          symb.apropos_print(out);
-      }
-      pkg = this.cdr(pkg);
-    }
-
-    out.flush();
-    return new StandardLispString(this, sout.toString());
-  }
-
-
-
-
-  // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:31:49 1997
   /**
    * This method prints out information on the amount of
@@ -1834,44 +1665,51 @@ public class Jatha extends Object
       return NIL;
     else if (expr instanceof LispAtom || expr instanceof LispNil)
       return makeList(QUOTE, expr);
-    else if (this.car(expr) == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
+    else if (car(expr) == COMMA_FN) // !expr.car().eq(COMMA_FN) instanceof LispNil
       return expr.second();
-    else if (this.car(expr) instanceof LispCons && this.car(this.car(expr)) == COMMA_ATSIGN_FN)
+    else if (car(expr) instanceof LispCons && car(car(expr)) == COMMA_ATSIGN_FN)
       return makeList(APPEND, this.car(expr).second(), backquote(this.cdr(expr)));
     else
       return combineExprs(backquote(this.car(expr)), backquote(this.cdr(expr)), expr);
  }
   
+
 	/**
 	 * Temporary for change arg.car to the f_lisp.car(arg) for
 	 * move "car" and "cdr" functions into LispConsOrNil from LispValue
-     */
-	public LispValue car(LispValue arg)
+	 */
+	public static LispValue car(LispValue arg)
 	{
-		if (arg instanceof LispList)
-			return ((LispList)arg).car();
-		throw new LispValueNotAConsException(arg);
-	}
-	public LispValue cdr(LispValue arg) 
-	{
-//		if (arg instanceof LispConsOrNil)
-			return ((LispList)arg).cdr();
+		assert arg instanceof LispList;
+		return ((LispList)arg).car();
 //		throw new LispValueNotAConsException(arg);
 	}
+	public static LispValue cdr(LispValue arg) 
+	{
+		assert arg instanceof LispList;
+		return ((LispList)arg).cdr();
+//		throw new LispValueNotAConsException(arg);
+	}
+	public static LispValue nth(long y, LispCons z)
+	{
+//		assert z instanceof LispCons; // todo: move LispCons type to variable declaration
+		
+		while (--y > 0)
+			z = (LispCons)z.cdr();
+		return z.car();
+	}
+	
+	public static LispValue cddr(LispValue arg)
+	{
+		return cdr(cdr(arg));
+	}
+	
 
-  /**
-   * Use this to exit Jatha.
-   */
-  public void exit()
-  {
-    System.exit(0);
-  }
-  
 	public static void main(String[] args)
 	{
 		if (System.in == null)
 			return;
-		Jatha lisp = new Jatha();
+		Lisp lisp = new Lisp();
 
 		LispParser cli = new LispParser(lisp,
 				args.length > 0
@@ -1885,6 +1723,10 @@ public class Jatha extends Object
 				return; // done.
 			}
 		}
+	}
+	public void exit()
+	{
+		System.exit(0);
 	}
 }
 

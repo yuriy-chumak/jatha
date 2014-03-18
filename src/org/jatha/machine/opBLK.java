@@ -26,7 +26,7 @@
  */
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 /**
@@ -44,7 +44,7 @@ class opBLK extends SECDop{
      * and the label of this instruction.
      * @see SECDMachine
      */
-    public opBLK(final Jatha lisp) {
+    public opBLK(final Lisp lisp) {
         super(lisp, "BLK");
     }
 

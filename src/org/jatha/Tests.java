@@ -52,14 +52,14 @@ public class Tests extends Object
 				System.out.print("Testing " + filename.getName() + " ... ");
 				List<String> errors = new ArrayList<String>();
 				
-				Jatha lisp = new Jatha();// lisp.eval("(defun restart () `restart)"); // сигнал к перезагрузке интерпретатора
+				Lisp lisp = new Lisp();// lisp.eval("(defun restart () `restart)"); // сигнал к перезагрузке интерпретатора
 				LispParser cli = new LispParser(lisp, resourceReader);
 				while (true) {
 					// System.io.printnl();
 					try {
 						LispValue s = cli.read();
 						if (s instanceof StandardLispCons && s.toString().equals("(RESTART)")) {
-							lisp = new Jatha();
+							lisp = new Lisp();
 							cli = new LispParser(lisp, resourceReader);
 							continue;
 						}

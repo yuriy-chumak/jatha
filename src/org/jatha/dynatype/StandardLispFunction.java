@@ -26,7 +26,7 @@ package org.jatha.dynatype;
 
 import java.io.*;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.compile.LispCompiler;
 
 
@@ -52,7 +52,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
   /**
    * Creates a function with no content - not recommended.
    */
-  public StandardLispFunction(Jatha lisp)
+  public StandardLispFunction(Lisp lisp)
   {
     super(lisp);
   }
@@ -62,7 +62,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
   /**
    * Send in the instance of Jatha and the code for this function.
    */
-  public StandardLispFunction(Jatha lisp, LispValue symbol, LispValue code)
+  public StandardLispFunction(Lisp lisp, LispValue symbol, LispValue code)
   {
     super(lisp);
 

@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 
@@ -42,41 +42,32 @@ import org.jatha.dynatype.*;
  */
 class opAP extends SECDop
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  public opAP(Jatha lisp)
-  {
-    super(lisp, "AP");
-  }
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opAP(Lisp lisp)
+	{
+		super(lisp, "AP");
+	}
 
+	public void Execute(SECDMachine machine)
+	{
+		LispCons fe = (LispCons)machine.S.pop();   /* (f . e) */ // or LispList???
+		LispValue v  = machine.S.pop();
 
-  public void Execute(SECDMachine machine)
-  {
+		LispValue code = fe.car();
+		if (code instanceof LispFunction)
+			code = ((LispFunction)code).getCode();
 
-    LispValue fe = machine.S.pop();   /* (f . e) */
-    LispValue v  = machine.S.pop();
+		machine.C.pop();   // Get rid of 'AP' opcode.
 
-    /*
-      printf("\nAP:   fe = "); print(fe);
-      printf("\nAP:   v  = "); print(v);
-      */
-
-    LispValue code = f_lisp.car(fe);
-    if (code instanceof LispFunction)
-      code = ((LispFunction)code).getCode();
-
-    machine.C.pop();   // Get rid of 'AP' opcode.
-
-    machine.D.assign(f_lisp.makeCons(machine.S.value(),
-                                     f_lisp.makeCons(machine.E.value(),
-                                                     f_lisp.makeCons(machine.C.value(), machine.D.value()))));
-    machine.C.assign(code);
-    machine.E.assign(f_lisp.makeCons(v, f_lisp.cdr(fe)));
-    machine.S.assign(f_lisp.NIL);
-  }
+		machine.D.assign(cons(machine.S.value(),
+		                      cons(machine.E.value(),
+		                           cons(machine.C.value(), machine.D.value()))));
+		machine.C.assign(code);
+		machine.E.assign(cons(v, fe.cdr()));
+		machine.S.assign(f_lisp.NIL);
+	}
 }
-
-

@@ -26,7 +26,7 @@ package org.jatha.dynatype;
 import java.io.PrintStream;
 import java.util.Iterator;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 // See LispValue.java for documentation
@@ -40,7 +40,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   private  String str;
 
   // -----  Constructors  -----
-  public StandardLispString(Jatha lisp, String strName)
+  public StandardLispString(Lisp lisp, String strName)
   {
     super(lisp);
     str = strName;

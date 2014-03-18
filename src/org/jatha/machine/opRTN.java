@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 
@@ -45,7 +45,7 @@ class opRTN extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opRTN(Jatha lisp)
+  public opRTN(Lisp lisp)
   {
     super(lisp, "RTN");
   }

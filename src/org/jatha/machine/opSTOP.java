@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -42,7 +42,7 @@ class opSTOP extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opSTOP(Jatha lisp)
+  public opSTOP(Lisp lisp)
   {
     super(lisp, "STOP");
   }

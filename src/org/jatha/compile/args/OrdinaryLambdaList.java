@@ -34,7 +34,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.util.Iterator;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 import org.jatha.dynatype.LispValue;
 
@@ -45,7 +45,7 @@ import org.jatha.dynatype.LispValue;
  * @version $Revision: 1.3 $
  */
 public class OrdinaryLambdaList implements LambdaList {
-    private Jatha lisp;
+    private Lisp lisp;
 
     private List<LispValue> normalArguments;
     private List<LispValue> optionalArguments;
@@ -56,7 +56,7 @@ public class OrdinaryLambdaList implements LambdaList {
 
     private LispValue allowOtherKeysKey;
 
-    public OrdinaryLambdaList(final Jatha lisp) {
+    public OrdinaryLambdaList(final Lisp lisp) {
         this.lisp = lisp;
         normalArguments = new LinkedList<LispValue>();
         optionalArguments = new LinkedList<LispValue>();

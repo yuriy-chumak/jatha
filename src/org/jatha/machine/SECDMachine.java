@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
 import org.jatha.compile.*;
@@ -53,7 +53,7 @@ import org.jatha.compile.*;
  */
 public class SECDMachine    // extends Abstract Machine !
 {
-	final Jatha f_lisp;
+	final Lisp f_lisp;
 
 	public static boolean DEBUG = false;
 
@@ -63,46 +63,46 @@ public class SECDMachine    // extends Abstract Machine !
 	public SECDRegister C = null;  // Control register
 	public SECDRegister D = null;  // Dump register
 
-  // The B register is for dynamic bindings.  It contains a hash table
-  // that indexes on symbol name.  The value is a list of values,
-  // the most recent value at the front of the list.
-  //
-  // There is a B register for each machine so that it will
-  // function correctly in a multi-threaded environment.
-  public LispValue B = null;
+	// The B register is for dynamic bindings.  It contains a hash table
+	// that indexes on symbol name.  The value is a list of values,
+	// the most recent value at the front of the list.
+	//
+	// There is a B register for each machine so that it will
+	// function correctly in a multi-threaded environment.
+	public LispValue B = null;
 
-    // A X register for dumping tag information, as a stack. This is the same register as D, but not totally. =)
-  public SECDRegister X = null;
+	// A X register for dumping tag information, as a stack. This is the same register as D, but not totally. =)
+	public SECDRegister X = null;
 
-/* ------------------  BASIC MACHINE OPS   ------------------------------ */
+	// ------------------  BASIC MACHINE OPS   ------------------------------
 
-  public SECDop AP = null;
-  public SECDop BLK = null; //OB: new opcode June 2005
-  public SECDop DAP = null;
-  public SECDop DUM = null;
-  public SECDop JOIN = null;
-  public SECDop LD = null;
-  public SECDop LD_GLOBAL = null;
-  public SECDop LDC = null;
-  public SECDop LDF = null;
-  public SECDop LDFC = null;
-  public SECDop LDR = null;   //##JPG new opcode  April 2005
-  public SECDop LIS = null;
-  public SECDop NIL = null;
-  public SECDop RAP = null;
-  public SECDop RTN = null;
-  public SECDop RTN_IF = null;
-  public SECDop RTN_IT = null;
-  public SECDop SEL = null;
-  public SECDop SP_BIND = null;
-  public SECDop SP_UNBIND = null;
-  public SECDop STOP = null;
-  public SECDop T = null;
-  public SECDop TAG_B = null;
-  public SECDop TAG_E = null;
-  public SECDop TEST = null;
+	public SECDop AP = null;
+	public SECDop BLK = null; //OB: new opcode June 2005
+	public SECDop DAP = null;
+	public SECDop DUM = null;
+	public SECDop JOIN = null;
+	public SECDop LD = null;         // 
+	public SECDop LD_GLOBAL = null;
+	public SECDop LDC = null;
+	public SECDop LDF = null;
+	public SECDop LDFC = null;
+	public SECDop LDR = null;    //##JPG new opcode  April 2005
+	public SECDop LIS = null;
+	public SECDop NIL = null;
+	public SECDop RAP = null;
+	public SECDop RTN = null;
+	public SECDop RTN_IF = null;
+	public SECDop RTN_IT = null;
+	public SECDop SEL = null;
+	public SECDop SP_BIND = null;
+	public SECDop SP_UNBIND = null;
+	public SECDop STOP = null;
+	public SECDop T = null;
+	public SECDop TAG_B = null;
+	public SECDop TAG_E = null;
+	public SECDop TEST = null;
 
-	public SECDMachine(final Jatha lisp)
+	public SECDMachine(final Lisp lisp)
 	{
 		f_lisp = lisp;
 
@@ -144,7 +144,7 @@ public class SECDMachine    // extends Abstract Machine !
  }
 
 
-  public Jatha getLisp()
+  public Lisp getLisp()
   {
     return f_lisp;
   }

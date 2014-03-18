@@ -27,7 +27,7 @@ package org.jatha.dynatype;
 import java.io.PrintStream;
 import java.math.BigInteger;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -41,13 +41,13 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
   public void internal_prin1(PrintStream os) { os.print(f_value); }
   public void internal_princ(PrintStream os) { os.print(f_value); }
 
-  public StandardLispReal(Jatha lisp, double theValue)
+  public StandardLispReal(Lisp lisp, double theValue)
   {
     super(lisp);
     f_value = theValue;
   }
 
-  public StandardLispReal(Jatha lisp)
+  public StandardLispReal(Lisp lisp)
   {
     super(lisp);
     f_value = 0.0;

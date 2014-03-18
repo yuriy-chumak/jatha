@@ -27,7 +27,7 @@ package org.jatha.dynatype;
 import java.io.PrintStream;
 import java.math.BigInteger;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -45,27 +45,27 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
   // ---  Constructors  ---
 
-  public StandardLispBignum(Jatha lisp, BigInteger  theValue)
+  public StandardLispBignum(Lisp lisp, BigInteger  theValue)
   {
     super(lisp);
     value = theValue;
   }
 
-  public StandardLispBignum(Jatha lisp, long   theValue)
+  public StandardLispBignum(Lisp lisp, long   theValue)
   {
     super(lisp);
     value = BigInteger.valueOf(theValue);
   }
 
 
-  public StandardLispBignum(Jatha lisp, double theValue)
+  public StandardLispBignum(Lisp lisp, double theValue)
   {
     super(lisp);
     value = BigInteger.valueOf((long)theValue);
   }
 
 
-  public StandardLispBignum(Jatha lisp)
+  public StandardLispBignum(Lisp lisp)
   {
     super(lisp);
     value = ZERO;

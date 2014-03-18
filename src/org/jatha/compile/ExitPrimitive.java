@@ -24,13 +24,13 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.machine.*;
 
 
 public class ExitPrimitive extends LispPrimitive
 {
-  public ExitPrimitive(Jatha lisp)
+  public ExitPrimitive(Lisp lisp)
   {
     super(lisp, "EXIT", 0);
   }

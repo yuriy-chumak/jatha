@@ -26,7 +26,7 @@ package org.jatha.compile;
 
 import java.io.*;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.exception.UndefinedFunctionException;
@@ -58,19 +58,18 @@ public abstract class LispPrimitive extends StandardLispValue
 	}
 	Evaluator evaluator = null;
 	
-	
-  public static LispValue s_PRIMITIVE_TAG = null;
+	public static LispValue s_PRIMITIVE_TAG = null;
   
-  // Fields
-  protected long minNumberOfArgs;
-  protected long maxNumberOfArgs;
+	// Fields
+	private long minNumberOfArgs;
+	private long maxNumberOfArgs;
 
-  /**
-   * the <tt>functionName</tt> is part of the string that
-   * gets printed when the instruction appears in a printed list.
-   */
-  protected String    functionName;
-  protected LispValue functionNameSymbol;
+	/**
+	 * the <tt>functionName</tt> is part of the string that
+	 * gets printed when the instruction appears in a printed list.
+	 */
+	protected String    functionName;
+	protected LispValue functionNameSymbol;
 
   public void initConstants()
   {
@@ -133,7 +132,7 @@ public abstract class LispPrimitive extends StandardLispValue
     System.out.print(functionName);
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(code);
+    return Lisp.cdr(code);
   }
 
 
@@ -145,37 +144,37 @@ public abstract class LispPrimitive extends StandardLispValue
 
 
 /* ------------------ CONSTRUCTORS    ------------------------------ */
-  /**
-   * The constructor for the LispPrimitive class.
-   * @see org.jatha.compile.LispCompiler
-   * @param fnName The LISP function name being implemented.
-   * @param minArgs      The minimum number of Arguments to this function.
-   * @param maxArgs      The maximum number of Arguments to this function.
-   */
-  public LispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs)
-  {
-    super(lisp);
-    minNumberOfArgs     = minArgs;
-    maxNumberOfArgs     = maxArgs;
-    functionName        = fnName;
-    functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
+	/**
+	 * The constructor for the LispPrimitive class.
+	 * @see org.jatha.compile.LispCompiler
+	 * @param fnName The LISP function name being implemented.
+	 * @param minArgs      The minimum number of Arguments to this function.
+	 * @param maxArgs      The maximum number of Arguments to this function.
+	 */
+	public LispPrimitive(final Lisp lisp, String fnName, long minArgs, long maxArgs)
+	{
+		super(lisp);
+		minNumberOfArgs     = minArgs;
+		maxNumberOfArgs     = maxArgs;
+		functionName        = fnName;
+		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
     
-    initConstants();
+		initConstants();
 
-    evaluator = new Evaluator() {
-		@Override
-		public void Execute(SECDMachine machine)
+		evaluator = new Evaluator() {
+			@Override
+			public void Execute(SECDMachine machine)
 				throws CompilerException
-		{
-		    LispValue arg1 = machine.S.pop();
+			{
+				LispValue arg1 = machine.S.pop();
 		    
-			machine.S.push(LispPrimitive.this.Execute(arg1));
-			machine.C.pop();
-		}
-    };
-  }
+				machine.S.push(LispPrimitive.this.Execute(arg1));
+				machine.C.pop();
+			}
+		};
+	}
 
-	public LispPrimitive(Jatha lisp, String fnName, long minArgs)
+	public LispPrimitive(Lisp lisp, String fnName, long minArgs)
 	{
 		super(lisp);
 		
@@ -220,7 +219,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	  }
   }
 
-  public LispPrimitive(Jatha lisp, String fnName) { // Abstract machine ops have no args
+  public LispPrimitive(Lisp lisp, String fnName) { // Abstract machine ops have no args
 	  this(lisp, fnName, 0);
   }
 
@@ -366,11 +365,11 @@ public abstract class LispPrimitive extends StandardLispValue
 		throw new UndefinedFunctionException();
 	}
 
-   // Called only on Builtin Functions
-   LispValue BuiltinFunctionCode(LispValue fn)
-   {
-     return ((LispFunction)fn).getCode().second();
-   }
+	// Called only on Builtin Functions
+	LispValue BuiltinFunctionCode(LispValue fn)
+	{
+		return ((LispFunction)fn).getCode().second();
+	}
 
 
   /**
@@ -412,5 +411,9 @@ public abstract class LispPrimitive extends StandardLispValue
 	public LispValue bool(boolean arg)
 	{
 		return arg ? f_lisp.T : f_lisp.NIL;
+	}
+	protected LispCons cons(LispValue car, LispValue cdr)
+	{
+		return new StandardLispCons(f_lisp, car, cdr);
 	}
 }

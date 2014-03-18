@@ -25,7 +25,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 /**
@@ -47,61 +47,58 @@ import org.jatha.dynatype.*;
  */
 class opLDR extends SECDop
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  public opLDR(Jatha lisp)
-  {
-    super(lisp, "LDR");
-  }
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opLDR(Lisp lisp)
+	{
+		super(lisp, "LDR");
+	}
 
 
-  public void Execute(SECDMachine machine)
-  {
-    LispValue indexes;
+	public void Execute(SECDMachine machine)
+	{
+		LispCons indexes = (LispCons)machine.C.value().second();
 
-    indexes = machine.C.value().second();
+		machine.S.push(getRestListAt(indexes, (LispCons)machine.E.value()));
 
-    machine.S.push(getRestListAt(indexes, machine.E.value()));
-
-    machine.C.pop();
-    machine.C.pop();
-  }
+		machine.C.pop();
+		machine.C.pop();
+	}
 
 
-  /**
-   * @param ij_indexes a dot paired (i . j) i is the list index, j the index in this list
-   * @param valueList the list of lists
-   * @return the "rest parameter" whose index is superior to j in list number i
-   */
-  private LispValue getRestListAt(LispValue ij_indexes, LispValue valueList)
-  {
-    long i, j;
+	/**
+	 * @param ij_indexes a dot paired (i . j) i is the list index, j the index in this list
+	 * @param valueList the list of lists
+	 * @return the "rest parameter" whose index is superior to j in list number i
+	 */
+	private LispValue getRestListAt(LispCons ij_indexes, LispCons values)
+	{
+		long i, j;
 
-    i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-    j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
+		i = ((LispInteger)(ij_indexes.car())).getLongValue();
+		j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
 
-    LispValue subList = loc(i, valueList);
-    for (int idx = 1 ; idx < j ; idx++)
-    {
-      subList = f_lisp.cdr(subList);
-    }
-    return subList;
-  }
+		LispCons subList = (LispCons)Lisp.nth(i, values);
+		for (int idx = 1 ; idx < j ; idx++)
+			subList = (LispCons)subList.cdr();
+
+		return subList;
+	}
 
 
-  public LispValue grindef(LispValue code, int indentAmount)
-  {
-    indent(indentAmount);
+	public LispValue grindef(LispValue code, int indentAmount)
+	{
+		indent(indentAmount);
 
-    System.out.print(functionName);
-    indent(6);
-    code.second().internal_princ(System.out);
+		System.out.print(functionName);
+		indent(6);
+		code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+		f_lisp.NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
-  }
+		return f_lisp.cdr(f_lisp.cdr(code));
+	}
 }

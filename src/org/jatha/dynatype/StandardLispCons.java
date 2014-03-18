@@ -24,7 +24,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 import java.io.*;
@@ -47,7 +47,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 	protected LispValue cdrCell;
 
 	// change theCdr to LispConsOrNil
-	public  StandardLispCons(Jatha lisp, LispValue theCar, LispValue theCdr)
+	public  StandardLispCons(Lisp lisp, LispValue theCar, LispValue theCdr)
 	{
 		super(lisp);
 		if (theCar == null) {
@@ -67,7 +67,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 		cdrCell = theCdr;
 	}
 
-	public  StandardLispCons(Jatha lisp)
+	public  StandardLispCons(Lisp lisp)
 	{
 		super(lisp);
 		carCell = f_lisp.NIL;
@@ -211,7 +211,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
    */
   public String toStringAsCar_internal(long length, long level)
   {
-    if (level > f_lisp.getPrintLevel().getLongValue())
+    if (level > Lisp.PRINT_LEVEL_VALUE)//f_lisp.getPrintLevel().getLongValue())
     {
       System.err.println("Printing list deeper than *PRINT-LEVEL*.  Truncated.");
       return "...";
@@ -229,7 +229,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue    ptr = this;
     StringBuffer buf = new StringBuffer();
 
-    long maxLength = f_lisp.getPrintLength().getLongValue();
+    long maxLength = Lisp.PRINT_LENGTH_VALUE;//f_lisp.getPrintLength().getLongValue();
     while (length <= maxLength)
     {
       if (ptr == f_lisp.NIL)
@@ -372,7 +372,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   {
     LispValue ptr = this;
     long      len = 0;  // To prevent runaway lists.
-    long      maxLength = f_lisp.getMaxListLength().getLongValue();
+    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
     while (!(f_lisp.cdr(ptr) instanceof LispNil))
       if (!(ptr instanceof LispCons))
@@ -401,7 +401,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   {
     LispValue ptr = this;
     long      len = 0;
-    long      maxLength = f_lisp.getMaxListLength().getLongValue();
+    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
     while (!(ptr instanceof LispNil))
     {
@@ -460,7 +460,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue  ptr   = this;
     LispValue  value;
     long       len = 0;  // To prevent runaway lists.
-    long       maxLength = f_lisp.getMaxListLength().getLongValue();
+    long       maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
     while (!(ptr instanceof LispNil))
     {

@@ -30,7 +30,7 @@ import java.io.*;
 
 import org.jatha.exception.*;
 import org.jatha.read.*;
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -69,13 +69,13 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected Map f_documentation;
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
-  public StandardLispSymbol(Jatha lisp, String symbolName)
+  public StandardLispSymbol(Lisp lisp, String symbolName)
   {
     this(lisp, new StandardLispString(lisp, symbolName));
   }
 
   // Only 'name' is required to create a symbol.
-  public StandardLispSymbol(Jatha lisp, LispString symbolNameString)
+  public StandardLispSymbol(Lisp lisp, LispString symbolNameString)
   {
     super(lisp);
     f_name       = symbolNameString;
@@ -127,43 +127,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   {
     os.print(toString());
   }
-
-
-  // Prints information for the APROPOS function
-  public void apropos_print(PrintWriter out)
-  {
-    String printRep = this.toString();
-
-    out.print(printRep);
-    out.print(' ');
-    // TAB over
-    for (int i=0; i<((Jatha.APROPOS_TAB - printRep.length()) - 1); ++i)
-      out.print(' ');
-
-    // If symbol has a function, describe it:
-    if (f_function != null)
-    {
-      if (f_function.basic_macrop())
-        out.print("[macro] ");
-      else if (f_function.basic_functionp())
-        out.print("[function] ");
-      else
-        out.print("[not macro or function!]");
-   }
-    else if (f_lisp.getCompiler().specialFormP(this))
-      out.print("[special form] ");
-
-    else if (f_lisp.isType(this))
-      out.print("[type] ");
-
-    // If symbol has a value, print it:
-    if (f_value != null)
-    {
-      out.print("value: " + f_value);
-    }
-    out.println();
-  }
-
 
   /**
    * Returns a Java String containing a printed representation of this symbol.

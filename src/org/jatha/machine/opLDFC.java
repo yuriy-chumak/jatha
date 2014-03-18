@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispFunction;
 import org.jatha.dynatype.LispValue;
 
@@ -49,7 +49,7 @@ class opLDFC extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLDFC(Jatha lisp)
+  public opLDFC(Lisp lisp)
   {
     super(lisp, "LDFC");
   }

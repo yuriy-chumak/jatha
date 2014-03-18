@@ -63,7 +63,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.RandomAccess;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 
@@ -83,13 +83,13 @@ import org.jatha.exception.*;
  */
 public abstract class StandardLispValue implements LispValue    // Base class for all the LISP data types
 {
-	protected final Jatha f_lisp;
-	public StandardLispValue(final Jatha lisp)
+	protected final Lisp f_lisp;
+	public StandardLispValue(final Lisp lisp)
 	{
 		f_lisp = lisp;
 	}
 
-	public Jatha getLisp()
+	public Lisp getLisp()
 	{
 		return f_lisp;
 	}
@@ -113,13 +113,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { System.err.print("#<unprintable object>"); }
   public void internal_print_as_cdr(PrintStream os)
   { os.print(" . "); internal_print(os);  }
-
-
-  // Prints information for the APROPOS function
-  public void apropos_print(PrintWriter out)
-  {
-    System.err.print("** Internal error: apropos_print called on non-Symbol: #<unprintable object>");
-  }
 
   public boolean basic_bignump()   { return false; }
   public boolean basic_constantp() { return false; }
@@ -287,7 +280,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCar_internal(long length, long level)
   {
-    if (level > f_lisp.getPrintLevel().getLongValue())
+    if (level > Lisp.PRINT_LEVEL_VALUE)//f_lisp.getPrintLevel().getLongValue())
     {
       System.err.println("Printing list deeper than *PRINT-LEVEL*.  Truncated.");
       return "...";
@@ -302,7 +295,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCdr_internal(long length, long level)
   {
-    if (length > f_lisp.getPrintLength().getLongValue())
+    if (length > Lisp.PRINT_LENGTH_VALUE)//f_lisp.getPrintLength().getLongValue())
     {
       System.err.println("Printing list...longer than *PRINT-LENGTH*.  Truncated.");
       System.err.println("Next few items are: ");

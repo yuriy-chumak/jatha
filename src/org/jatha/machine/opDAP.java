@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 
@@ -46,7 +46,7 @@ class opDAP extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opDAP(Jatha lisp)
+  public opDAP(Lisp lisp)
   {
     super(lisp, "DAP");
   }

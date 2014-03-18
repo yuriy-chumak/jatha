@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
 
@@ -47,7 +47,7 @@ class opLIS extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLIS(Jatha lisp)
+  public opLIS(Lisp lisp)
   {
     super(lisp, "LIS");
   }

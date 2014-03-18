@@ -24,7 +24,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 import java.util.Iterator;
@@ -41,7 +41,7 @@ import java.util.Iterator;
  */
 public abstract class StandardLispList extends StandardLispValue  implements LispList
 {
-	public StandardLispList(Jatha lisp)
+	public StandardLispList(Lisp lisp)
 	{
 		super(lisp);
 	}

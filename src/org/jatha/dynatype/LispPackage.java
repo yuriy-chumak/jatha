@@ -32,7 +32,7 @@ import org.jatha.util.SymbolTable;
  * An implementation of ANSI Common LISP packages,
  * including defpackage, export, import, etc.
  *
- * @see org.jatha.Jatha
+ * @see org.jatha.Lisp
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  * @version 1.0
  *

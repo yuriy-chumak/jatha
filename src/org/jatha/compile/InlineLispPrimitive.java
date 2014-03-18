@@ -24,7 +24,7 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
@@ -40,10 +40,10 @@ import org.jatha.machine.*;
  */
 public abstract class InlineLispPrimitive extends LispPrimitive
 {
-	public InlineLispPrimitive(Jatha lisp, String fnName, long minArgs) {
+	public InlineLispPrimitive(Lisp lisp, String fnName, long minArgs) {
 		super(lisp, fnName, minArgs);
 	}
-	public InlineLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
+	public InlineLispPrimitive(Lisp lisp, String fnName, long minArgs, long maxArgs) {
 		super(lisp, fnName, minArgs, maxArgs);
 	}
 

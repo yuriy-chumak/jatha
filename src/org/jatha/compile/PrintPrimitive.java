@@ -24,13 +24,13 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.machine.*;
 
 
 public class PrintPrimitive extends LispPrimitive
 {
-  public PrintPrimitive(Jatha lisp)
+  public PrintPrimitive(Lisp lisp)
   {
     super(lisp, "PRINT", 1);
   }

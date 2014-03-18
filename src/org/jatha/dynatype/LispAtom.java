@@ -40,5 +40,5 @@ package org.jatha.dynatype;
  */
 public interface LispAtom extends LispValue
 {
-  // no extensions from LispValue
+	// no extensions from LispValue
 }

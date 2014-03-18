@@ -26,7 +26,7 @@
  */
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 /**
  * TAGBODY end.
@@ -42,7 +42,7 @@ class opTAG_E extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opTAG_E(final Jatha lisp) {
+  public opTAG_E(final Lisp lisp) {
     super(lisp, "TAG_E");
   }
 

@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -43,7 +43,7 @@ class opDUM extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opDUM(Jatha lisp)
+  public opDUM(Lisp lisp)
   {
     super(lisp, "DUM");
   }

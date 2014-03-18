@@ -26,7 +26,7 @@ package org.jatha.dynatype;
 
 import java.io.*;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.LispValueNotASymbolException;
 import org.jatha.util.SymbolTable;
 
@@ -36,7 +36,7 @@ import org.jatha.util.SymbolTable;
  * An implementation of ANSI Common LISP packages,
  * including defpackage, export, import, etc.
  *
- * @see org.jatha.Jatha
+ * @see org.jatha.Lisp
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  * @version 1.0
  * 
@@ -82,7 +82,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * this function.
    * @param name - a string giving the name of the new package
    */
-  public StandardLispPackage(Jatha lisp, String name)
+  public StandardLispPackage(Lisp lisp, String name)
   {
     this(lisp, new StandardLispString(lisp, name));
   }
@@ -97,7 +97,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * @param name - a LISP string giving the name of the package
    *
    */
-  public StandardLispPackage(Jatha lisp, LispValue name)
+  public StandardLispPackage(Lisp lisp, LispValue name)
   {
     this(lisp, name, null, null, null);
   }
@@ -110,12 +110,12 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * @param nicknames - a LISP list of nicknames (all strings)
    *
    */
-  public StandardLispPackage(Jatha lisp, LispValue name, LispValue nicknames)
+  public StandardLispPackage(Lisp lisp, LispValue name, LispValue nicknames)
   {
     this(lisp, name, nicknames, null, null);
   }
 
-  public StandardLispPackage(Jatha lisp, LispValue name, LispValue nicknames,
+  public StandardLispPackage(Lisp lisp, LispValue name, LispValue nicknames,
                              LispList usesList)
   {
     this(lisp, name, nicknames, usesList, null);
@@ -132,7 +132,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * @param puses a LISP list of exported symbols (all strings)
    * @param symtab a symbol table to use for this package.
    */
-  public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
+  public StandardLispPackage(Lisp lisp, LispValue pname, LispValue pnicknames,
 		                 LispList puses, SymbolTable symtab)
   {
       this(lisp, pname, pnicknames, puses, symtab, null);
@@ -150,7 +150,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    * @param shadows a shadowing symbol table to use for this package.
    *
    */
-  public StandardLispPackage(Jatha lisp, LispValue pname, LispValue pnicknames,
+  public StandardLispPackage(Lisp lisp, LispValue pname, LispValue pnicknames,
 		                 LispList puses, SymbolTable symtab, final SymbolTable shadows)
   {
     super(lisp);

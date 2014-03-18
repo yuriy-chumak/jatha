@@ -24,7 +24,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 /**
  * Implements a Common LISP 'macro' type which represents
@@ -36,7 +36,7 @@ import org.jatha.Jatha;
 public class StandardLispMacro extends StandardLispFunction implements LispMacro
 {
 
-  public StandardLispMacro(Jatha f_lisp, LispValue symbol, LispValue value)
+  public StandardLispMacro(Lisp f_lisp, LispValue symbol, LispValue value)
   {
     super(f_lisp, symbol, value);
   }

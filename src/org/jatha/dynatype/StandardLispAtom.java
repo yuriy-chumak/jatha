@@ -24,7 +24,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 // @date    Thu Mar 27 13:26:07 1997
@@ -41,7 +41,7 @@ import org.jatha.Jatha;
  */
 abstract public class StandardLispAtom extends StandardLispValue implements LispAtom
 {
-  public StandardLispAtom(Jatha lisp)
+  public StandardLispAtom(Lisp lisp)
   {
     super(lisp);
   }

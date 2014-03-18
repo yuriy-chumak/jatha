@@ -27,7 +27,7 @@ package org.jatha.dynatype;
 import java.io.PrintStream;
 import java.math.BigInteger;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -41,14 +41,14 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
 
   // ---  Constructors  ---
 
-  public StandardLispInteger(Jatha lisp, long theValue)
+  public StandardLispInteger(Lisp lisp, long theValue)
   {
     super(lisp);
     f_value = theValue;
   }
 
 
-  public StandardLispInteger(Jatha lisp)
+  public StandardLispInteger(Lisp lisp)
   {
     super(lisp);
     f_value = 0L;

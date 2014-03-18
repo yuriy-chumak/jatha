@@ -25,7 +25,7 @@ package org.jatha.dynatype;
 
 import java.io.PrintStream;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.LispConstantRedefinedException;
 
 
@@ -55,7 +55,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   private  LispValue  function = null;
   private  LispValue  pack = null;   // its package
 
-  public StandardLispNIL(Jatha lisp, String symbolName)
+  public StandardLispNIL(Lisp lisp, String symbolName)
   {
     super(lisp);
     name = new StandardLispString(lisp, symbolName);
@@ -63,7 +63,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
     plist = this;
   }
 
-  public StandardLispNIL(Jatha lisp, LispString symbolNameString)
+  public StandardLispNIL(Lisp lisp, LispString symbolNameString)
   {
     super(lisp);
     name  = symbolNameString;
@@ -80,35 +80,6 @@ public class StandardLispNIL extends StandardLispList implements LispNil
 
   public void internal_print(PrintStream os)        { os.print("NIL"); }
   public void internal_print_as_cdr(PrintStream os) { /* Do Nothing */ }
-
-  // Prints information for the APROPOS function
-  // Same implementation as for LispSymbol.
-  public void apropos_print(PrintStream out)
-  {
-    internal_print(out);
-    // Print at least one space;
-    out.print(' ');
-    // TAB over
-    for (int i=0; i<((Jatha.APROPOS_TAB - name.getValue().length()) - 1); ++i)
-      out.print(' ');
-
-    // If symbol has a function, describe it:
-    if (function != null)
-    {
-      if (function.basic_macrop())
-        out.print("[macro] ");
-      else
-        out.print("[function] ");
-    }
-
-    // If symbol has a value, print it:
-    if (value != null)
-    {
-      out.print("value: ");
-      value.internal_prin1(out);
-    }
-    out.println();
-  }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()

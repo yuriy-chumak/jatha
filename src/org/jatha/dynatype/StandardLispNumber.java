@@ -24,7 +24,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 import java.util.Iterator;
@@ -45,7 +45,7 @@ import java.util.Iterator;
  */
 abstract public class StandardLispNumber extends StandardLispAtom implements LispNumber
 {
-  public StandardLispNumber(Jatha lisp)
+  public StandardLispNumber(Lisp lisp)
   {
     super(lisp);
   }

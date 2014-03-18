@@ -26,7 +26,7 @@ package org.jatha.dynatype;
 
 import java.io.PrintStream;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 
@@ -43,14 +43,14 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
 
   // ----- Constructors  ------------
-  public StandardLispCharacter(Jatha lisp, char theChar)
+  public StandardLispCharacter(Lisp lisp, char theChar)
   {
     super(lisp);
     value = theChar;
   }
 
 
-  public StandardLispCharacter(Jatha lisp)
+  public StandardLispCharacter(Lisp lisp)
   {
     super(lisp);
     value = 'm';  // For Mike!

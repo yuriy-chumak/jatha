@@ -24,14 +24,14 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.machine.*;
 
 
 public class SetPrimitive extends LispPrimitive
 {
-  public SetPrimitive(Jatha lisp)
+  public SetPrimitive(Lisp lisp)
   {
     super(lisp, "SET", 2);
   }

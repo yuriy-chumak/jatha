@@ -33,7 +33,7 @@
 
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 import java.math.BigInteger;
 
@@ -49,7 +49,7 @@ public class StandardLispComplex extends StandardLispNumber implements LispCompl
   /**
    * Creates the complex number (0, 0).
    */
-  public StandardLispComplex(Jatha lisp)
+  public StandardLispComplex(Lisp lisp)
   {
     this(lisp, lisp.makeReal(0.0), lisp.makeReal(0.0));
   }
@@ -60,7 +60,7 @@ public class StandardLispComplex extends StandardLispNumber implements LispCompl
    * @param realPart
    * @param imaginaryPart
    */
-  public StandardLispComplex(Jatha lisp, LispValue realPart, LispValue imaginaryPart)
+  public StandardLispComplex(Lisp lisp, LispValue realPart, LispValue imaginaryPart)
   {
     super(lisp);
 

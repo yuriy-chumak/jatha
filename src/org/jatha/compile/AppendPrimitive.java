@@ -22,48 +22,47 @@
  *
  */
 
-package org.jatha.machine;
+package org.jatha.compile;
 
 import org.jatha.Lisp;
 import org.jatha.dynatype.*;
+import org.jatha.exception.CompilerException;
+import org.jatha.machine.*;
 
 
-// @date    Sat Feb  1 22:18:53 1997
-/**
- * opRTN_IT returns from a function call if the
- * value on the stack is non-NIL. (RTN-if-true).
- * It returns the value on the stack.  Used in
- * compilation of the OR function.
- * Uses D register.
- * Modifes S, E, C and D registers.
- * @see SECDMachine
- * @author  Micheal S. Hewett    hewett@cs.stanford.edu
- */
-class opRTN_IT extends SECDop
+public class AppendPrimitive extends LispPrimitive
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  public opRTN_IT(Lisp lisp)
+  public AppendPrimitive(Lisp lisp)
   {
-    super(lisp, "RTN_IT");
+    super(lisp, "APPEND", 0, Long.MAX_VALUE);
   }
-
 
   public void Execute(SECDMachine machine)
   {
-    LispValue save = machine.S.pop();
+    LispValue args = machine.S.pop();
 
-    machine.C.pop();               /* Pop the RTN_IT command. */
-
-    if (save != f_lisp.NIL)
-    {
-      machine.S.assign(f_lisp.makeCons(save, machine.D.pop()));
-      machine.E.assign(machine.D.pop());
-      machine.C.assign(machine.D.pop());
-    }
-    // else do nothing and continue processing.
+    machine.S.push(appendArgs(args));
+    machine.C.pop();
   }
+
+  // This is right-recursive so it only copies each arg once.
+  // The last arg is not copied, of course.
+  LispValue appendArgs(LispValue args)
+  {
+    if (f_lisp.cdr(args) == f_lisp.NIL)
+      return f_lisp.car(args);
+    else
+      return f_lisp.car(args).append(appendArgs(f_lisp.cdr(args)));
+  }
+
+  // Unlimited number of evaluated args.
+  public LispValue CompileArgs (LispCompiler compiler, SECDMachine machine, LispValue args,
+				LispValue valueList, LispValue code)
+    throws CompilerException
+  {
+    return
+      compiler.compileArgsLeftToRight(args, valueList,
+				      f_lisp.makeCons(machine.LIS,
+                              f_lisp.makeCons(args.length(), code)));
+   }
 }

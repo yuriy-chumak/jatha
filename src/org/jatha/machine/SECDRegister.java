@@ -25,7 +25,7 @@
 package org.jatha.machine;
 
 import org.jatha.dynatype.*;
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 // @date    Mon Feb  3 19:02:37 1997
 /**
@@ -40,18 +40,15 @@ import org.jatha.Jatha;
  *
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class SECDRegister extends StandardLispSymbol
+public class SECDRegister //extends StandardLispSymbol
 {
-	protected LispSymbol f_registerSymbol = null;
+	protected final LispSymbol f_registerSymbol;
 
-
-	public SECDRegister(final Jatha lisp, String name)
+	public SECDRegister(final Lisp lisp, String name)
 	{
-		super(lisp, name);
-    
 		long rand = (long)(Math.rint(Math.random() * 1000.0));
 		f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
-    
+
 		assign(lisp.NIL);
 	}
 

@@ -26,7 +26,7 @@
  */
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 /**
@@ -43,7 +43,7 @@ class opTAG_B extends SECDop {
      * and the label of this instruction.
      * @see SECDMachine
      */
-    public opTAG_B(final Jatha lisp) {
+    public opTAG_B(final Lisp lisp) {
         super(lisp, "TAG_B");
     }
     

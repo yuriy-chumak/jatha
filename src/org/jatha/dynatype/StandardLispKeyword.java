@@ -23,7 +23,7 @@
  */
 package org.jatha.dynatype;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.LispConstantRedefinedException;
 
 // See LispValue.java for documentation
@@ -37,14 +37,14 @@ import org.jatha.exception.LispConstantRedefinedException;
  */
 public class StandardLispKeyword extends StandardLispConstant implements LispKeyword
 {
-  public StandardLispKeyword(Jatha lisp, String symbolName)
+  public StandardLispKeyword(Lisp lisp, String symbolName)
   {
     super(lisp, symbolName);
     f_value = this;
     setExternal(true);   // All keywords are external in the keyword package
   }
 
-  public StandardLispKeyword(Jatha lisp, LispString symbolNameString)
+  public StandardLispKeyword(Lisp lisp, LispString symbolNameString)
   {
     super(lisp, symbolNameString);
     f_value = this;

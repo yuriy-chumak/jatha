@@ -29,7 +29,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.LispException;
 
 /**
@@ -51,14 +51,13 @@ import org.jatha.exception.LispException;
  *             \----- LispSymbol
  *                      \------- LispConstant
  *                                 \--------- LispKeyword
- *   \------ LispConsOrNil
+ *   \------ LispList
  *             \---------- LispCons
  *             \---------- LispNil
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
  *   \
- *   
  */
 public interface LispValue extends Comparable<LispValue>
 {
@@ -69,7 +68,7 @@ public interface LispValue extends Comparable<LispValue>
 	
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
 
-  public Jatha getLisp();
+  public Lisp getLisp();
 
   public String internal_getName();
 
@@ -85,11 +84,6 @@ public interface LispValue extends Comparable<LispValue>
 
   public void internal_print_as_cdr(PrintStream os);
 
-
-  /**
-   * Prints information for the APROPOS function
-   */
-  public void apropos_print(PrintWriter out);
 
   /**
    * Returns Java true if the object is a Bignum.

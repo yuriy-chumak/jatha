@@ -24,12 +24,8 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
-
-
-
-// @date    Sat Feb  1 22:18:53 1997
 /**
  * opT pushes a constant T onto the stack.
  * Uses C register (2 values).
@@ -44,7 +40,7 @@ class opT extends SECDop
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opT(final Jatha lisp)
+	public opT(final Lisp lisp)
 	{
 		super(lisp, "CONST_T");
 	}

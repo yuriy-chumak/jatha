@@ -24,7 +24,9 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
+import org.jatha.dynatype.LispCons;
+import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
 
 
@@ -40,55 +42,40 @@ import org.jatha.dynatype.LispValue;
  */
 class opLD extends SECDop
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLD(Jatha lisp)
-  {
-    super(lisp, "LD");
-  }
-
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opLD(Lisp lisp)
+	{
+		super(lisp, "LD");
+	}
 
 	public void Execute(SECDMachine machine)
 	{
 		LispValue indexes;
 
-		indexes = machine.C.value().second();
-    /*
-    System.err.println("----DEBUG----");
-    System.err.println(machine.E.value());
-    System.err.println(indexes);
-    System.err.println(getComponentAt(indexes,machine.E.value()));
-    System.err.println("-------------");
-    */
-    /*
-       print(CREATE_SYMBOL("---DEBUG----"));
-       print(indexes);
-       print(symbol_value(E));
-       push(print(getComponentAt(indexes, symbol_value(E))), S);
-       print(CREATE_SYMBOL("-----------"));
-       */
+		LispCons value = (LispCons)machine.C.value();
 
-    machine.S.push(getComponentAt(indexes, machine.E.value()));
+		indexes = value.second();
+		
+		machine.S.push(getComponentAt(indexes, machine.E.value()));
 
-    machine.C.pop();
-    machine.C.pop();
-  }
+		machine.C.pop();
+		machine.C.pop();
+	}
 
+	public LispValue grindef(LispValue code, int indentAmount)
+	{
+		indent(indentAmount);
 
-  public LispValue grindef(LispValue code, int indentAmount)
-  {
-    indent(indentAmount);
+		System.out.print(functionName);
+		indent(6);
+		code.second().internal_princ(System.out);
 
-    System.out.print(functionName);
-    indent(6);
-    code.second().internal_princ(System.out);
+		f_lisp.NEWLINE.internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
-
-    return f_lisp.cdr(f_lisp.cdr(code));
-  }
+		return Lisp.cddr(code);
+	}
 }

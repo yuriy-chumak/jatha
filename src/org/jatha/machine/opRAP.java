@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 
 
@@ -48,7 +48,7 @@ class opRAP extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opRAP(Jatha lisp)
+  public opRAP(Lisp lisp)
   {
     super(lisp, "RAP");
   }

@@ -24,7 +24,7 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.machine.*;
 
@@ -33,7 +33,7 @@ import org.jatha.machine.*;
 
 public class ConsPrimitive extends LispPrimitive
 {
-  public ConsPrimitive(Jatha lisp)
+  public ConsPrimitive(Lisp lisp)
   {
     super(lisp, "CONS", 2);
   }

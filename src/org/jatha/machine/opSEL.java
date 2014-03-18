@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispValue;
 
 
@@ -47,7 +47,7 @@ class opSEL extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opSEL(Jatha lisp)
+  public opSEL(Lisp lisp)
   {
     super(lisp, "SEL");
   }

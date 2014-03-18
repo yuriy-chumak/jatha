@@ -24,11 +24,8 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
-
-
-// @date    Sat Feb  1 22:18:53 1997
 /**
  * opNIL pushes the constant NIL onto the S register and pops the C register.
  * Modifes S register.
@@ -37,20 +34,19 @@ import org.jatha.Jatha;
  */
 class opNIL extends SECDop
 {
-  /**
-   * It calls <tt>SECDop()</tt> with the machine argument
-   * and the label of this instruction.
-   * @see SECDMachine
-   */
-  public opNIL(Jatha lisp)
-  {
-    super(lisp, "CONST_NIL");
-  }
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opNIL(Lisp lisp)
+	{
+		super(lisp, "CONST_NIL");
+	}
 
-
-  public void Execute(SECDMachine machine)
-  {
-    machine.S.push(f_lisp.NIL);
-    machine.C.pop();
-  }
+	public void Execute(SECDMachine machine)
+	{
+		machine.S.push(f_lisp.NIL);
+		machine.C.pop();
+	}
 }

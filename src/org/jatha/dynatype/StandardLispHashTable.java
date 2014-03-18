@@ -27,7 +27,7 @@ package org.jatha.dynatype;
 import java.io.*;
 import java.util.*;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 
 
 // date    Mon Feb 24 22:40:45 1997
@@ -139,7 +139,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
    * and rehash thresholds.  The defaults are from
    * Allegro Common Lisp 4.3
    */
-  public StandardLispHashTable(Jatha lisp)
+  public StandardLispHashTable(Lisp lisp)
   {
     super(lisp);
   }
@@ -156,7 +156,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
    * Send in the test type, size, rehash-size, and rehash-threshold
    * or NIL for any of the parameters.
    */
-  public StandardLispHashTable(Jatha lisp, LispValue typeArg, LispValue sizeArg,
+  public StandardLispHashTable(Lisp lisp, LispValue typeArg, LispValue sizeArg,
 		   LispValue rehashSizeArg, LispValue rehashThresholdArg)
   {
     super(lisp);

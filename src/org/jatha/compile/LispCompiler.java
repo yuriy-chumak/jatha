@@ -33,7 +33,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.Registrar;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
@@ -93,8 +93,8 @@ public class LispCompiler
   
 
   boolean WarnAboutSpecialsP = false;    // todo: Need some way to turn this on.
-  private Jatha f_lisp = null;
-  public Jatha getLisp() { return f_lisp; }
+  private Lisp f_lisp = null;
+  public Lisp getLisp() { return f_lisp; }
   private final Stack<LispValue> legalBlocks = new Stack<LispValue>();
   private final Stack<Set<LispValue>> legalTags   = new Stack<Set<LispValue>>();
   private final Map<Long, LispValue> registeredGos = new HashMap<Long, LispValue>();
@@ -219,7 +219,7 @@ public class LispCompiler
     DUMMY_MACRO    = new StandardLispMacro(f_lisp, null, f_lisp.makeCons(f_lisp.T, f_lisp.NIL));
 	}
 
-  public LispCompiler(Jatha lisp)
+  public LispCompiler(Lisp lisp)
   {
     super();
 
@@ -318,12 +318,48 @@ public class LispCompiler
 				machine.C.pop();
 			}
 		}, SYSTEM_PKG);
+    	// "inline" primitives (for perfomance purposes)
+		Register(new InlineLispPrimitive(f_lisp, "BLOCK", 1, Long.MAX_VALUE) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				final LispValue tag = ((LispList)args).car();
+				compiler.getLegalBlocks().push(tag);
+				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"), ((LispList)args).cdr()));
+				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList, f_lisp.makeCons(machine.BLK, f_lisp.makeCons(tag, code)));
+				compiler.getLegalBlocks().pop();
+				return compiledCode;
+			}
+		}, SYSTEM_PKG);
+		
 		Register(new LispPrimitive(f_lisp, "CONS", 2) {
 			public LispValue Execute(LispValue a, LispValue b) {
 				return
 				f_lisp.makeCons(a, b);
 			}
 		}, SYSTEM_PKG);
+		Register(new InlineLispPrimitive(f_lisp, "LIST", 0, Long.MAX_VALUE) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				return compiler.compileArgsLeftToRight(args, valueList,
+						f_lisp.makeCons(machine.LIS,
+								f_lisp.makeCons(args.length(), code)));
+			}
+		}, SYSTEM_PKG);
+		/*compiler.Register(new InlineLispPrimitive(f_lisp, "LIST*", 1, Long.MAX_VALUE) {
+			LispValue CONS = new ConsPrimitive(f_lisp);
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				if (args.cdr() == f_lisp.NIL)
+					return compiler.compileArgsLeftToRight(args, valueList, code);
+				return compiler.compile(args.car(), valueList,
+						CompileArgs(compiler, machine, args.cdr(),
+								valueList,
+								f_lisp.makeCons(CONS, code)));
+			}
+		}, SYSTEM_PKG);*/
 
 		
 		// 
@@ -347,6 +383,11 @@ public class LispCompiler
 				return f_lisp.NIL;
 			}
 		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "EQL", 2) {
+			public LispValue Execute(LispValue a, LispValue b) {
+				return a.eql(b);
+			}
+		}, SYSTEM_PKG);
 		Register(new LispPrimitive(f_lisp, "NOT", 1) {
 			public LispValue Execute(LispValue a) {
 				return f_lisp.makeBool(is_null(a));
@@ -360,8 +401,19 @@ public class LispCompiler
 			    LispValue val = machine.S.pop();
 			    LispValue sym = machine.S.pop();
 
-			    if (sym instanceof LispList)   // local variable
-			      machine.LD.setComponentAt(sym, machine.E.value(), val);
+			    if (sym instanceof LispCons) {   // local variable
+			    	LispCons ij_indexes = (LispCons)sym;
+			    	LispValue valueList = machine.E.value();
+			    	LispValue newValue = val;
+
+					long i = ((LispInteger)(ij_indexes.car())).getLongValue();
+					long j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
+
+					LispCons values = (LispCons)Lisp.nth(i, (LispCons)valueList);
+					while (--j > 0)
+						values = (LispCons)values.cdr();
+					values.rplaca(newValue);
+			    }
 
 			    else if (sym.specialP())  // special variable
 			      machine.special_set(sym, val);
@@ -398,7 +450,7 @@ public class LispCompiler
 			}
 		}, SYSTEM_PKG);
 		
-		
+		// move to "math" ?
 		Register(new ComplexLispPrimitive(f_lisp, "+", 0, Long.MAX_VALUE) {
 			public LispValue Execute(LispValue args) {
 				if (args == f_lisp.NIL)
@@ -442,6 +494,84 @@ public class LispCompiler
 		
 		registerAccessorFunctions(SYSTEM_PKG);
 //		registerStringFunctions(SYSTEM_PKG);
+		
+		Register(new EqualNumericPrimitive(f_lisp));
+		Register(new AppendPrimitive(f_lisp));
+		
+		
+		// TEMPORARY for TESTS (maybe need to set permanent)
+		Register(new LispPrimitive(f_lisp, "CONSP", 1) {
+			public LispValue Execute(LispValue a) {
+				if (a instanceof LispCons)
+					return f_lisp.T;
+				return f_lisp.NIL;
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "CONSTANTP", 1) {
+			public LispValue Execute(LispValue a) {
+				if (a instanceof LispConstant)
+					return f_lisp.T;
+				return f_lisp.NIL;
+			}
+		}, SYSTEM_PKG);
+
+	
+		Register(new LispPrimitive(f_lisp, "STRING", 1) {
+			public LispValue Execute(LispValue a) {
+				return a.string();
+			}
+		}, SYSTEM_PKG);
+		Register(new LispPrimitive(f_lisp, "STRING-EQUAL", 2) {
+			public LispValue Execute(LispValue a, LispValue b) {
+				return a.stringEqual(b);
+			}
+		}, SYSTEM_PKG);
+		
+		
+		/**
+		 * Concatenate a string to another string.
+		 * Passing in any LispValue causes it to be converted to a string
+		 * and concatenated to the end.
+		 * This returns a new LispString.
+		 */
+		Register(new ComplexLispPrimitive(f_lisp, "CONCATENATE", 1, Long.MAX_VALUE) {
+			// First argument should be 'STRING
+			// Apply concatenate to the next argument.
+			public LispValue Execute(LispValue args) {
+				LispValue concatType = Lisp.car(args);
+				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
+					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
+				args = Lisp.cdr(args);
+				
+				if (args.basic_length() == 0)
+					return f_lisp.makeString("");
+				
+				StringBuffer buff = new StringBuffer(args.basic_length() * 5);
+
+				Iterator<LispValue> valuesIt = args.iterator();
+				while (valuesIt.hasNext())
+				{
+					LispValue value = valuesIt.next();
+					if (value instanceof LispString)
+						buff.append(value.toStringSimple());
+					else
+						buff.append(value.toString());
+				}
+				return new StandardLispString(f_lisp, buff.toString());
+				
+/*				if (args.basic_length() > 1)
+					return args.second().concatenate(f_lisp.makeCons(args.car(), args.cdr().cdr()));
+				return f_lisp.makeString("");*/
+			}
+		}, SYSTEM_PKG);
+		
+		
+		Register(new LispPrimitive(f_lisp, "SQRT", 1) {
+			public LispValue Execute(LispValue a) {
+				return a.sqrt();
+			}
+		}, SYSTEM_PKG);
+		
 		
 	}
 	
@@ -541,77 +671,6 @@ public class LispCompiler
 
 
   /* --- Utility routines --- */
-
-/*  LispValue	loc(long y, LispValue z)
-  {
-    if (y == 1)
-      return(z.car());
-    else
-      return loc(y-1, z.cdr());
-  }
-
-
-  LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
-  {
-    long i, j;
-
-    i = ((LispInteger)(ij_indexes.car())).getLongValue();
-    j = ((LispInteger)(ij_indexes.cdr())).getLongValue();
-
-    return loc(j, loc(i, valueList));
-  }
-
-
-  LispValue index2(LispValue e, LispValue n, long j)
-  {
-    if (n == f_lisp.NIL)
-      return n;
-    else if (n.car() == e)
-      return f_lisp.makeInteger(j);
-    else
-      return index2(e, n.cdr(), j+1);
-  }
-
-
-  LispValue index_aux(LispValue e, LispValue n, long i)
-  {
-    if (n == f_lisp.NIL)
-      return n;
-    else
-    {
-      LispValue j;
-
-      j = index2(e, n.car(), 1);
-
-      if (j == f_lisp.NIL)
-        return index_aux(e, n.cdr(), i+1);
-      else
-        return f_lisp.makeCons(f_lisp.makeInteger(i), j);
-    }
-  }
-
-  /**
-   * Looks up the symbol in a list of lists.
-   * Returns the index of the list in which it is found and
-   * the index in that list.
-   * Both indexes start from 1.
-   * Returns NIL if not found.
-   * Examples:
-   * <pre>
-   *     index(b, ((a b c) (d e f)) = (1 . 2)
-   *     index(f, ((a b c) (d e f)) = (2 . 3)
-   *     index(z, ((a b c) (d e f)) = NIL
-   * </pre>
-   * @param e a Symbol
-   * @param n a list of lists
-   * @return either NIL, if not found, or a Cons of 2 LispIntegers (a . b) indicating list number (a) and index into that list (b)
-   */
-/*  LispValue index(LispValue e, LispValue n)
-  {
-    return index_aux(e, n, 1);
-  }
-*/
-
   // New IndexInList and IndexAndAttributes contributed by
   // Jean-Pierre Gaillardon, April 2005
   /**

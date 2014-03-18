@@ -29,7 +29,7 @@ import java.math.BigInteger;
 
 import java.util.regex.Pattern;
 import org.jatha.dynatype.*;
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 
@@ -101,14 +101,14 @@ public class LispParser
   private static LispParser f_myParser = null;
 
 
-  private Jatha f_lisp = null;
+  private Lisp f_lisp = null;
 
-  public LispParser(Jatha lisp, Reader inStream)
+  public LispParser(Lisp lisp, Reader inStream)
   {
     this(lisp, inStream, UPCASE);
   }
 
-  public LispParser(Jatha lisp, String inString)
+  public LispParser(Lisp lisp, String inString)
   {
     this(lisp, new StringReader(inString), UPCASE);
   }
@@ -120,7 +120,7 @@ public class LispParser
    * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
    * @param inStream
    */
-  public LispParser(Jatha lisp, Reader inStream, int caseSensitivity)
+  public LispParser(Lisp lisp, Reader inStream, int caseSensitivity)
   {
     f_lisp = lisp;
 
@@ -136,7 +136,7 @@ public class LispParser
    * input case conversion as you like.
    * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
    */
-  public LispParser(Jatha lisp, String inString, int caseSensitivity)
+  public LispParser(Lisp lisp, String inString, int caseSensitivity)
   {
     this(lisp, new StringReader(inString));
     setCaseSensitivity(caseSensitivity);
@@ -1153,7 +1153,7 @@ public class LispParser
    * @param input a String
    * @return true if it has balanced parentheses
    */
-  public static boolean hasBalancedParentheses(Jatha lisp, LispValue input)
+  public static boolean hasBalancedParentheses(Lisp lisp, LispValue input)
   {
     return hasBalancedParentheses(lisp, input.toString());
   }
@@ -1163,7 +1163,7 @@ public class LispParser
    * @param input a String
    * @return true if it has balanced parentheses
    */
-  public static boolean hasBalancedParentheses(Jatha lisp, String input)
+  public static boolean hasBalancedParentheses(Lisp lisp, String input)
   {
     LispValue result = lisp.NIL;
 

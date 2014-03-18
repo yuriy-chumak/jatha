@@ -24,7 +24,7 @@
 
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
@@ -33,7 +33,7 @@ import org.jatha.machine.*;
 // todo: rename as LispPrimitiveWithVariableNumerOfArgs
 public abstract class ComplexLispPrimitive extends LispPrimitive
 {
-	public ComplexLispPrimitive(Jatha lisp, String fnName, long minArgs, long maxArgs) {
+	public ComplexLispPrimitive(Lisp lisp, String fnName, long minArgs, long maxArgs) {
 		super(lisp, fnName, minArgs, maxArgs);
 	}
 

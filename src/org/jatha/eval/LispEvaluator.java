@@ -26,7 +26,7 @@
 
 package org.jatha.eval;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispPackage;
 import org.jatha.dynatype.LispString;
 import org.jatha.dynatype.LispSymbol;
@@ -46,11 +46,11 @@ import org.jatha.dynatype.StandardLispString;
  */
 public class LispEvaluator
 {
-  private Jatha f_lisp = null;
+  private Lisp f_lisp = null;
 
   // --------  CONSTRUCTORS  -------------
 
-  public LispEvaluator(Jatha lisp)
+  public LispEvaluator(Lisp lisp)
   {
     super();
 

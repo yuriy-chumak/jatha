@@ -24,7 +24,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispValue;
 
 
@@ -38,7 +38,7 @@ import org.jatha.dynatype.LispValue;
  */
 class opSP_UNBIND extends SECDop
 {
-  public opSP_UNBIND(Jatha lisp)
+  public opSP_UNBIND(Lisp lisp)
   {
     super(lisp, "SP_UNBIND");
   }

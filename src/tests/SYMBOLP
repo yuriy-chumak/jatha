@@ -1,10 +1,12 @@
 ;;;; LISP
 
-(require 'symbols)
+(comment
+	(require 'symbols)
 
-(symbolp 'elephant)
-(not (symbolp 123))
-(symbolp nil)
-(symbolp '())
-(symbolp :pp)
-(not (symbolp "s"))
+	(symbolp 'elephant)
+	(not (symbolp 123))
+	(symbolp nil)
+	(symbolp '())
+	(symbolp :pp)
+	(not (symbolp "s"))
+)

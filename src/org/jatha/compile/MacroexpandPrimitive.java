@@ -26,7 +26,7 @@
  */
 package org.jatha.compile;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispPackage;
 import org.jatha.dynatype.LispSymbol;
@@ -41,7 +41,7 @@ import org.jatha.machine.SECDMachine;
  * @version $Revision: 1.3 $
  */
 public class MacroexpandPrimitive extends LispPrimitive {
-    public MacroexpandPrimitive(final Jatha lisp) {
+    public MacroexpandPrimitive(final Lisp lisp) {
         super(lisp, "MACROEXPAND", 1);
     }
     

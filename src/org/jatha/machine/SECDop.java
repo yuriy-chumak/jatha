@@ -41,7 +41,7 @@
 
 package org.jatha.machine;
 
-import org.jatha.Jatha;
+import org.jatha.Lisp;
 import org.jatha.compile.LispPrimitive;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispList;
@@ -62,7 +62,7 @@ public abstract class SECDop extends LispPrimitive
 	/**
 	 * @see SECDMachine
 	 */
-	public SECDop(final Jatha lisp, String opName)
+	public SECDop(final Lisp lisp, String opName)
 	{
 		super(lisp, opName);
 	}
@@ -78,32 +78,6 @@ public abstract class SECDop extends LispPrimitive
 
 
 	/* --- Utility routines --- */
-	public LispValue loc(long y, LispValue z)
-	{
-		assert z instanceof LispCons; // todo: move LispCons type to variable declaration
-		
-		if (y == 1)
-			return(f_lisp.car(z));
-		else
-			return loc(y-1, f_lisp.cdr(z));
-	}
-
-
-  /**
-   * Sets the nth position in the list to the new value.
-   * @param y  an index into the list
-   * @param values a list of values
-   * @param newValue the new value for the index.
-   */
-  public void setLoc(long y, LispValue values, LispValue newValue)
-  {
-    if (y == 1)
-      values.rplaca(newValue);
-    else
-      setLoc(y-1, f_lisp.cdr(values), newValue);
-  }
-
-
 	public LispValue getComponentAt(LispValue ij_indexes, LispValue valueList)
 	{
 		assert ij_indexes instanceof LispCons;	// ?
@@ -111,18 +85,6 @@ public abstract class SECDop extends LispPrimitive
 		long i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
 		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
 
-		return loc(j, loc(i, valueList));
-	}
-
-	public void setComponentAt(LispValue ij_indexes, LispValue valueList, LispValue newValue)
-	{
-		assert ij_indexes instanceof LispCons;	// ?
-
-		long i = ((LispInteger)(f_lisp.car(ij_indexes))).getLongValue();
-		long j = ((LispInteger)(f_lisp.cdr(ij_indexes))).getLongValue();
-
-		setLoc(j, loc(i, valueList), newValue);
+		return Lisp.nth(j, (LispCons)Lisp.nth(i, (LispCons)valueList));
 	}
 }
-
-// The individual opcodes are in separate files.
