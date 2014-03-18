@@ -104,20 +104,20 @@ public class LispCompiler
   // static initializer.
 	private void initializeConstants()
 	{
-		final LispPackage keyPkg = (LispPackage)(f_lisp.findPackage("KEYWORD"));
+		final LispPackage keyPkg = f_lisp.KEYWORD;
 		final LispPackage SYSTEM_PKG = (LispPackage)(f_lisp.findPackage("SYSTEM"));
 
-		QUOTE      = f_lisp.EVAL.internAndExport("QUOTE",   SYSTEM_PKG);
-		AMP_REST   = f_lisp.EVAL.internAndExport("&REST", SYSTEM_PKG);
-		MACRO      = f_lisp.EVAL.internAndExport("MACRO", keyPkg);
-		PRIMITIVE  = f_lisp.EVAL.internAndExport("PRIMITIVE", keyPkg);
-		SETQ       = f_lisp.EVAL.internAndExport("SETQ", SYSTEM_PKG);
+		QUOTE      = f_lisp.internAndExport("QUOTE",   SYSTEM_PKG);
+		AMP_REST   = f_lisp.internAndExport("&REST", SYSTEM_PKG);
+		MACRO      = f_lisp.MACRO;
+		PRIMITIVE  = f_lisp.PRIMITIVE;
+		SETQ       = f_lisp.internAndExport("SETQ", SYSTEM_PKG);
     //    sysPkg.export(BLOCK);
     //    WHEN       = f_lisp.EVAL.intern("WHEN");
     
 		SpecialOperators = new TreeMap<LispValue, Compiler>() {{
 			put(PROGN =
-				f_lisp.EVAL.internAndExport("PROGN", SYSTEM_PKG),
+				f_lisp.internAndExport("PROGN", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -125,7 +125,7 @@ public class LispCompiler
 						}
 				});
 			put(COMMENT =
-				f_lisp.EVAL.internAndExport("COMMENT", SYSTEM_PKG),
+				f_lisp.internAndExport("COMMENT", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -133,7 +133,7 @@ public class LispCompiler
 						}
 				});
 			put(DEFUN =
-				f_lisp.EVAL.internAndExport("DEFUN", SYSTEM_PKG),
+				f_lisp.internAndExport("DEFUN", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -142,7 +142,7 @@ public class LispCompiler
 				});
 
 			put(LAMBDA =
-				f_lisp.EVAL.internAndExport("LAMBDA", SYSTEM_PKG),
+				f_lisp.internAndExport("LAMBDA", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -151,7 +151,7 @@ public class LispCompiler
 						}
 				});
 			put(DEFMACRO =
-				f_lisp.EVAL.internAndExport("DEFMACRO", SYSTEM_PKG),
+				f_lisp.internAndExport("DEFMACRO", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -159,7 +159,7 @@ public class LispCompiler
 						}
 				});
 			put(AND =
-				f_lisp.EVAL.internAndExport("AND", SYSTEM_PKG),
+				f_lisp.internAndExport("AND", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -167,7 +167,7 @@ public class LispCompiler
 						}
 				});
 			put(OR =
-				f_lisp.EVAL.internAndExport("OR", SYSTEM_PKG),
+				f_lisp.internAndExport("OR", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -175,7 +175,7 @@ public class LispCompiler
 						}
 				});
 			put(IF =
-				f_lisp.EVAL.internAndExport("IF", SYSTEM_PKG),
+				f_lisp.internAndExport("IF", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -184,7 +184,7 @@ public class LispCompiler
 						}
 				});
 			put(LET =
-				f_lisp.EVAL.internAndExport("LET", SYSTEM_PKG),
+				f_lisp.internAndExport("LET", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -197,7 +197,7 @@ public class LispCompiler
 						}
 				});
 			put(LETREC =
-				f_lisp.EVAL.internAndExport("LETREC", SYSTEM_PKG),
+				f_lisp.internAndExport("LETREC", SYSTEM_PKG),
 					new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
@@ -325,7 +325,7 @@ public class LispCompiler
 			{
 				final LispValue tag = ((LispList)args).car();
 				compiler.getLegalBlocks().push(tag);
-				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.getEval().intern("PROGN"), ((LispList)args).cdr()));
+				final LispValue fullCode = f_lisp.makeList(f_lisp.makeCons(f_lisp.intern("PROGN"), ((LispList)args).cdr()));
 				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList, f_lisp.makeCons(machine.BLK, f_lisp.makeCons(tag, code)));
 				compiler.getLegalBlocks().pop();
 				return compiledCode;
@@ -663,7 +663,7 @@ public class LispCompiler
 		    private LispValue expand(final LispValue form) {
 		        final LispValue carForm = f_lisp.car(form); // todo: check for LispSymbol
 		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
-		            return f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form))));
+		            return f_lisp.eval(f_lisp.makeCons(f_lisp.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form))));
 		        } else {
 		            return form;
 		        }
@@ -684,7 +684,7 @@ public class LispCompiler
 		        final LispValue carForm = f_lisp.car(form);	// todo: check for LispSymbol
 		        
 		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
-		            return (f_lisp.eval(f_lisp.makeCons(f_lisp.EVAL.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form)))));
+		            return (f_lisp.eval(f_lisp.makeCons(f_lisp.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form)))));
 		        } else {
 		            return (form);
 		        }
@@ -742,7 +742,7 @@ public class LispCompiler
   */
   public void Register(LispPrimitive primitive, LispPackage pkg)
   {
-      final LispValue symbol = f_lisp.getEval().intern(primitive.LispFunctionNameString(), pkg);
+      final LispValue symbol = f_lisp.intern(primitive.LispFunctionNameString(), pkg);
       symbol.setf_symbol_function(f_lisp.makeList(PRIMITIVE, primitive));
       pkg.export(symbol);
 
@@ -1443,7 +1443,7 @@ public class LispCompiler
     // Multiple arguments: construct an IF statement
     // (let ((*dummy* args.first())) (if ...))
 
-    LispValue dummyVar = f_lisp.EVAL.intern("*AND-DUMMY-VAR*");
+    LispValue dummyVar = f_lisp.intern("*AND-DUMMY-VAR*");
     dummyVar.set_special(true);
 
     return compile(f_lisp.makeList(LET,
@@ -1483,7 +1483,7 @@ public class LispCompiler
     // Multiple arguments: construct an IF statement
     // (let ((*dummy* args.first())) (if ...))
 
-    LispValue dummyVar = f_lisp.EVAL.intern("*OR-DUMMY-VAR*");
+    LispValue dummyVar = f_lisp.intern("*OR-DUMMY-VAR*");
     dummyVar.set_special(true);
 
     return compile(f_lisp.makeList(LET,
@@ -1530,11 +1530,11 @@ public class LispCompiler
     final LispValue possibleDocumentation = argsAndBody.second();
     LispValue endArgsAndBody = argsAndBody;
     if(possibleDocumentation instanceof LispString && argsAndBody.basic_length() > 2) {
-        name.setf_documentation(f_lisp.EVAL.intern("FUNCTION"),possibleDocumentation);
+        name.setf_documentation(f_lisp.intern("FUNCTION"),possibleDocumentation);
         endArgsAndBody = f_lisp.makeCons(f_lisp.car(argsAndBody), f_lisp.cdr(f_lisp.cdr(argsAndBody)));
     }
     // Adds an implicit BLOCK with the same name as the defun around the definition.
-    endArgsAndBody = f_lisp.makeList(f_lisp.car(endArgsAndBody),f_lisp.makeCons(f_lisp.getEval().intern("BLOCK"),f_lisp.makeCons(name, f_lisp.cdr(endArgsAndBody))));
+    endArgsAndBody = f_lisp.makeList(f_lisp.car(endArgsAndBody),f_lisp.makeCons(f_lisp.intern("BLOCK"),f_lisp.makeCons(name, f_lisp.cdr(endArgsAndBody))));
     name.setf_symbol_function(
             compileList(f_lisp.MACHINE, f_lisp.makeCons(LAMBDA, endArgsAndBody),
                         f_lisp.makeCons(f_lisp.makeCons(name, f_lisp.NIL),
@@ -1554,7 +1554,7 @@ public class LispCompiler
          LispValue valueList, LispValue code)
       throws CompilerException
   {
-      LispValue tempNew = f_lisp.EVAL.intern("%%%" + ((LispSymbol)name).symbol_name().toStringSimple(), (LispPackage)f_lisp.findPackage("SYSTEM"));
+      LispValue tempNew = f_lisp.intern("%%%" + ((LispSymbol)name).symbol_name().toStringSimple(), (LispPackage)f_lisp.findPackage("SYSTEM"));
       compileDefun(machine,tempNew,argsAndBody,valueList,code); // TODO, fix an ew method for doing this.
     //  ##JPG
     // for compilation of recursive macros, we need to know if the symbol under compilation is a
@@ -1580,7 +1580,7 @@ public class LispCompiler
     final LispValue possibleDocumentation = argsAndBody.second();
     LispValue endArgsAndBody = argsAndBody;
     if(possibleDocumentation instanceof LispString && argsAndBody.basic_length() > 2) {
-        name.setf_documentation(f_lisp.EVAL.intern("FUNCTION"),possibleDocumentation);
+        name.setf_documentation(f_lisp.intern("FUNCTION"),possibleDocumentation);
         endArgsAndBody = f_lisp.makeCons(f_lisp.car(argsAndBody), f_lisp.cdr(f_lisp.cdr(argsAndBody)));
     }
 
@@ -1705,8 +1705,21 @@ public class LispCompiler
     if (code.basic_functionp())
       code = ((LispFunction)code).getCode();
 
-    return (code instanceof LispList && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
-                                   (LispPackage)(code.getLisp().findPackage("KEYWORD")))));
+    if (code instanceof LispList) {
+    	LispValue a = code.first();
+    	LispValue b = code.getLisp().intern("PRIMITIVE",
+                (LispPackage)(code.getLisp().KEYWORD));
+        LispValue c = code.getLisp().PRIMITIVE;
+        
+        if (a == c)
+        	return true;
+        if (a == b)
+        	return true;
+    }
+    return false;
+    
+//    return (code instanceof LispList && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
+//                                   (LispPackage)(code.getLisp().KEYWORD))));
   }
 
 

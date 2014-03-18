@@ -291,7 +291,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
       return f_lisp.makeCons(f_lisp.car(symbolList),
 			 makeSymbolsFromList(f_lisp.cdr(symbolList)));
     else // Assume it's a string
-      return f_lisp.makeCons(f_lisp.EVAL.intern(getAsString(f_lisp.car(symbolList)), this),makeSymbolsFromList(f_lisp.cdr(symbolList)));
+      return f_lisp.makeCons(f_lisp.intern(getAsString(f_lisp.car(symbolList)), this),makeSymbolsFromList(f_lisp.cdr(symbolList)));
   }
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -398,7 +398,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
       symb = f_lisp.car(s);
       final LispString symb_name = (symb.basic_stringp()?((LispString)symb):((LispString)((LispSymbol)symb).symbol_name()));
       if(getSymbol(symb_name) == f_lisp.NIL) {
-          final LispSymbol symbi = f_lisp.EVAL.intern(symb_name,this);
+          final LispSymbol symbi = f_lisp.intern(symb_name,this);
           f_shadowingSymbols.put(symb_name, symbi);
       } else if(f_shadowingSymbols.get(symb_name) == f_lisp.NIL) {
           f_shadowingSymbols.put(symb_name,getSymbol(symb_name));

@@ -173,7 +173,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public String toStringSimple()
   {
     // if (this instanceof LispKeyword)    // would this work?
-    if (f_package == f_lisp.findPackage("KEYWORD"))
+    if (f_package == f_lisp.KEYWORD)
       return ":" + f_name.getValue();
     else
       return f_name.getValue();
