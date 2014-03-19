@@ -65,10 +65,10 @@ public class StandardLispConstant extends StandardLispSymbol implements LispCons
   {
     super(lisp, oldSymbol.symbol_name());
 
-    if (oldSymbol.boundp() == f_lisp.T)
+    if (oldSymbol.boundp())
       f_value    = oldSymbol.symbol_value();
 
-    if (oldSymbol.fboundp() == f_lisp.T)
+    if (oldSymbol.fboundp())
       f_function = oldSymbol.symbol_function();
 
     f_plist    = oldSymbol.symbol_plist();

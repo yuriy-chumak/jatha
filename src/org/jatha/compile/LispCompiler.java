@@ -61,9 +61,11 @@ import org.jatha.machine.*;
  */
 public class LispCompiler
 {
-  // Set this to true to produce debugging output during compilation.
-  static boolean DEBUG = false;
+	// Set this to true to produce debugging output during compilation.
+	static boolean DEBUG = false;
 
+	static LispValue NIL = Lisp.NIL;
+  
 	// These are special forms that get expanded in the compiler
 	LispValue COMMENT;
 	LispValue PROGN;
@@ -218,8 +220,9 @@ public class LispCompiler
 
     //##JPG added
     // should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
-    DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, f_lisp.makeCons(f_lisp.T, f_lisp.NIL));
-    DUMMY_MACRO    = new StandardLispMacro(f_lisp, null, f_lisp.makeCons(f_lisp.T, f_lisp.NIL));
+		// this is NOT builtin function and macro
+    DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, cons(f_lisp.T, NIL));
+    DUMMY_MACRO    = new StandardLispMacro   (f_lisp, null, cons(f_lisp.T, NIL));
 	}
 
   public LispCompiler(Lisp lisp)
@@ -655,7 +658,7 @@ public class LispCompiler
 			}
 		    private LispValue expand(final LispValue form) {
 		        final LispValue carForm = f_lisp.car(form); // todo: check for LispSymbol
-		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
+		        if(carForm.fboundp() && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
 		            return f_lisp.eval(f_lisp.makeCons(f_lisp.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form))));
 		        } else {
 		            return form;
@@ -676,7 +679,7 @@ public class LispCompiler
 			protected LispValue Execute(LispValue form) {
 		        final LispValue carForm = f_lisp.car(form);	// todo: check for LispSymbol
 		        
-		        if(carForm.fboundp() == f_lisp.T && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
+		        if(carForm.fboundp() && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
 		            return (f_lisp.eval(f_lisp.makeCons(f_lisp.intern("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple(),(LispPackage)f_lisp.findPackage("SYSTEM")),quoteList(f_lisp.cdr(form)))));
 		        } else {
 		            return (form);
@@ -1051,7 +1054,7 @@ public class LispCompiler
 		// Function on a symbol
 		if (is_atom(function))
 		{
-			if (isBuiltinFunction(function))
+			if (Lisp.isBuiltinFunction(function))
 				return compileBuiltin(machine, function, args, valueList, code);
 
 			Compiler specialCompiler;
@@ -1680,41 +1683,6 @@ public class LispCompiler
                                            code));
   }
 
-  /**
-   * Send in either code or a symbol with a function value.
-   * Returns true only if the first element of the code list
-   * is :PRIMITIVE.
-   * @param code a LISP list.
-   * @return true if the code indicates a built-in function
-   */
-  public static boolean isBuiltinFunction(LispValue code)
-  {
-    if ((code.basic_symbolp()) && (code.fboundp() == code.getLisp().T))
-      code = code.symbol_function();
-
-    if ((code == null) || (code == code.getLisp().NIL))
-      return false;
-
-    if (code.basic_functionp())
-      code = ((LispFunction)code).getCode();
-
-    if (code instanceof LispList) {
-    	LispValue a = code.first();
-    	LispValue b = code.getLisp().intern("PRIMITIVE",
-                (LispPackage)(code.getLisp().KEYWORD));
-        LispValue c = code.getLisp().PRIMITIVE;
-        
-        if (a == c)
-        	return true;
-        if (a == b)
-        	return true;
-    }
-    return false;
-    
-//    return (code instanceof LispList && (code.first() == code.getLisp().EVAL.intern("PRIMITIVE",
-//                                   (LispPackage)(code.getLisp().KEYWORD))));
-  }
-
 
   // Contributed by Jean-Pierre Gaillardon, April 2005
   /**
@@ -1756,12 +1724,11 @@ public class LispCompiler
 	// util functions
 	public static boolean is_atom(LispValue value)
 	{
-		return (value instanceof LispNil ||
-				value instanceof LispAtom);
+		return (value instanceof LispAtom || value == NIL);
 	}
 	public static boolean is_null(LispValue value)
 	{
-		return (value instanceof LispNil);
+		return (value == NIL);
 	}
 	public final LispCons cons(LispValue car, LispValue cdr)
 	{

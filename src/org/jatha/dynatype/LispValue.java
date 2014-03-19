@@ -312,7 +312,7 @@ public interface LispValue extends Comparable<LispValue>
   /**
    * Returns T if the symbol has been assigned a value.
    */
-  public LispValue boundp();
+  public boolean boundp();
 
   /**
    * Returns all but the last of the elements of a list.
@@ -405,7 +405,7 @@ public interface LispValue extends Comparable<LispValue>
   /**
    * Returns T if the symbol has an assigned function.
    */
-  public LispValue fboundp();
+  public boolean fboundp();
 
   /**
    * Returns T if the object is a floating-point number.

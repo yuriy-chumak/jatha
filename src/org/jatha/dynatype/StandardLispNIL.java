@@ -56,23 +56,6 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   private  LispValue  function = null;
   private  LispValue  pack = null;   // its package
 
-  public StandardLispNIL(Lisp lisp, String symbolName)
-  {
-    super(lisp);
-    name = new StandardLispString(lisp, symbolName);
-    value = this;
-    plist = this;
-  }
-
-  public StandardLispNIL(Lisp lisp, LispString symbolNameString)
-  {
-    super(lisp);
-    name  = symbolNameString;
-    value = this;
-    plist = this;
-  }
-
-
   public void internal_princ(PrintStream os)        { os.print("NIL"); }
   public void internal_princ_as_cdr(PrintStream os) { /* Do Nothing */ }
 
@@ -109,7 +92,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
 
   public LispValue     append(LispValue otherList) { return otherList; }
   public LispValue     assoc(LispValue index)      { return f_lisp.NIL; }
-  public LispValue     boundp()                    { return f_lisp.T;   }
+  public boolean boundp() { return true; }
   public LispValue     butlast()                   { return f_lisp.NIL; }
   public LispValue     copy_list()                 { return f_lisp.NIL; }
   public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
@@ -137,26 +120,20 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   public LispValue     rplaca(LispValue  newCar) { return f_lisp.NIL; }
   public LispValue     rplacd(LispValue  newCdr) { return f_lisp.NIL; }
 
-  public LispValue setf_symbol_function(LispValue newFunction)
-  {
-    throw new LispConstantRedefinedException(name.getValue());
+  public LispValue     setf_symbol_function(LispValue newFunction) {
+    throw new LispConstantRedefinedException("NIL");
+  }
+  public LispValue     setf_symbol_value(LispValue newValue) {
+    throw new LispConstantRedefinedException("NIL");
   }
 
-  public LispValue     setf_symbol_value(LispValue newValue)
-  {
-    if (value == null)
-      return value = newValue;
-    else
-      throw new LispConstantRedefinedException(name.getValue());
-  }
-
-  public LispString    symbol_name()    { return name;  }
-  public LispValue     symbol_package() { return pack;  }
-  public LispValue     symbol_plist()   { return plist; }
-  public LispValue     symbol_value()   { return value; }
+  public LispString    symbol_name()    { return null;  } // ?
+  public LispValue     symbol_package() { return null;  }
+  public LispValue     symbol_plist()   { return this; }
+  public LispValue     symbol_value()   { return this; }
 
   public LispValue     subst(LispValue oldValue, LispValue newValue)
-  { return f_lisp.NIL; }
+  { return this; }
 
   public LispValue     type_of     ()  { return f_lisp.NULL_TYPE;   }
   public LispValue typep(LispValue type)

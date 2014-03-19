@@ -394,7 +394,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     bignump      ()  { return f_lisp.NIL; }
 
-  public LispValue     boundp       ()
+  public boolean boundp       ()
   { throw new LispValueNotASymbolException("The argument to BOUNDP");  }
 
   public LispValue     butlast      ()
@@ -515,7 +515,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     throw new LispValueNotANumberException("The argument to FACTORIAL");
   }
 
-  public LispValue     fboundp      ()
+  public boolean fboundp      ()
   { throw new LispValueNotASymbolException("The argument to FBOUNDP");  }
 
   public LispValue floatp()  { return f_lisp.NIL; }

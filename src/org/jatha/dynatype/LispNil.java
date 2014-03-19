@@ -23,22 +23,13 @@
  */
 package org.jatha.dynatype;
 
-
-
-// See LispValue.java for documentation
-
-
-
 //--------------------------------  LispNil  --------------------------------
 //
 // This is used only for NIL.  Since NIL is both a degenerate list and
-// a symbol, it causes some programming difficulties.  Using this resolves
+// a symbol, it causes some programming difficulties. Using this resolves
 // those problems.
 
 public interface LispNil extends LispList
 {
-
-
+	
 }
-
-

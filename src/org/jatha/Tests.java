@@ -31,10 +31,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.jatha.dynatype.LispFunction;
+import org.jatha.dynatype.LispMacro;
 import org.jatha.dynatype.LispValue;
-import org.jatha.dynatype.StandardLispCons;
-import org.jatha.dynatype.StandardLispConstant;
-import org.jatha.dynatype.StandardLispNIL;
+import org.jatha.dynatype.LispCons;
+import org.jatha.dynatype.LispConstant;
 import org.jatha.read.LispParser;
 
 public class Tests extends Object
@@ -58,18 +59,29 @@ public class Tests extends Object
 					// System.io.printnl();
 					try {
 						LispValue s = cli.read();
-						if (s instanceof StandardLispCons && s.toString().equals("(RESTART)")) {
+						if (s instanceof LispCons && s.toString().equals("(RESTART)")) {
 							lisp = new Lisp();
 							cli = new LispParser(lisp, resourceReader);
 							continue;
 						}
 						LispValue r = lisp.eval(s);
+						if (r == lisp.T)
+							continue;
 						
-						if ((r instanceof StandardLispConstant && !r.toString().equals("T"))
-						 || (r instanceof StandardLispNIL)
+//						if (r.functionp() == lisp.T)
+//							continue;
+//						if (r.macrop() == Lisp.T)
+//							continue;
+						
+						if ((r instanceof LispConstant && !r.toString().equals("T"))
+						 || (r == Lisp.NIL)
 						) {
 							errors.add(s.toString() + " -> " + r.toString());
 						}
+/*						if (!(r instanceof LispConstant && r.toString().equals("T")))
+						{
+							errors.add(s.toString() + " -> " + r.toString());
+						}*/
 					} catch (EOFException e) {
 						break;
 					}

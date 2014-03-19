@@ -1566,28 +1566,6 @@ public class Lisp
   }
 
 
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Thu Feb 20 12:20:57 1997
-  /**
-   * Creates a LispNil (the funny symbol/cons that is the LISP NIL).
-   * This method does <b>not</b> intern the symbol.
-   *
-   * @see LispNil
-   * @see LispCons
-   * @see LispSymbol
-   * @see LispValue
-   * @return LispSymbol
-   */
-  public LispNil makeNIL(String symbolName)
-  {
-    return new StandardLispNIL(this, symbolName);
-  }
-
-  public LispNil makeNIL(LispString symbolName)
-  {
-    return new StandardLispNIL(this, symbolName);
-  }
-
   /**
    * Turns a Java object into a LISP object.
    *
@@ -1842,10 +1820,43 @@ public class Lisp
 	    return newSymbol;
 	  }
 
-	  public LispValue setf_symbol_value(LispValue symbol, LispValue value)
-	  {
-	    return symbol.setf_symbol_value(value);
+	public LispValue setf_symbol_value(LispValue symbol, LispValue value)
+	{
+		return symbol.setf_symbol_value(value);
+	}
+	  
+	  
+	  /**
+	   * Send in either code or a symbol with a function value.
+	   * Returns true only if the first element of the code list
+	   * is :PRIMITIVE.
+	   * @param code a LISP list.
+	   * @return true if the code indicates a built-in function
+	   */
+		public static boolean isBuiltinFunction(LispValue code)
+		{
+			if ((code == null) || (code == NIL))
+				return false;
+		    
+			if (code instanceof LispSymbol)
+				if (code.fboundp())
+					code = code.symbol_function();
+				else
+					return false;
+
+			if (code instanceof LispFunction)
+				code = ((LispFunction)code).getCode();
+
+			if (code instanceof LispList) {
+				LispValue a = code.first();
+				LispValue c = code.getLisp().PRIMITIVE;
+	        
+				if (a == c)
+					return true;
+			}
+			return false;
 	  }
+	  
 }
 
 

@@ -224,7 +224,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 
     private LispString getAsString(final LispValue inp) {
     	// todo: check for LispSymbol
-        return (LispString)((inp.basic_symbolp()) ? ((LispSymbol)inp).symbol_name() : inp);
+        return (LispString)(inp.basic_symbolp() ? ((LispSymbol)inp).symbol_name() : inp);
     }
 
 	// Returns either NIL or the symbol.

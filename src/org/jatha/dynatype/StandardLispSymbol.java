@@ -223,20 +223,14 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     }
   }
 
-  public LispValue  boundp()
+  public boolean boundp()
   {
-    if (f_value == null)
-      return f_lisp.NIL;
-    else
-      return f_lisp.T;
+    return (f_value != null);
   }
 
-  public LispValue  fboundp()
+  public boolean fboundp()
   {
-    if (f_function == null)
-      return f_lisp.NIL;
-    else
-      return f_lisp.T;
+    return (f_function != null);
   }
 
   public LispValue  funcall(LispValue args)

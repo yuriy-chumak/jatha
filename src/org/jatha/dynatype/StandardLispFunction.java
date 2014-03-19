@@ -68,19 +68,21 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
 
     f_code   = code;
     f_symbol = symbol;
-    f_isBuiltin = LispCompiler.isBuiltinFunction(code);
+    f_isBuiltin = Lisp.isBuiltinFunction(code);
   }
 
 
-  public String toString()
-  {
-    LispValue aPackage = f_lisp.findPackage("LISP");
-    String aSymbol     = (f_symbol == null) ? "anonymous" : f_symbol.toStringSimple();
-
-    if (f_symbol != null)
-      aPackage = f_symbol.symbol_package();
-
-    return "#<standardFunction " + aPackage.toString() + " " + aSymbol + ">";
+	public String toString()
+	{
+		return toString("standardFunction");
+	}
+	protected String toStringNamed(String name)
+	{
+		return "#<" + name + " " +
+				(f_symbol != null ? f_symbol.symbol_package().toString() : "NIL")
+	        	+ " " +
+	        	(f_symbol != null ? f_symbol.toStringSimple() : "anonymous")
+	        	+ ">";
   }
 
 
