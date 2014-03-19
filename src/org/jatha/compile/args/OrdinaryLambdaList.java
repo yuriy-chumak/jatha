@@ -64,7 +64,7 @@ public class OrdinaryLambdaList implements LambdaList {
         keyArguments = new HashMap<LispValue, LispValue>();
         allowOtherKeys = false;
         auxArguments = new LinkedList<LispValue>();
-        allowOtherKeysKey = lisp.intern(":ALLOW-OTHER-KEYS");
+        allowOtherKeysKey = lisp.keyword(":ALLOW-OTHER-KEYS");
     }
 
     public Map<LispValue, LispValue> parse(final LispValue arguments) {
