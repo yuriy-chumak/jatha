@@ -566,8 +566,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     integerp     ()  { return f_lisp.NIL; }
 
-  public LispValue     keywordp     ()  { return f_lisp.NIL; }
-
   public LispValue     last         ()
   { throw new LispValueNotAListException("The argument to LAST");  }
 

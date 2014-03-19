@@ -106,7 +106,6 @@ public class LispCompiler
   // static initializer.
 	private void initializeConstants()
 	{
-		final LispPackage keyPkg = f_lisp.KEYWORD;
 		final LispPackage SYSTEM_PKG = (LispPackage)(f_lisp.findPackage("SYSTEM"));
 
 		QUOTE      = f_lisp.QUOTE;
@@ -477,7 +476,59 @@ public class LispCompiler
 				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
 			}
 		}, SYSTEM_PKG);
+
+/*		
+		final LispPrimitive EVAL;
+		Register(EVAL = new LispPrimitiveC(f_lisp, "EVAL", 1) {
+			  public void Execute(SECDMachine machine)
+					    throws CompilerException
+					  {
+					    LispValue expr = machine.S.pop();
+					    LispValue code = f_lisp.COMPILER.compile(expr, f_lisp.NIL, f_lisp.NIL);
+
+					    machine.C.pop();  // Pop the EVAL command
+
+					    // Push the new code on the stack.
+					    machine.C.assign(code.append(machine.C.value()));
+					  }
+
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				return null;
+			}});
+
 		
+		// todo: must be integrated, but needs to test
+		Register(new LispPrimitiveC(f_lisp, "FUNCALL", 1) {
+			  public void Execute(SECDMachine machine)
+			  {
+			    // The args list is an expression to be evaluated.
+			    // Need to quote the argument(s) because they have already been evaluated.
+			    // The EVAL will evaluate them again.
+			    LispValue args   = machine.S.pop();
+			    LispValue fn     = ((LispCons)args).car();
+			    LispValue fnArgs = ((LispCons)args).cdr();
+
+			    machine.S.push(f_lisp.makeCons(fn, quoteList(fnArgs)));
+
+			    // (mh) 4 Sep 2004
+			    // This seems like a kludge, but I don't know how to get around it.
+			    // if the fn is a user-defined function, we have to move the arguments to the E register.
+			    if ((fn instanceof LispFunction) && (! ((LispFunction)fn).isBuiltin()))
+			    {
+			      machine.S.pop();
+			      machine.S.push(f_lisp.makeList(fn));
+			      machine.E.push(fnArgs);
+			    }
+
+			    machine.C.pop();
+			    machine.C.push(EVAL);
+			  }
+			protected LispValue Execute(LispValue args) {
+				return null;
+			}
+		}, SYSTEM_PKG);
+*/
 		// move to "math" ?
 		Register(new LispPrimitiveC(f_lisp, "+", 0) {
 			protected LispValue Execute(LispValue args) {
@@ -544,6 +595,23 @@ public class LispCompiler
 			      }
 			}			
 		});
+		
+		Register(new LispPrimitive2(f_lisp, "<") {
+			protected LispValue Execute(LispValue a, LispValue b) {
+				return a.lessThan(b);
+			}			
+		});
+		Register(new LispPrimitive1(f_lisp, "LAST") {
+			protected LispValue Execute(LispValue a) {
+				return a.last();
+			}			
+		});
+		Register(new LispPrimitive1(f_lisp, "LENGTH") {
+			protected LispValue Execute(LispValue a) {
+				return a.length();
+			}			
+		});
+		
 		Register(new LispPrimitiveC(f_lisp, "APPEND", 0) {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
@@ -694,6 +762,14 @@ public class LispCompiler
 		        return ret.nreverse();
 		    }
 		}, SYSTEM_PKG);
+		Register(new LispPrimitive1(f_lisp, "SIN") {
+			protected LispValue Execute(LispValue a) {
+				return new StandardLispReal(
+						f_lisp,
+						Math.sin(((LispNumber)a).getDoubleValue())
+				);
+			}			
+		});
 		
 	}
 	
@@ -738,8 +814,8 @@ public class LispCompiler
   */
   public void Register(LispPrimitive primitive, LispPackage pkg)
   {
-      final LispValue symbol = f_lisp.intern(primitive.LispFunctionNameString(), pkg);
-      symbol.setf_symbol_function(f_lisp.makeList(PRIMITIVE, primitive));
+      final LispSymbol symbol = f_lisp.intern(primitive.LispFunctionNameString(), pkg);
+      symbol.setf_symbol_function(list(PRIMITIVE, primitive));
       pkg.export(symbol);
 
   }
@@ -761,7 +837,7 @@ public class LispCompiler
    */
    public void Register(LispPrimitive primitive, String pkgName)
    {
-       Register(primitive,(LispPackage)(f_lisp.findPackage(pkgName)));
+       Register(primitive, (LispPackage)(f_lisp.findPackage(pkgName)));
    }
 
 
@@ -1000,7 +1076,7 @@ public class LispCompiler
 		if (expr == f_lisp.T)
 			return cons(machine.T, code);
 
-		if (expr.keywordp() == f_lisp.T)
+		if (expr instanceof LispKeyword)
 			return cons(machine.LDC, cons(expr, code));
 		
 		if (expr instanceof LispSymbol) {
@@ -1732,21 +1808,21 @@ public class LispCompiler
 	}
 	public final LispCons cons(LispValue car, LispValue cdr)
 	{
-		return f_lisp.makeCons(car, cdr);
+		return new StandardLispCons(f_lisp, car, cdr);
 	}
 	public final LispList list(LispValue... parts)
 	{
 		LispList result = Lisp.NIL;
 		for (int i = parts.length-1 ; i >= 0; i--)
-			result = new StandardLispCons(f_lisp, parts[i], result);
+			result = cons(parts[i], result);
 		return result;
 	}
 	public LispValue car(LispValue value)
 	{
-		return f_lisp.car(value);
+		return ((LispList)value).car();
 	}
 	public LispValue cdr(LispValue value)
 	{
-		return f_lisp.cdr(value);
+		return ((LispList)value).cdr();
 	}
 }

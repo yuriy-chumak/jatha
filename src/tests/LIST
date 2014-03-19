@@ -1,0 +1,62 @@
+;;; required common functions
+;;; lisp
+
+(defun second (l) (car (cdr l)))
+
+;; --- Functions needed to implement macros -----
+
+(defun combine-exprs (lft rgt expr)
+  (if (and (constantp lft) (constantp rgt)) (list 'quote expr)
+     (if (null rgt) (list 'list lft)
+       (if (and (consp rgt) (eql (car rgt) 'list))  (cons 'list (cons lft (cdr rgt )))
+         (list 'cons lft rgt ))))) 
+
+
+(defun f-backquote (expr)
+  (if (null expr) nil 
+    (if (atom expr) (list 'quote expr)
+       (if (eq (car expr) :COMMA) (second expr)  
+         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+            (list 'append (second (car expr)) (f-backquote (cdr expr))) 
+         (combine-exprs (f-backquote (car expr)) 
+            (f-backquote (cdr expr)) expr) )))))
+
+(defmacro backquote (expr)
+   (f-backquote expr))
+
+(defun f-cond (l)
+  (if (null l) nil
+    (let ((clause (car l))) 
+      `(if ,(car clause) (progn ,@(cdr clause))
+        ,(f-cond (cdr l))))))
+
+(defmacro cond (&rest l) 
+   (f-cond l))
+
+;; ======================================================
+;; solve
+(defun is_in(el spis)
+ (cond
+   ((null spis) nil)
+   ((eql el (car spis)) T)
+   (t (is_in el (cdr spis)))
+ )
+)
+
+(defun remove_first(el spis)
+ (cond
+   ((null spis) nil )
+   ((eql el (car spis)) (cdr spis))
+   (t (cons (car spis) ( remove_first el (cdr spis) ) ) )
+ )
+)
+
+(defun group(spis)
+ (cond
+   ((null spis) nil )
+   ((is_in (car spis) (cdr spis)) (cons (car spis) (group (cons (car spis) (remove_first (car spis) (cdr spis))))))
+   (t (cons (car spis) (group (cdr spis))) )
+ )
+)
+
+(progn (PRINT  (group '(1 2 1 3 2 5 4 7 4 1))) t)

@@ -480,11 +480,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue integerp();
 
   /**
-   * Returns T if the object is a keyword.
-   */
-  public LispValue keywordp();
-
-  /**
    * Returns the last cons cell in a list.
    * LAST of NIL is NIL.
    */

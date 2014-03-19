@@ -85,8 +85,6 @@ public class StandardLispKeyword extends StandardLispConstant implements LispKey
 
   // ------  LISP methods  --------
 
-  public LispValue     keywordp     ()  { return f_lisp.T; }
-
   public LispValue setf_symbol_value(LispValue newValue)
   {
     throw new LispConstantRedefinedException(f_name.getValue());

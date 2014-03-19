@@ -1,0 +1,138 @@
+;;; LISP
+
+;;; required common functions
+;;; lisp
+
+(defun second (l) (car (cdr l)))
+
+;; --- Functions needed to implement macros -----
+
+(defun combine-exprs (lft rgt expr)
+  (if (and (constantp lft) (constantp rgt)) (list 'quote expr)
+     (if (null rgt) (list 'list lft)
+       (if (and (consp rgt) (eql (car rgt) 'list))  (cons 'list (cons lft (cdr rgt )))
+         (list 'cons lft rgt ))))) 
+
+
+(defun f-backquote (expr)
+  (if (null expr) nil 
+    (if (atom expr) (list 'quote expr)
+       (if (eq (car expr) :COMMA) (second expr)  
+         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+            (list 'append (second (car expr)) (f-backquote (cdr expr))) 
+         (combine-exprs (f-backquote (car expr)) 
+            (f-backquote (cdr expr)) expr) )))))
+
+(defmacro backquote (expr)
+   (f-backquote expr))
+
+;; ------------------------------------------------
+;; COND
+;; ------------------------------------------------
+(defun f-cond (l)
+  (if (null l) nil
+    (let ((clause (car l))) 
+      `(if ,(car clause) (progn ,@(cdr clause))
+        ,(f-cond (cdr l))))))
+
+(defmacro cond (&rest l) 
+   (f-cond l))
+
+;;; Task Solving
+
+(defun neql (x y) (not (eql x y)))
+;; Accessors 
+(defun caar (l) (car (car l)))
+(defun cadr (l) (car (cdr l)))
+(defun cdar (l) (cdr (car l)))
+(defun cddr (l) (cdr (cdr l)))
+
+
+(defun is_in (k lst)
+  (cond
+   ( (NULL lst) NIL)
+   ( (eql k (car lst)) T)
+   ( 1 (is_in k (cdr lst)) )
+  )
+)
+
+(defun remove (k lst)
+ (cond
+  ((NULL lst) NIL)
+  ((eql k (car lst)) (remove k (cdr lst)) )
+  ( 1 (cons (car lst) (remove k (cdr lst))) )
+ )
+)
+
+(defun is_ok (lst)
+ (cond
+  ( (NULL lst) T )
+  ( (is_in 'man lst) T )
+  ( (and (is_in 'goat lst) (is_in 'cabbage lst)) NIL)
+  ( (and (is_in 'wolf lst) (is_in 'goat lst)) NIL)
+  ( 1 T)
+ )
+)
+
+(defun move (k)
+ (cond
+  ( (eql k 'man)
+    (cond
+     ((is_in 'man left) (setq left (remove 'man left)) (setq right (cons 'man right))? T)
+     ((is_in 'man right) (setq right (remove 'man right)) (setq left (cons 'man left)) T)
+    )
+  )
+  ( (and (is_in k left) (is_in 'man left)) (setq left (remove 'man (remove k left))) (setq right (cons 'man (cons k right))) T )
+  ( (and (is_in k right) (is_in 'man right)) (setq right (remove 'man (remove k right))) (setq left (cons 'man (cons k left))) T )
+  ( 1 NIL)
+ )
+)
+
+(defun perevoz()
+ (setq p (car way))
+ (setq way (cdr way))
+
+ (setq left (car (cdr p)))
+ (setq right (car (cddr p)))
+ (setq k (car p))
+ (cond (
+   (eql (length right) 4)
+   (print p)
+
+   (cond
+     ( (and (is_ok left) (is_ok right))
+       (cond ((and (neql (car(last k)) 'goat) (move 'goat)) (setq way (append way (list (list (append k (list 'goat)) left right)))) (move 'goat)))
+       (cond ((and (neql (car(last k)) 'wolf) (move 'wolf)) (setq way (append way (list (list (append k (list 'wolf)) left right)))) (move 'wolf)))
+       (cond ((and (neql (car(last k)) 'cabbage) (move 'cabbage)) (setq way (append way (list (list (append k (list 'cabbage)) left right))))(move 'cabbage)))
+       (cond ((and (neql (car(last k)) 'man) (move 'man)) (setq way (append way (list (list (append k (list 'man)) left right))))(move 'man)))
+     )
+   )
+
+   (perevoz)
+ ))
+)
+
+(defun solve ()
+   (setq way nil)
+ 
+   (setq left '(goat cabbage wolf man))
+   (setq right NIL)
+   (move 'goat)
+   (setq way (append way (list (list (list 'goat) left right))))
+
+   (setq left '(goat cabbage wolf man))
+   (setq right NIL)
+   (move 'wolf)
+   (setq way (append way (list (list (list 'wolf) left right))))
+ 
+   (setq left '(goat cabbage wolf man))
+   (setq right NIL)
+   (move 'cabbage)
+   (setq way (append way (list (list (list 'cabbage) left right))))
+
+   (setq right NIL)
+   (setq left NIL)
+
+   (perevoz)
+)
+(progn (solve) t)

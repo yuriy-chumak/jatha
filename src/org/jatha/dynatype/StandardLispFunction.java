@@ -42,7 +42,8 @@ import org.jatha.compile.LispCompiler;
  */
 public class StandardLispFunction extends StandardLispValue implements LispFunction
 {
-
+	// there no internal f_lisp dependencies now.
+	
   private boolean   f_isBuiltin = false;
   private LispValue f_symbol    = null;
   private LispValue f_code      = null;

@@ -21,12 +21,11 @@
  *   hewett@cs.stanford.edu
  *
  */
-package org.jatha.exception
-;
+package org.jatha.exception;
 
 public class LispUndefinedPackageException extends LispException
 {
-  LispUndefinedPackageException()          { super();  }
-  LispUndefinedPackageException(String s)  { super(s + " is not a defined package.");  }
+	public LispUndefinedPackageException()          { super();  }
+	public LispUndefinedPackageException(String s)  { super(s + " is not a defined package.");  }
 }
 

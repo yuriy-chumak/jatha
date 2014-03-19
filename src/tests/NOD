@@ -1,0 +1,73 @@
+(defun second (l) (car (cdr l)))
+
+;; --- Functions needed to implement macros -----
+
+(defun combine-exprs (lft rgt expr)
+  (if (and (constantp lft) (constantp rgt)) (list 'quote expr)
+     (if (null rgt) (list 'list lft)
+       (if (and (consp rgt) (eql (car rgt) 'list))  (cons 'list (cons lft (cdr rgt )))
+         (list 'cons lft rgt ))))) 
+
+
+(defun f-backquote (expr)
+  (if (null expr) nil 
+    (if (atom expr) (list 'quote expr)
+       (if (eq (car expr) :COMMA) (second expr)  
+         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+            (list 'append (second (car expr)) (f-backquote (cdr expr))) 
+         (combine-exprs (f-backquote (car expr)) 
+            (f-backquote (cdr expr)) expr) )))))
+
+(defmacro backquote (expr)
+   (f-backquote expr))
+
+(defun f-cond (l)
+  (if (null l) nil
+    (let ((clause (car l))) 
+      `(if ,(car clause) (progn ,@(cdr clause))
+        ,(f-cond (cdr l))))))
+
+(defmacro cond (&rest l) 
+   (f-cond l))
+
+;; NOD
+(defun nod(a b)
+  (cond
+    ((= a b) a)
+    ((< b a) (nod (- a b) b) )
+    (t (nod a (- b a) ) )
+  )
+)
+
+(= (nod 3 6) 3)
+(= (nod 5 7) 1)
+(= (nod 128 12) 4)
+(= (nod 63 21) 21)
+(= (nod 1234566 7776) 18)
+
+
+; http://protsyk.com/cms/wp-content/uploads/2009/06/PRO38.png
+(DEFUN POW(a i)
+ (COND ((= a 0) 1)
+       ((= i 1) a)
+       (1 (* a (POW a (- i 1))) )
+ )
+)
+ 
+(DEFUN SUM_i(a b i)
+ (COND ((NULL a) 0)
+       ((NULL b) 0)
+       (1 (+ (/ (+ (POW (CAR a) i) (POW (CAR b) i)) (+ (CAR a) (CAR b))) (SUM_i (CDR a) (CDR b) (+ i 1) )) )
+ )
+)
+ 
+(DEFUN SUM(a b)
+  ( SUM_i a b 1)
+)
+
+(print (SUM '(1 2 5) '(3 4 6)))
+(comment
+(let ((f (SUM '(1 2 5) '(3 4 6))))
+  (and (< 34 f) (< f 35))
+)
+)

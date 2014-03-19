@@ -795,123 +795,87 @@ public class LispParser
     return f_lisp.NIL;
   }
 
-  /**
-   * Converts a string to a LISP value such as
-   * NIL, T, an integer, a real number, a string or a symbol.
-   */
-  public LispValue tokenToLispValue(String token)
-  {
-    LispValue newCell = null;
-    LispValue keywordPackage = f_lisp.KEYWORD;
+	/**
+	 * Converts a string to a LISP value such as
+	 * NIL, T, an integer, a real number, a string or a symbol.
+	 */
+	public LispValue tokenToLispValue(String token)
+	{
+		LispValue newCell = null;
 
-    if (T_token_p(token))
-      newCell = f_lisp.T;
-    else if (NIL_token_p(token))
-      newCell = f_lisp.NIL;
-    else if (INTEGER_token_p(token))
-    {
-      // It may be an Fixnum or a Bignum.
-      // Let Java tell us by generating a NumberFormatException
-      // when the number is too big (or too negatively big).
+		if (T_token_p(token))
+			newCell = f_lisp.T;
+		else if (NIL_token_p(token))
+			newCell = f_lisp.NIL;
+		else if (INTEGER_token_p(token))
+		{
+			// It may be an Fixnum or a Bignum.
+			// Let Java tell us by generating a NumberFormatException
+			// when the number is too big (or too negatively big).
 
-      // SK: java cannot parse integer with '+' in front of it?  25 Jul 2009
-      if( token.charAt(0) == '+' ){
-        token = token.substring(1);
-      }
+			// SK: java cannot parse integer with '+' in front of it?  25 Jul 2009
+			if (token.charAt(0) == '+' )
+				token = token.substring(1);
 
-      try {
-        newCell = f_lisp.makeInteger(new Long(token)); 
-      } catch (NumberFormatException e) {
-        newCell = f_lisp.makeBignum(new BigInteger(token)); 
-      }
-    }
-    else if (REAL_token_p(token))
-      newCell = f_lisp.makeReal(new Double(token));
-    else if (STRING_token_p(token))
-    { /* remove the first and last double quotes. */
-      try
-      { newCell = f_lisp.makeString(token.substring(1, token.length() - 1)); }
-      catch (StringIndexOutOfBoundsException e)
-      { System.err.println("Hey, got a bad string index in 'tokenToLispValue'!"); }
+			try {
+				newCell = f_lisp.makeInteger(new Long(token)); 
+			} catch (NumberFormatException e) {
+				newCell = f_lisp.makeBignum(new BigInteger(token)); 
+			}
+		}
+		else if (REAL_token_p(token))
+			newCell = f_lisp.makeReal(new Double(token));
+		else if (STRING_token_p(token))
+		{ /* remove the first and last double quotes. */
+			try
+			{
+				newCell = f_lisp.makeString(token.substring(1, token.length() - 1));
+			}
+			catch (StringIndexOutOfBoundsException e)
+			{
+				System.err.println("Hey, got a bad string index in 'tokenToLispValue'!");
+			}
+		}
+		else if (SYMBOL_token_p(token))
+		{
+			// Added packages, 10 May 1997 (mh)
+			if (token.indexOf(':') >= 0)
+			{
+				String packageStr = token.substring(0, token.indexOf(':'));
+				token = token.substring(packageStr.length() + 1, token.length());
 
-    }
-    else if (SYMBOL_token_p(token))
-    {
-      // default package.
-      LispValue pkg      = f_lisp.PACKAGE_SYMBOL.symbol_value();
-      String packageStr  = "";
-      boolean   external = false;
+				// assertion!
+				if (token.startsWith(":")) {
+					System.err.println("Warning: ignored extra ':' in '" + packageStr + token + "'.");
+					token = token.substring(token.lastIndexOf(':')+1, token.length());
+				}
+				
+				if (packageStr.equals("#"))   // Uninterned symbol
+					newCell= f_lisp.makeSymbol(token);	// no package
+				else {
+					if (!"".equals(packageStr))
+						throw(new LispUndefinedPackageException(packageStr));
+					
+					newCell = f_lisp.keyword(token.toUpperCase());
+				}
+			}
+			else
+				newCell = f_lisp.intern(token, f_lisp.PACKAGE);
+		}
+		else {
+			System.err.println("ERROR: Unrecognized input: \"" + token + "\"");
+			newCell = Lisp.NIL;
+		}
 
-      // Added packages, 10 May 1997 (mh)
-      if (token.indexOf(':') >= 0)
-      {
-        packageStr = token.substring(0, token.indexOf(':'));
-        if (packageStr.equals("#"))   // Uninterned symbol
-          pkg = null;
-        else
-        {
-          pkg = f_lisp.findPackage(packageStr);
-          if (pkg == f_lisp.NIL)
-          {
-            // throw(new LispUndefinedPackageException(packageStr));
-            System.err.println("Warning: package '" + packageStr +
-                               "' undefined.  Using current package.");
-            pkg = f_lisp.PACKAGE_SYMBOL.symbol_value();
-          }
-        }
+		if (newCell == null)
+		{
+			System.err.println("MEMORY_ERROR in  \"tokenToLispValue\" " + "for token \""
+					+ token + "\", returning NIL.");
+			newCell = Lisp.NIL;
+		}
 
-        // Strip off the package.
-        token = token.substring(packageStr.length(), token.length());
-
-        if (token.startsWith(":::"))
-        {
-          System.err.println("Warning: ignored extra ':' in '" +
-                             packageStr + token + "'.");
-          token = token.substring(token.lastIndexOf(':')+1, token.length());
-        }
-        else if (token.startsWith("::"))
-          token = token.substring(2, token.length());
-        else if (token.startsWith(":"))
-        {
-          if (pkg != null)
-            external = true;
-          token    = token.substring(1, token.length());
-        }
-      }  // end of package parsing
-
-      // Handle external symbols separately, except for keywords
-      if (external && (pkg != null) && (! packageStr.equals("")))
-      {
-        newCell = ((LispPackage)pkg).getExternalSymbol(f_lisp.makeString(token));
-        if (newCell == f_lisp.NIL)
-          System.err.println(";; *** ERROR: " + packageStr + ":" + token +
-                             " is not an external symbol in " + packageStr +
-                             ".\n;; *** Creating new symbol in current package.");
-        newCell = f_lisp.intern(token, (LispPackage) f_lisp.PACKAGE_SYMBOL.symbol_value());
-      }
-      // keywords must always be uppercase.
-      else if (pkg == keywordPackage)
-        newCell = f_lisp.intern(token.toUpperCase(), (LispPackage)pkg);
-      else if (pkg != null)
-        newCell = f_lisp.intern(token, (LispPackage) pkg);
-      else
-        newCell= f_lisp.makeSymbol(token);
-    }
-    else
-    {
-      System.err.println("ERROR: Unrecognized input: \"" + token + "\"");
-      newCell = f_lisp.NIL;
-    }
-
-    if (newCell == null)
-    {
-      System.err.println("MEMORY_ERROR in  \"tokenToLispValue\" " + "for token \""
-                         + token + "\", returning NIL.");
-      newCell = f_lisp.NIL;
-    }
-
-    return(newCell);
-  }
+		return(newCell);
+	}
 
   // ----  Utility functions  ----------------------------------
 

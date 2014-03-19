@@ -105,6 +105,10 @@ public class Lisp
    */
   public LispPackage   PACKAGE;
   public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
+  
+  public LispPackage KEYWORD;
+  public LispPackage SYSTEM;
+  public LispPackage   CL;
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -242,9 +246,6 @@ public class Lisp
   }
     private LispPackage f_systemPackage = null;
     private LispPackage f_keywordPackage = null;
-
-	public LispPackage KEYWORD;
-	public LispPackage SYSTEM;
 
   private void initializeConstants()
   {
@@ -533,9 +534,13 @@ public class Lisp
     f_keywordPackage.setNicknames(makeList(makeString("")));
 
     PACKAGE = new StandardLispPackage(this, makeString("COMMON-LISP-USER"),makeList(makeString("CL-USER"),makeString("USER")),NIL,SYMTAB);
-    final LispPackage clPackage = new StandardLispPackage(this, makeString("COMMON-LISP"),makeList(makeString("CL")));
+    
+    final LispPackage clPackage = CL = new StandardLispPackage(this, makeString("COMMON-LISP"),makeList(makeString("CL")));
+    
     PACKAGE.setUses(makeList(((StandardLispPackage)clPackage).getName(),((StandardLispPackage)f_systemPackage).getName()));
+    
     ((StandardLispPackage)clPackage).setUses(makeList(((StandardLispPackage)f_systemPackage).getName()));
+    
     ((StandardLispPackage)f_keywordPackage).setUses(NIL);
     ((StandardLispPackage)f_systemPackage).setUses(NIL);
 
@@ -1720,8 +1725,7 @@ public class Lisp
 	  public LispSymbol intern(LispString symbolString)
 	  {
 	    if (COLON.eql(symbolString.basic_elt(0)) != NIL)
-	      return intern((LispString)(symbolString.substring(new StandardLispInteger(this, 1))),
-	                    KEYWORD);
+	      return keyword((LispString)(symbolString.substring(new StandardLispInteger(this, 1))));
 	    else
 	      return intern(symbolString, PACKAGE);
 	  }
@@ -1741,13 +1745,8 @@ public class Lisp
 	    }
 	    else
 	    {
-	      if (pkg == KEYWORD)
-	      {
-	        String newString = symbolString.toStringSimple().toUpperCase();
-	        // Symbols must be uppercase
-	        newSymbol = new StandardLispKeyword(this, new StandardLispString(this, newString));
-	      }
-	      else
+	    	assert (pkg != KEYWORD);
+	    	
 	        newSymbol = makeSymbol(symbolString);
 
 	      return intern(symbolString, newSymbol, pkg);
@@ -1799,6 +1798,10 @@ public class Lisp
 		  LispSymbol value = keyword(makeString(str));
 		  KEYWORD.export(value);
 		  return value;
+	  }
+	  public LispSymbol keyword(String str)
+	  {
+		  return keyword(makeString(str));
 	  }
 	  public LispSymbol keyword(LispString symbolString)
 	  {
