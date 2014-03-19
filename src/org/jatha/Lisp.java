@@ -104,7 +104,7 @@ public class Lisp
    * @see org.jatha.dynatype.LispPackage
    */
   public LispPackage   PACKAGE;
-  public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
+//public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
   
   public LispPackage KEYWORD;
   public LispPackage SYSTEM;
@@ -444,7 +444,7 @@ public class Lisp
   LispValue prompt, userPrompt;
   LispValue packages = null;
 
-  LispSymbol STAR, STARSTAR, STARSTARSTAR;
+//  LispSymbol STAR, STARSTAR, STARSTARSTAR;
   LispSymbol LOAD_VERBOSE;
 
   public static long MAX_LIST_LENGTH_VALUE = 100000;
@@ -557,19 +557,8 @@ public class Lisp
     // Need to allow *TOP-LEVEL-PROMPT* to change this.
     prompt = makeString("Jatha> ");
 
-    STAR         = internAndExport("*", f_systemPackage);
-    STARSTAR     = internAndExport("**", f_systemPackage);
-    STARSTARSTAR = internAndExport("***", f_systemPackage);
-
-    STAR.setf_symbol_value(NIL);
-    STARSTAR.setf_symbol_value(NIL);
-    STARSTARSTAR.setf_symbol_value(NIL);
-
     // Defines global variables, etc.  Should only be called once.
     EVAL_init();
-
-    PACKAGE_SYMBOL = intern("*PACKAGE*");
-    PACKAGE_SYMBOL.set_special(true);    // 13 Dec 2005 (mh)
 
     LOAD_VERBOSE = intern("*LOAD-VERBOSE*");
     LOAD_VERBOSE.setf_symbol_value(NIL);
@@ -801,11 +790,6 @@ public class Lisp
       return makeString(e.getMessage());
     }
 
-    // useful variable management
-    STARSTARSTAR.setf_symbol_value(STARSTAR.symbol_value());
-    STARSTAR.setf_symbol_value(STAR.symbol_value());
-    STAR.setf_symbol_value(value);
-
     return value;
   }
 
@@ -898,14 +882,10 @@ public class Lisp
   {
     LispValue input, code, value, myprompt;
     boolean   validInput;
-    LispValue oldPackageSymbolValue = PACKAGE_SYMBOL.symbol_value();
+//    LispValue oldPackageSymbolValue = PACKAGE;
 
     // Need to allow *TOP-LEVEL-PROMPT* to change this.
-    myprompt = makeString("Jatha " + PACKAGE_SYMBOL.symbol_value().toString() + "> ");
-
-    STAR.setf_symbol_value(NIL);
-    STARSTAR.setf_symbol_value(NIL);
-    STARSTARSTAR.setf_symbol_value(NIL);
+    myprompt = makeString("Jatha >");
 
     System.out.println("Run (EXIT) to stop.");
 
@@ -913,12 +893,6 @@ public class Lisp
 
     while (true)
     {
-      if (oldPackageSymbolValue != PACKAGE_SYMBOL.symbol_value())
-      {
-        myprompt = makeString("Jatha " + PACKAGE_SYMBOL.symbol_value().toString() + "> ");
-        oldPackageSymbolValue = PACKAGE_SYMBOL.symbol_value();
-      }
-
       System.out.println();
       myprompt.princ();
       System.out.flush();
@@ -949,11 +923,6 @@ public class Lisp
           System.out.println("Unable to evaluate " + input + "\n  " + e2);
           continue;
         }
-
-        // useful variable management
-        STARSTARSTAR.setf_symbol_value(STARSTAR.symbol_value());
-        STARSTAR.setf_symbol_value(STAR.symbol_value());
-        STAR.setf_symbol_value(value);
 
         // PRINT
         value.prin1();
@@ -1039,7 +1008,6 @@ public class Lisp
     LispValue  input, code;
     boolean    atLeastOneResult = false;
 
-    LispPackage oldPackage = (LispPackage)PACKAGE_SYMBOL.symbol_value();
     // Read and Eval stream until EOF.
     try {
       while (true)
@@ -1062,13 +1030,11 @@ public class Lisp
       } catch (IOException e2) {
         return T;
       }
-    catch (Exception ex)
-    {
+      catch (Exception ex)
+      {
     	final Exception ex2 = ex;
     	throw new LispValueNotAConsException();
-    }
-    } finally {
-      PACKAGE_SYMBOL.setf_symbol_value(oldPackage);
+      }
     }
 
     if (atLeastOneResult)
@@ -1711,16 +1677,16 @@ public class Lisp
 	////////////// EVAL
 	void EVAL_init()
 	{
-	    setf_symbol_value(intern("*"),                         NIL);
-	    setf_symbol_value(intern("**"),                        NIL);
-	    setf_symbol_value(intern("***"),                       NIL);
-	    setf_symbol_value(intern("*LISP-TRACE*"),              NIL);
-	    setf_symbol_value(intern("*COMP-NATIVE-FUNCTIONS*"),   NIL);
-	    setf_symbol_value(intern("*COMP-SPECIAL-FUNCTIONS*"),  NIL);
+//	    setf_symbol_value(intern("*"),                         NIL);
+//	    setf_symbol_value(intern("**"),                        NIL);
+//	    setf_symbol_value(intern("***"),                       NIL);
+//	    setf_symbol_value(intern("*LISP-TRACE*"),              NIL);
+//	    setf_symbol_value(intern("*COMP-NATIVE-FUNCTIONS*"),   NIL);
+//	    setf_symbol_value(intern("*COMP-SPECIAL-FUNCTIONS*"),  NIL);
 
 	    // Declare *PACKAGE* as a global variable.
-	    setf_symbol_value(intern("*PACKAGE*"),                 PACKAGE);
-	    intern("*PACKAGE*").set_special(true);
+//	    setf_symbol_value(intern("*PACKAGE*"),                 PACKAGE);
+//	    intern("*PACKAGE*").set_special(true);
 	}
 	  public LispSymbol intern(LispString symbolString)
 	  {

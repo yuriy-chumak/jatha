@@ -839,6 +839,7 @@ public class LispParser
 		else if (SYMBOL_token_p(token))
 		{
 			// Added packages, 10 May 1997 (mh)
+			// Removed packages, 19 Mar 2014 (yc)
 			if (token.indexOf(':') >= 0)
 			{
 				String packageStr = token.substring(0, token.indexOf(':'));
@@ -851,7 +852,7 @@ public class LispParser
 				}
 				
 				if (packageStr.equals("#"))   // Uninterned symbol
-					newCell= f_lisp.makeSymbol(token);	// no package
+					newCell = f_lisp.makeSymbol(token);	// no package
 				else {
 					if (!"".equals(packageStr))
 						throw(new LispUndefinedPackageException(packageStr));
