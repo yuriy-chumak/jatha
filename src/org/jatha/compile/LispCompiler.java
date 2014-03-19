@@ -794,7 +794,7 @@ public class LispCompiler
    */
   public void Register(LispPrimitive primitive)
   {
-      Register(primitive, f_lisp.PACKAGE);
+      Register(primitive, f_lisp.SYSTEM);
   }
 
 
@@ -816,8 +816,6 @@ public class LispCompiler
   {
       final LispSymbol symbol = f_lisp.intern(primitive.LispFunctionNameString(), pkg);
       symbol.setf_symbol_function(list(PRIMITIVE, primitive));
-      pkg.export(symbol);
-
   }
 
 

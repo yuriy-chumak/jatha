@@ -1030,11 +1030,11 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     third       ()
   { throw new LispValueNotASequenceException("The first argument to THIRD"); }
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue     type_of     ()  { return f_lisp.T;   }
+// // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue     type_of     ()  { return f_lisp.T;   }
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue     typep       (LispValue type)  { return f_lisp.NIL;   }
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue     typep       (LispValue type)  { return f_lisp.NIL;   }
 
   public LispValue     zerop       ()
   { throw new LispValueNotANumberException("The argument to ZEROP"); }

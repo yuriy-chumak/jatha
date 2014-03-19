@@ -27,7 +27,6 @@ package org.jatha.dynatype;
 import java.io.*;
 
 import org.jatha.Lisp;
-import org.jatha.exception.LispValueNotASymbolException;
 import org.jatha.util.SymbolTable;
 
 
@@ -232,12 +231,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 	// the string.
 	public LispSymbol getExternalSymbol(LispString str)
 	{
-		LispSymbol symbol = f_symbolTable.get(str);
-
-		if ((symbol != null) && symbol.externalP())
-			return symbol;
-
-		return null;
+		return f_symbolTable.get(str);
 	}
 
 	/**
@@ -265,7 +259,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 		if (symbol != null)
 			return symbol;
 
-		// ELSE - search used packages
+/*		// ELSE - search used packages
 		LispValue p = f_uses;
 		while (p != f_lisp.NIL)
 		{
@@ -274,197 +268,15 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 				return symbol;
 			else
 				p = f_lisp.cdr(p);
-		}
+		}*/
 
 		// If all fails, return null.
 		return null;
 	}
 
 /* ------------------  LISP methods   ------------------------------ */
-
-  // A list might be all strings or all symbols.
-  LispValue makeSymbolsFromList(LispValue symbolList)
-  {
-    if (symbolList == f_lisp.NIL)
-      return symbolList;
-    else if (f_lisp.car(symbolList).basic_symbolp())
-      return f_lisp.makeCons(f_lisp.car(symbolList),
-			 makeSymbolsFromList(f_lisp.cdr(symbolList)));
-    else // Assume it's a string
-      return f_lisp.makeCons(f_lisp.intern(getAsString(f_lisp.car(symbolList)), this),makeSymbolsFromList(f_lisp.cdr(symbolList)));
-  }
-
-  // author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // date    Sun May 11 16:25:14 1997
-  /**
-   * Declares the symbol or symbols as exported symbols.
-   * The symbol can be a symbol or list of symbols.
-   */
-  public LispValue export(LispValue symbols)
-  {
-    if (!(symbols instanceof LispCons))
-      symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
-
-    // For every symbol, declare it external
-    LispList s = (LispList)symbols;
-    while (s != f_lisp.NIL)
-    {
-        if (f_lisp.car(s) instanceof LispSymbol) {
-            ((LispSymbol)(f_lisp.car(s))).setExternal(true); // Should handle error here.
-        }
-
-      s = (LispList)f_lisp.cdr(s);
-    }
-
-    return f_lisp.T;
-  }
-
-
-  // author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // date    Sun May 11 16:25:14 1997
-  /**
-   * Imports the given symbols into the current package.
-   * The symbol can be a symbol or list of symbols.
-   * Note: this method name is altered because of a
-   * conflict with a Java reserved word.
-   */
-  public LispValue lisp_import(LispValue symbols)
-  {
-	  if (!(symbols instanceof LispCons))
-		  symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
-
-    // For every symbol, declare it external
-    LispValue  s = symbols;
-    LispValue symb;
-
-    while (s != f_lisp.NIL)
-    {
-      symb = f_lisp.car(s);
-      if (!(symb instanceof LispSymbol))
-    	  throw new LispValueNotASymbolException(symb);
-      LispSymbol symbol = (LispSymbol)symb;
-      LispString name = (LispString)(symbol.symbol_name());
-      
-      if (getSymbol(name) == null)
-    	  f_symbolTable.put(name, symbol);
-      else
-    	  System.err.println(";; * WARNING: Attempt to import " + symb +
-			   " conflicts with existing symbol " +
-			   getSymbol(name) + " in " + this.f_name);
-
-      s = f_lisp.cdr(s);
-    }
-
-    // Return T
-    return f_lisp.T;
-  }
-
-  // author  Ola Bini    ola.bini@itc.ki.se
-  // date    Sun May 22 20:31:00 2005
-  /**
-   * Imports the given symbols into the current package shadowing list.
-   */
-  public LispValue shadowing_import(LispValue symbols) {
-    if (!(symbols instanceof LispCons))
-      symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
-
-    // For every symbol, declare it external
-    LispValue  s = symbols;
-    LispValue symb;
-
-    while (s != f_lisp.NIL) {
-      symb = f_lisp.car(s);
-      if (!(symb instanceof LispSymbol))
-    	  throw new LispValueNotASymbolException(symb);
-      
-      f_shadowingSymbols.put((LispString)(((LispSymbol)symb).symbol_name()), (LispSymbol)symb);
-      s = f_lisp.cdr(s);
-    }
-
-    // Return T
-    return f_lisp.T;
-  }
-
-  // author  Ola Bini    ola.bini@itc.ki.se
-  // date    Sun May 22 20:31:00 2005
-  public LispValue shadow(LispValue symbols) {
-    if (!(symbols instanceof LispCons))
-      symbols = f_lisp.makeCons(symbols, f_lisp.NIL);
-
-    LispValue  s = symbols;
-    LispValue symb;
-
-    while(s != f_lisp.NIL) {
-      symb = f_lisp.car(s);
-      final LispString symb_name = (symb.basic_stringp()?((LispString)symb):((LispString)((LispSymbol)symb).symbol_name()));
-      if(getSymbol(symb_name) == f_lisp.NIL) {
-          final LispSymbol symbi = f_lisp.intern(symb_name,this);
-          f_shadowingSymbols.put(symb_name, symbi);
-      } else if(f_shadowingSymbols.get(symb_name) == f_lisp.NIL) {
-          f_shadowingSymbols.put(symb_name,getSymbol(symb_name));
-      }
-      s = f_lisp.cdr(s);
-    }
-
-    // Return T
-    return f_lisp.T;
-  }
-
-  public LispValue type_of() { return f_lisp.PACKAGE_TYPE; }
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.PACKAGE_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
-  }
-
   public LispString getName()
   {
     return (LispString)(f_name);
   }
-
-  /**
-   * Returns a list of the nicknames of this package.
-   * Each element of the list is a LispString.
-   */
-  public LispValue getNicknames()
-  {
-    return f_nicknames;
-  }
-
-  /**
-   * Sets the nicknames-list
-   */
-  public void setNicknames(final LispValue nicknames)
-  {
-    f_nicknames = nicknames;
-  }
-
-  public LispValue getUses() {
-    return f_uses;
-  }
-
-  public void setUses(final LispList uses) {
-    this.f_uses = uses;
-  }
-
-  /**
-   * Returns true if this package uses the given package
-   */
-  public boolean uses(final LispValue pkg)
-  {
-    LispValue p = f_uses;
-
-    while (!(p instanceof LispNil))
-    {
-      if (pkg.eq(f_lisp.findPackage(f_lisp.car(p))) == f_lisp.T)
-        return true;
-      p = f_lisp.cdr(p);
-    }
-    return false;
-  }
-
 }

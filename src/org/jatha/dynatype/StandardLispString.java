@@ -559,8 +559,8 @@ public class StandardLispString extends StandardLispAtom implements LispString
   }
 
 
-  public LispValue     type_of     ()  { return f_lisp.STRING_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue     type_of     ()  { return f_lisp.STRING_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -568,7 +568,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
 };
 

@@ -433,8 +433,8 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
   }
   
 
-  public LispValue type_of   ()  { return f_lisp.BIGNUM_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue type_of   ()  { return f_lisp.BIGNUM_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -442,7 +442,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
   public LispValue zerop     ()
   {

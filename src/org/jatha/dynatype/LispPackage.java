@@ -45,12 +45,6 @@ public interface LispPackage extends LispCons
   public LispString getName();
 
   /**
-   * Returns a list of the nicknames of this package.
-   * Each element of the list is a LispString.
-   */
-  public LispValue getNicknames();
-
-  /**
    * Returns the external symbol with the given name
    * @param str a LispString corresponding to the symbol.
    */
@@ -67,32 +61,10 @@ public interface LispPackage extends LispCons
    */
   LispSymbol getSymbol(LispString str);
 
-  // author  Micheal S. Hewett    hewett@cs.stanford.edu
-  // date    Sun May 11 16:25:14 1997
-  /**
-   * Declares the symbol or symbols as exported symbols.
-   * The symbol can be a symbol or list of symbols.
-   */
-    public LispValue export(LispValue symbols);
-
   /**
    * Returns the symbol after it is added to the package.
    * @param name
    * @param symbol
    */
     void addSymbol(LispString name, LispSymbol symbol);
-
-    /**
-     * Returns a list of package names that this package uses. Contains either symbols or strings.
-     */
-    LispValue getUses();
-
-    /**
-     * Sets the uses for this package.
-     *
-     * @param uses the uses of this package
-     */
-    void setUses(final LispList uses);
-
-    void setNicknames(final LispValue nicknames);
 }

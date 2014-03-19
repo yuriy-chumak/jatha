@@ -878,11 +878,11 @@ public interface LispValue extends Comparable<LispValue>
    */
   public LispValue radiansToDegrees();
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue type_of();
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue type_of();
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue typep(LispValue type);
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue typep(LispValue type);
 
   public LispValue zerop();
 

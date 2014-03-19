@@ -103,12 +103,11 @@ public class Lisp
    *
    * @see org.jatha.dynatype.LispPackage
    */
-  public LispPackage   PACKAGE;
+//public LispPackage PACKAGE;
 //public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
   
-  public LispPackage KEYWORD;
+//public LispPackage KEYWORD;
   public LispPackage SYSTEM;
-  public LispPackage   CL;
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -189,28 +188,28 @@ public class Lisp
 
   // Types
   // todo: move this into external lisp package
-  public LispSymbol ARRAY_TYPE;
-  public LispSymbol ATOM_TYPE;
-  public LispSymbol BIGNUM_TYPE;
-  public LispSymbol BOOLEAN_TYPE;
-  public LispSymbol CHARACTER_TYPE;
-  public LispSymbol COMPLEX_TYPE;
-  public LispSymbol CONS_TYPE;
-  public LispSymbol DOUBLE_FLOAT_TYPE;
-  public LispSymbol FLOAT_TYPE;
-  public LispSymbol FUNCTION_TYPE;
-  public LispSymbol HASHTABLE_TYPE;
-  public LispSymbol INTEGER_TYPE;
-  public LispSymbol MACRO_TYPE;
-  public LispSymbol NULL_TYPE;
-  public LispSymbol NUMBER_TYPE;
-  public LispSymbol PACKAGE_TYPE;
-  public LispSymbol PATHNAME_TYPE;
-  public LispSymbol REAL_TYPE;
-  public LispSymbol STREAM_TYPE;
-  public LispSymbol STRING_TYPE;
-  public LispSymbol SYMBOL_TYPE;
-  public LispSymbol VECTOR_TYPE;
+//  public LispSymbol ARRAY_TYPE;
+//  public LispSymbol ATOM_TYPE;
+//  public LispSymbol BIGNUM_TYPE;
+//  public LispSymbol BOOLEAN_TYPE;
+//  public LispSymbol CHARACTER_TYPE;
+//  public LispSymbol COMPLEX_TYPE;
+//  public LispSymbol CONS_TYPE;
+//  public LispSymbol DOUBLE_FLOAT_TYPE;
+//  public LispSymbol FLOAT_TYPE;
+//  public LispSymbol FUNCTION_TYPE;
+//  public LispSymbol HASHTABLE_TYPE;
+//  public LispSymbol INTEGER_TYPE;
+//  public LispSymbol MACRO_TYPE;
+//  public LispSymbol NULL_TYPE;
+//  public LispSymbol NUMBER_TYPE;
+//  public LispSymbol PACKAGE_TYPE;
+//  public LispSymbol PATHNAME_TYPE;
+//  public LispSymbol REAL_TYPE;
+//  public LispSymbol STREAM_TYPE;
+//  public LispSymbol STRING_TYPE;
+//  public LispSymbol SYMBOL_TYPE;
+//  public LispSymbol VECTOR_TYPE;
 
   /**
    * This is used in apropos_print on StandardLispSymbol.
@@ -218,7 +217,7 @@ public class Lisp
    * @param object a LispSymbol
    * @return true if it is equal to ARRAY_TYPE, ATOM_TYPE, etc.
    */
-  public boolean isType(LispValue object)
+/*  public boolean isType(LispValue object)
   {
     return ((object == ARRAY_TYPE)
             || (object == ATOM_TYPE)
@@ -243,9 +242,9 @@ public class Lisp
             || (object == SYMBOL_TYPE)
             || (object == VECTOR_TYPE)
             );
-  }
-    private LispPackage f_systemPackage = null;
-    private LispPackage f_keywordPackage = null;
+  }*/
+//    private LispPackage f_systemPackage = null;
+//    private LispPackage f_keywordPackage = null;
 
   private void initializeConstants()
   {
@@ -262,40 +261,39 @@ public class Lisp
       e.printStackTrace();
     }
 
-    f_systemPackage = SYSTEM = new StandardLispPackage(this, makeString("SYSTEM"));
-    f_keywordPackage = KEYWORD = new StandardLispPackage(this, makeString("KEYWORD"));
+    SYSTEM = new StandardLispPackage(this, makeString("SYSTEM"));
 
     // NIL is special case - not a symbol but require be in system symbol table(?)
 //	NIL.setPackage(f_systemPackage);
     
     DOT = new StandardLispSymbol(this, ".");
-    intern(makeString("DOT"), DOT, f_systemPackage);
+    intern(makeString("DOT"), DOT, SYSTEM);
 
-    QUOTE = internAndExport("QUOTE", f_systemPackage);
+    QUOTE = internAndExport("QUOTE", SYSTEM);
     
     BACKQUOTE = new StandardLispSymbol(this, "BACKQUOTE");
-    intern(makeString("BACKQUOTE"), BACKQUOTE, f_systemPackage);
+    intern(makeString("BACKQUOTE"), BACKQUOTE, SYSTEM);
 
     LIST = new StandardLispSymbol(this, "LIST");
-    intern(makeString("LIST"), LIST, f_systemPackage);
+    intern(makeString("LIST"), LIST, SYSTEM);
 
     APPEND = new StandardLispSymbol(this, "APPEND");
-    intern(makeString("APPEND"), APPEND, f_systemPackage);
+    intern(makeString("APPEND"), APPEND, SYSTEM);
 
     CONS = new StandardLispSymbol(this, "CONS");
-    intern(makeString("CONS"), CONS, f_systemPackage);
+    intern(makeString("CONS"), CONS, SYSTEM);
 
     COMMA_FN        = new StandardLispKeyword(this, "COMMA");
-    intern(makeString("COMMA"), COMMA_FN, f_keywordPackage);
+    intern(makeString("COMMA"), COMMA_FN, SYSTEM);
 
     COMMA_ATSIGN_FN = new StandardLispKeyword(this, "COMMA-ATSIGN");
-    intern(makeString("COMMA-ATSIGN"), COMMA_ATSIGN_FN, f_keywordPackage);
+    intern(makeString("COMMA-ATSIGN"), COMMA_ATSIGN_FN, SYSTEM);
 
     COMMA_DOT_FN    = new StandardLispKeyword(this, "COMMA-DOT");
-    intern(makeString("COMMA-DOT"), COMMA_DOT_FN, f_keywordPackage);
+    intern(makeString("COMMA-DOT"), COMMA_DOT_FN, SYSTEM);
 
     T = new StandardLispConstant(this, "T");
-    intern(makeString("T"), T, f_systemPackage);
+    intern(makeString("T"), T, SYSTEM);
     T.setf_symbol_value(T);
 
     ZERO = new StandardLispInteger(this, 0);
@@ -310,11 +308,11 @@ public class Lisp
     SPACE   = new StandardLispCharacter(this, ' ');
 
     STRING = new StandardLispSymbol(this, "STRING");
-    intern(makeString("STRING"), STRING, f_systemPackage);
+    intern(makeString("STRING"), STRING, SYSTEM);
 
 
     // Lisp data types  --------------------------------------------
-
+/*
     ARRAY_TYPE = new StandardLispSymbol(this, "ARRAY");
     intern(makeString("ARRAY"), ARRAY_TYPE, f_systemPackage);
 
@@ -380,7 +378,7 @@ public class Lisp
 
     VECTOR_TYPE = new StandardLispSymbol(this, "VECTOR");
     intern(makeString("VECTOR"), VECTOR_TYPE, f_systemPackage);
-    
+*/    
     MACRO = keywordAndExport("MACRO");
     PRIMITIVE = keywordAndExport("PRIMITIVE");
 
@@ -395,45 +393,11 @@ public class Lisp
       System.exit(1);
     }
 
-    if (PACKAGE == null)
+    if (SYSTEM == null)
     {
       System.err.println("In LispValue.init(), package is null!");
       System.exit(1);
     }
-
-    f_systemPackage.export(DOT);
-    f_systemPackage.export(NIL);
-    f_systemPackage.export(QUOTE);
-    f_systemPackage.export(BACKQUOTE);
-    f_systemPackage.export(T);
-    f_systemPackage.export(LIST);
-    f_systemPackage.export(APPEND);
-    f_systemPackage.export(CONS);
-    f_keywordPackage.export(COMMA_FN);
-    f_keywordPackage.export(COMMA_ATSIGN_FN);
-    f_keywordPackage.export(COMMA_DOT_FN);
-    f_systemPackage.export(ARRAY_TYPE);
-    f_systemPackage.export(ATOM_TYPE);
-    f_systemPackage.export(BIGNUM_TYPE);
-    f_systemPackage.export(BOOLEAN_TYPE);
-    f_systemPackage.export(CHARACTER_TYPE);
-    f_systemPackage.export(COMPLEX_TYPE);
-    f_systemPackage.export(CONS_TYPE);
-    f_systemPackage.export(DOUBLE_FLOAT_TYPE);
-    f_systemPackage.export(FLOAT_TYPE);
-    f_systemPackage.export(FUNCTION_TYPE);
-    f_systemPackage.export(HASHTABLE_TYPE);
-    f_systemPackage.export(INTEGER_TYPE);
-    f_systemPackage.export(MACRO_TYPE);
-    f_systemPackage.export(NULL_TYPE);
-    f_systemPackage.export(NUMBER_TYPE);
-    f_systemPackage.export(PACKAGE_TYPE);
-    f_systemPackage.export(PATHNAME_TYPE);
-    f_systemPackage.export(REAL_TYPE);
-    f_systemPackage.export(STREAM_TYPE);
-    f_systemPackage.export(STRING_TYPE);
-    f_systemPackage.export(SYMBOL_TYPE);
-    f_systemPackage.export(VECTOR_TYPE);
 
   }
 
@@ -522,30 +486,13 @@ public class Lisp
 
   public void init()
   {
-
     // EVAL must be before SYMTAB.
     SYMTAB  = new SymbolTable(this);
 
     initializeConstants();
 
-    // Have to be careful about initializing this...
-
-    f_systemPackage.setNicknames(makeList(makeString("SYS")));
-    f_keywordPackage.setNicknames(makeList(makeString("")));
-
-    PACKAGE = new StandardLispPackage(this, makeString("COMMON-LISP-USER"),makeList(makeString("CL-USER"),makeString("USER")),NIL,SYMTAB);
-    
-    final LispPackage clPackage = CL = new StandardLispPackage(this, makeString("COMMON-LISP"),makeList(makeString("CL")));
-    
-    PACKAGE.setUses(makeList(((StandardLispPackage)clPackage).getName(),((StandardLispPackage)f_systemPackage).getName()));
-    
-    ((StandardLispPackage)clPackage).setUses(makeList(((StandardLispPackage)f_systemPackage).getName()));
-    
-    ((StandardLispPackage)f_keywordPackage).setUses(NIL);
-    ((StandardLispPackage)f_systemPackage).setUses(NIL);
-
     // Create the rest of the packages
-    packages = makeList(f_systemPackage,clPackage,f_keywordPackage,PACKAGE);
+    packages = makeList(SYSTEM);
 
     initConstants2();
 
@@ -1123,32 +1070,10 @@ public class Lisp
     if (packages == null)
       return NIL;
 
-    LispValue     pList = packages;
-    LispValue     nickNameList;
-    LispPackage   pkg;
-
-    while (pList != NIL)
-    {
-      pkg = (LispPackage)(this.car(pList));
-
-      // Try to match the package name
-      if (packageNameStr.equalsIgnoreCase(pkg.getName().getValue()))
-        return pkg;
-
-      // Try to match the nicknames
-      nickNameList = pkg.getNicknames();
-      while (nickNameList != NIL)
-      {
-        if (packageNameStr.equalsIgnoreCase(((LispString)(this.car(nickNameList))).getValue()))
-          return pkg;
-        nickNameList = this.cdr(nickNameList);
-      }
-
-      // Try the next package.
-      pList = this.cdr(pList);
-    }
-
-    return NIL;
+    if ("SYSTEM".equals(packageNameStr))
+    	return SYSTEM;
+    
+    throw new LispValueNotAPackageException(packageNameStr);
   }
 
   public LispValue allPackages() { return packages; }
@@ -1246,26 +1171,8 @@ public class Lisp
    */
   public LispPackage defpackage(LispValue args)
   {
-    return PACKAGE;
+    return SYSTEM;
   }
-
-    /**
-     * Creates a package and returns it. If it already exists, a cerror is reported.
-     *
-     * @param name the name of the package. may be a string or a symbol
-     * @param nickNames a list of nicknames. the content must be strings or symbols
-     * @param use a list of package names to use. may be strings or symbols.
-     * @return Jatha.PACKAGE
-     */
-    public LispValue makePackage(final LispValue name, final LispValue nickNames, final LispList use) {
-        LispValue firstPkg = findPackage(name);
-        if(NIL != firstPkg) {
-            throw new LispAlreadyDefinedPackageException(((LispString)name.string()).getValue());
-        }
-        firstPkg = new StandardLispPackage(this, name, nickNames, use);
-        packages = makeCons(firstPkg,packages);
-        return firstPkg;
-    }
 
   // -----  ActionListener interface  ------------------
   // ---------------------  methods formerly in LispValueFactory  ------------------
@@ -1693,7 +1600,7 @@ public class Lisp
 	    if (COLON.eql(symbolString.basic_elt(0)) != NIL)
 	      return keyword((LispString)(symbolString.substring(new StandardLispInteger(this, 1))));
 	    else
-	      return intern(symbolString, PACKAGE);
+	      return intern(symbolString, SYSTEM);
 	  }
 
 
@@ -1711,11 +1618,9 @@ public class Lisp
 	    }
 	    else
 	    {
-	    	assert (pkg != KEYWORD);
-	    	
 	        newSymbol = makeSymbol(symbolString);
 
-	      return intern(symbolString, newSymbol, pkg);
+	        return intern(symbolString, newSymbol, pkg);
 	    }
 	  }
 
@@ -1724,7 +1629,7 @@ public class Lisp
 	  // properties, we must make the type be LispValue.
 	  public LispSymbol intern(LispString symbolString, LispSymbol symbol)
 	  {
-	    return intern(symbolString, symbol, PACKAGE);
+	    return intern(symbolString, symbol, SYSTEM);
 	  }
 
 	  // We need this for the startup when we create f_lisp.NIL and LispValue.T.
@@ -1755,14 +1660,12 @@ public class Lisp
 	  public LispSymbol internAndExport(String str, LispPackage pkg)
 	  {
 		  LispSymbol value = intern(makeString(str), pkg);
-		  pkg.export(value);
 		  return value;
 	  }
 	  
 	  public LispSymbol keywordAndExport(String str)
 	  {
 		  LispSymbol value = keyword(makeString(str));
-		  KEYWORD.export(value);
 		  return value;
 	  }
 	  public LispSymbol keyword(String str)
@@ -1774,7 +1677,7 @@ public class Lisp
 		  LispSymbol newSymbol;
 
 		  // First, check to see whether one exists already.
-	    newSymbol = KEYWORD.getSymbol(symbolString);
+	    newSymbol = SYSTEM.getSymbol(symbolString);
 
 	    if (newSymbol == null)    // Already there, don't add it again.
 	    {
@@ -1782,8 +1685,8 @@ public class Lisp
 	        // Symbols must be uppercase
 	        newSymbol = new StandardLispKeyword(this, new StandardLispString(this, newString));
 
-	        newSymbol.setPackage(KEYWORD);
-	        KEYWORD.addSymbol(symbolString, newSymbol);
+	        newSymbol.setPackage(SYSTEM);
+	        SYSTEM.addSymbol(symbolString, newSymbol);
 	        return newSymbol;
 	    }
 	    return newSymbol;

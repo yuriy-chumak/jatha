@@ -861,7 +861,7 @@ public class LispParser
 				}
 			}
 			else
-				newCell = f_lisp.intern(token, f_lisp.PACKAGE);
+				newCell = f_lisp.intern(token, f_lisp.SYSTEM);
 		}
 		else {
 			System.err.println("ERROR: Unrecognized input: \"" + token + "\"");

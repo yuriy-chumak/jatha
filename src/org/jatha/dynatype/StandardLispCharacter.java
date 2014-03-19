@@ -116,8 +116,8 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
   }
 
 
-  public LispValue     type_of     ()  { return f_lisp.CHARACTER_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue     type_of     ()  { return f_lisp.CHARACTER_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -125,7 +125,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
   public char getCharacterValue()
   {

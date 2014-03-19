@@ -45,18 +45,6 @@ import org.jatha.exception.LispException;
 public interface LispSymbol extends LispAtom
 {
   /**
-   * Returns true if the symbol is external in its package.
-   */
-  boolean externalP();
-
-  /**
-   * Sets whether the symbol is external in its package.
-   * @param b
-   */
-  void setExternal(boolean b);
-
-
-  /**
    * Assigns a value to a symbol.
    */
   public LispValue setq(LispValue newValue);

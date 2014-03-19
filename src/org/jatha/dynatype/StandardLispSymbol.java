@@ -141,28 +141,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public String toString()
   {
-    String pkg = "";
-
-    // System.err.println("StandardLispSymbol.toString(): pkg = " + f_package + ", PACKAGE=" + f_lisp.PACKAGE);
-    if (f_package == null)
-      pkg = "#:";
-    else if (f_package != f_lisp.PACKAGE)
-    {
-      if (f_lisp.PACKAGE.uses(f_package))
-        pkg = "";
-      else if (f_isExternalInPackage)
-        pkg = f_package.toString() + ":";
-      else
-        pkg = f_package.toString() + "::";
-    }
-
-    /* Don't worry about OR bars for now.
-    // TODO  need *print-case* and *read-case*.
-    if (mixedCase)
-      return pkg + "|" + name.getValue() + "|";
-    else
-    */
-    return pkg + f_name.getValue();
+	  return (f_package == null ? "#:" : "") + f_name.getValue();
   }
 
 
@@ -173,7 +152,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public String toStringSimple()
   {
     // if (this instanceof LispKeyword)    // would this work?
-    if (f_package == f_lisp.KEYWORD)
+    if (this instanceof LispKeyword)
       return ":" + f_name.getValue();
     else
       return f_name.getValue();
@@ -197,18 +176,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     if (f_package == null)    // Can only have one home package
       f_package = newPackage;
   }
-
-  public void setExternal(boolean value)
-  {
-    // We really should verify that the package is set, but
-    // we probably can't set this unless it is so we'll assume it is.
-
-    f_isExternalInPackage = value;
-  }
-
-  public boolean externalP() { return f_isExternalInPackage; }
-
-
 /* ------------------  LISP methods   ------------------------------ */
 
   public LispValue  apply(LispValue args)
@@ -364,8 +331,8 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return f_value;
   }
 
-  public LispValue     type_of     ()  { return f_lisp.SYMBOL_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue     type_of     ()  { return f_lisp.SYMBOL_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -373,7 +340,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
     public LispValue documentation(final LispValue type) {
         if(!(type instanceof LispSymbol)) {

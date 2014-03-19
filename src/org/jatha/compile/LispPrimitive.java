@@ -64,7 +64,7 @@ public abstract class LispPrimitive extends StandardLispValue
   public void initConstants()
   {
     if (s_PRIMITIVE_TAG == null)
-      s_PRIMITIVE_TAG = f_lisp.intern("PRIMITIVE", f_lisp.KEYWORD); //todo: change to f_lisp.PRIMITIVE
+      s_PRIMITIVE_TAG = f_lisp.keyword("PRIMITIVE"); //todo: change to f_lisp.PRIMITIVE
   }
   
   /**

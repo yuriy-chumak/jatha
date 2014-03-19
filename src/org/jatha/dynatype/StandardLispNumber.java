@@ -793,7 +793,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     return new StandardLispReal(f_lisp, StrictMath.sqrt(getDoubleValue()));
   }
 
-  public LispValue typep(LispValue type)
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -801,7 +801,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
   public LispValue greaterThan(LispValue arg)
   {

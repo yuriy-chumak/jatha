@@ -142,8 +142,8 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
 
   public LispValue integerp  ()  { return f_lisp.T; }
 
-  public LispValue type_of   ()  { return f_lisp.INTEGER_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue type_of   ()  { return f_lisp.INTEGER_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -151,7 +151,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
   public LispValue zerop     ()
   {

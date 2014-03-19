@@ -102,10 +102,10 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public void initializeConstants()
   {
 
-    EQ     = f_lisp.intern("EQ-HASH-TABLE",    f_lisp.KEYWORD);
-    EQL    = f_lisp.intern("EQL-HASH-TABLE",   f_lisp.KEYWORD);
-    EQUAL  = f_lisp.intern("EQUAL-HASH-TABLE", f_lisp.KEYWORD);
-    EQUALP = f_lisp.intern("EQUALP-HASH-TABLE",f_lisp.KEYWORD);
+    EQ     = f_lisp.keyword("EQ-HASH-TABLE");
+    EQL    = f_lisp.keyword("EQL-HASH-TABLE");
+    EQUAL  = f_lisp.keyword("EQUAL-HASH-TABLE");
+    EQUALP = f_lisp.keyword("EQUALP-HASH-TABLE");
 
     DEFAULT_TYPE             = EQL;
   }
@@ -315,8 +315,8 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 
   public LispValue hash_table_test () { return f_lisp.intern("EQL"); }
 
-  public LispValue type_of      ()  { return f_lisp.HASHTABLE_TYPE; }
-  public LispValue typep(LispValue type)
+//  public LispValue type_of      ()  { return f_lisp.HASHTABLE_TYPE; }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -324,7 +324,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
 
 

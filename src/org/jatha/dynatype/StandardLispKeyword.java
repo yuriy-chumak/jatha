@@ -41,14 +41,12 @@ public class StandardLispKeyword extends StandardLispConstant implements LispKey
   {
     super(lisp, symbolName);
     f_value = this;
-    setExternal(true);   // All keywords are external in the keyword package
   }
 
   public StandardLispKeyword(Lisp lisp, LispString symbolNameString)
   {
     super(lisp, symbolNameString);
     f_value = this;
-    setExternal(true);   // All keywords are external in the keyword package
   }
 
 

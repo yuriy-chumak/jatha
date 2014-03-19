@@ -512,8 +512,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
       return new StandardLispCons(f_lisp, car(), cdr().subst(newValue, oldValue));
   }
 
-  public LispValue     type_of     ()  { return f_lisp.CONS_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue     type_of     ()  { return f_lisp.CONS_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -521,7 +521,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
 };
 

@@ -135,8 +135,8 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   public LispValue     subst(LispValue oldValue, LispValue newValue)
   { return this; }
 
-  public LispValue     type_of     ()  { return f_lisp.NULL_TYPE;   }
-  public LispValue typep(LispValue type)
+//  public LispValue     type_of     ()  { return f_lisp.NULL_TYPE;   }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
@@ -144,7 +144,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
       return f_lisp.T;
     else
       return f_lisp.NIL;
-  }
+  }*/
 
 
 
