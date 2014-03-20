@@ -67,8 +67,8 @@ public interface LispValue extends Comparable<LispValue>
 	public static final LispSymbol QUOTE     = new StandardLispSymbol("QUOTE");
 	public static final LispSymbol BACKQUOTE = new StandardLispSymbol("BACKQUOTE");
 	
-	public static final LispSymbol MACRO     = new StandardLispKeyword(new StandardLispString(null, "MACRO"));
-	public static final LispSymbol PRIMITIVE = new StandardLispKeyword(new StandardLispString(null, "PRIMITIVE"));
+	public static final LispSymbol MACRO     = new StandardLispKeyword("MACRO");
+	public static final LispSymbol PRIMITIVE = new StandardLispKeyword("PRIMITIVE");
 	
 	// =-( unsorted )-=========================================	
 	
@@ -626,12 +626,6 @@ public interface LispValue extends Comparable<LispValue>
    * instead of the CAR.
    */
   public LispValue rassoc(LispValue index);
-
-  /**
-   * Reads a value from the given string.
-   * @return a LispValue as read by the LISP Reader
-   */
-  LispValue readFromString();
 
   /**
    * Computes 1/x of the given number.  Only valid for numbers.

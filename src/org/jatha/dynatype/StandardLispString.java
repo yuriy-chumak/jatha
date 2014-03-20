@@ -36,14 +36,12 @@ import org.jatha.exception.*;
 
 public class StandardLispString extends StandardLispAtom implements LispString
 {
-	protected Lisp f_lisp;	// todo: remove this!
   // -----  Fields  -----
   private  String str;
 
   // -----  Constructors  -----
-  public StandardLispString(Lisp lisp, String strName)
+  public StandardLispString(String strName)
   {
-		f_lisp = lisp;
     str = strName;
   }
 
@@ -87,7 +85,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {
-    return f_lisp.T;
+    return T;
   }
 
   public LispValue elt(int index)
@@ -108,7 +106,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
         throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
 
       // All is okay - return the element, which is a character.
-      return new StandardLispCharacter(f_lisp, str.charAt((int) indexValue));
+      return new StandardLispCharacter(str.charAt((int) indexValue));
     }
   }
 
@@ -117,7 +115,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (other instanceof LispString)
       if (str.equals(((LispString)other).getValue()))
-        return f_lisp.T;
+        return T;
 
     return NIL;
   }
@@ -131,7 +129,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
   public boolean equals(LispValue other)
   {
-    return (eql(other) == f_lisp.T);
+    return (eql(other) == T);
   }
 
 
@@ -154,7 +152,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   public LispValue length()
   { return integer(str.length()); }
 
-  public LispValue     stringp      ()     { return f_lisp.T; }
+  public LispValue     stringp      ()     { return T; }
 
   /**
    * For Common LISP compatibility, but identical to stringUpcase.
@@ -204,20 +202,6 @@ public class StandardLispString extends StandardLispAtom implements LispString
   }
 
   /**
-   * Reads a value from the given string.
-   * @return a LispValue as read by the LISP Reader
-   */
-  public LispValue readFromString()
-  {
-    try {
-      return f_lisp.parse(this.getValue());
-    } catch (Exception ex) {
-      System.err.println("READ-FROM-STRING: unable to read value from '" + this.getValue() + "'");
-      return null;
-    }
-  }
-
-  /**
    * Converts a String, Symbol or Character to a string.
    */
   public LispValue string()
@@ -232,9 +216,9 @@ public class StandardLispString extends StandardLispAtom implements LispString
   public LispValue stringCapitalize()
   {
     if (str.length() > 0)
-      return new StandardLispString(f_lisp, str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase());
+      return string(str.substring(0,1).toUpperCase() + str.substring(1).toLowerCase());
     else
-      return new StandardLispString(f_lisp, str);
+      return string(str);
   }
 
   /**
@@ -242,7 +226,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue stringDowncase()
   {
-    return new StandardLispString(f_lisp, str.toLowerCase());
+    return string(str.toLowerCase());
   }
 
   /**
@@ -252,7 +236,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.endsWith(((LispString)arg).getValue()))
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -268,7 +252,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.equals(((LispString)arg).getValue()))
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -284,7 +268,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.equalsIgnoreCase(((LispString)arg).getValue()))
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -299,7 +283,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) > 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -314,7 +298,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareTo(((LispString)arg).getValue()) > 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -329,7 +313,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareTo(((LispString)arg).getValue()) >= 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -345,7 +329,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
     int i=0;
     while ((i < maxLength) && (Character.isWhitespace(str.charAt(i))))
       i++;
-    return new StandardLispString(f_lisp, str.substring(i));
+    return string(str.substring(i));
   }
 
   /**
@@ -360,7 +344,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
     int i=0;
     while ((i < maxLength) && (((LispString)deleteBag).getValue().indexOf(str.charAt(i)) >= 0))
       i++;
-    return new StandardLispString(f_lisp, str.substring(i));
+    return string(str.substring(i));
   }
 
   /**
@@ -371,7 +355,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) < 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -386,7 +370,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareTo(((LispString)arg).getValue()) < 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -401,7 +385,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareTo(((LispString)arg).getValue()) <= 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -417,7 +401,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.equals(((LispString)arg).getValue()))
         return NIL;
       else
-        return f_lisp.T;
+        return T;
     else
       throw new LispValueNotAStringException("The argument to stringNeq (" + arg + ")");
   }
@@ -430,7 +414,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) <= 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -445,7 +429,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) >= 0)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -460,7 +444,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
     int i = str.length() - 1;
     while ((i >= 0) && (Character.isWhitespace(str.charAt(i))))
       i--;
-    return new StandardLispString(f_lisp, str.substring(0, i+1));
+    return string(str.substring(0, i+1));
   }
 
   /**
@@ -474,7 +458,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
     int i = str.length() - 1;
     while ((i >= 0) && (((LispString)deleteBag).getValue().indexOf(str.charAt(i)) >= 0))
       i--;
-    return new StandardLispString(f_lisp, str.substring(0, i+1));
+    return string(str.substring(0, i+1));
   }
 
   /**
@@ -484,7 +468,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.startsWith(((LispString)arg).getValue()))
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else
@@ -496,7 +480,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue stringTrim()
   {
-    return new StandardLispString(f_lisp, str.trim());
+    return string(str.trim());
   }
 
   /**
@@ -513,7 +497,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue stringUpcase()
   {
-    return new StandardLispString(f_lisp, str.toUpperCase());
+    return string(str.toUpperCase());
   }
 
   /**
@@ -548,9 +532,9 @@ public class StandardLispString extends StandardLispAtom implements LispString
           throw new LispIndexOutOfRangeException("The end index of substring (" + i_end + ")");
 
         else if ((i_begin >= length) || (i_begin >= i_end))
-          return new StandardLispString(f_lisp, "");
+          return string("");
         else
-          return new StandardLispString(f_lisp, str.substring((int)i_begin, (int)i_end));
+          return string(str.substring((int)i_begin, (int)i_end));
       }
       else
         throw new LispValueNotAnIntegerException("The operand of substring (" + start + ")");

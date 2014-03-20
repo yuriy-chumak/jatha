@@ -732,7 +732,7 @@ public class LispParser
           ch = token.charAt(0);
       }
 
-      return new StandardLispCharacter(f_lisp, ch);
+      return new StandardLispCharacter(ch);
     }
 
     // #< usually starts a structure

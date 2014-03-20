@@ -629,7 +629,7 @@ public class LispCompiler
 					else
 						buff.append(value.toString());
 				}
-				return new StandardLispString(f_lisp, buff.toString());
+				return new StandardLispString(buff.toString());
 				
 /*				if (args.basic_length() > 1)
 					return args.second().concatenate(f_lisp.makeCons(args.car(), args.cdr().cdr()));

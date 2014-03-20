@@ -83,7 +83,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
    */
   public StandardLispPackage(Lisp lisp, String name)
   {
-    this(lisp, new StandardLispString(lisp, name));
+    this(lisp, string(name));
   }
 
 

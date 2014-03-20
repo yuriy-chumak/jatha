@@ -216,9 +216,9 @@ public class Lisp
     E    = StandardLispValue.real(StrictMath.E);
     PI   = StandardLispValue.real(StrictMath.PI);
 
-    COLON   = new StandardLispCharacter(this, ':');
-    NEWLINE = new StandardLispCharacter(this, '\n');
-    SPACE   = new StandardLispCharacter(this, ' ');
+    COLON   = new StandardLispCharacter(':');
+    NEWLINE = new StandardLispCharacter('\n');
+    SPACE   = new StandardLispCharacter(' ');
 
     symbol("MACRO", LispValue.MACRO);
     symbol("PRIMITIVE", LispValue.PRIMITIVE);
@@ -1130,7 +1130,7 @@ public class Lisp
    */
   public LispString makeString(String str)
   {
-    return new StandardLispString(this, str);
+    return new StandardLispString(str);
   }
 
 
@@ -1378,7 +1378,7 @@ public class Lisp
 	    {
 	        String newString = symbolString.toStringSimple().toUpperCase();
 	        // Symbols must be uppercase
-	        newSymbol = new StandardLispKeyword(new StandardLispString(this, newString));
+	        newSymbol = new StandardLispKeyword(makeString(newString));
 
 	        newSymbol.setPackage(SYSTEM);
 	        SYSTEM.addSymbol(symbolString, newSymbol);

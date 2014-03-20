@@ -73,12 +73,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 /* ------------------  CONSTRUCTORS   ------------------------------ */
 	public StandardLispSymbol(String symbolName)
 	{
-		this(null, new StandardLispString(null, symbolName));
+		this(null, string(symbolName));
 	}
 
   public StandardLispSymbol(Lisp lisp, String symbolName)
   {
-    this(lisp, new StandardLispString(lisp, symbolName));
+    this(lisp, string(symbolName));
   }
 
   // Only 'name' is required to create a symbol.
@@ -299,7 +299,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public LispValue string()
   {
-    return new StandardLispString(f_lisp, this.toString());
+    return string(this.toString());
   }
 
   public LispValue symbol_function() throws LispException

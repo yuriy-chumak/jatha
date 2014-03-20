@@ -34,8 +34,6 @@ import org.jatha.Lisp;
 
 public class StandardLispCharacter extends StandardLispAtom implements LispCharacter
 {
-	protected Lisp f_lisp;	// todo: remove this!
-
   // ----- fields  ------------
 
   private  char value;
@@ -44,16 +42,14 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
 
   // ----- Constructors  ------------
-  public StandardLispCharacter(Lisp lisp, char theChar)
+  public StandardLispCharacter(char theChar)
   {
-		f_lisp = lisp;
     value = theChar;
   }
 
 
-  public StandardLispCharacter(Lisp lisp)
+  public StandardLispCharacter()
   {
-		f_lisp = lisp;
     value = 'm';  // For Mike!
   }
 
@@ -113,7 +109,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
    */
   public LispValue string()
   {
-    return new StandardLispString(f_lisp, this.toString());
+    return new StandardLispString(this.toString());
   }
 
 

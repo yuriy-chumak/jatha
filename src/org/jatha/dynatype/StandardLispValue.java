@@ -701,15 +701,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotAListException("The second argument to RASSOC");  }
 
   /**
-   * Reads a value from the given string.
-   * @return a LispValue as read by the LISP Reader
-   */
-  public LispValue readFromString()
-  {
-    throw new LispValueNotAStringException("The argument to READ-FROM-STRING");
-  }
-
-  /**
    * Computes 1/x of the given number.  Only valid for numbers.
    * @return a LispReal
    */
@@ -1214,5 +1205,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 		return new StandardLispReal(0.0);
 	}
 	
-	
+	public static LispString string(String value)
+	{
+		return new StandardLispString(value);
+	}
 }
