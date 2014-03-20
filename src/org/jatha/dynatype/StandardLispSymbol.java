@@ -28,6 +28,7 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.*;
 
+import org.jatha.compile.LispCompiler;
 import org.jatha.exception.*;
 import org.jatha.read.*;
 import org.jatha.Lisp;
@@ -69,6 +70,11 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected Map f_documentation;
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
+	public StandardLispSymbol(String symbolName)
+	{
+		this(null, new StandardLispString(null, symbolName));
+	}
+
   public StandardLispSymbol(Lisp lisp, String symbolName)
   {
     this(lisp, new StandardLispString(lisp, symbolName));
@@ -258,7 +264,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     }
 
     // A macro has the symbol :MACRO as the first element.
-    if (f_lisp.getCompiler().isMacroCode(newCode))
+    if (LispCompiler.isMacroCode(newCode))
     {
       f_function = new StandardLispMacro(f_lisp, this, f_lisp.cdr(newCode));
       return f_function;

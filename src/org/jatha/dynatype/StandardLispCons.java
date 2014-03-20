@@ -141,7 +141,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   public boolean basic_constantp()
   { // returns true if the list evaluates to itself - if it is quoted.
-    return carCell == f_lisp.QUOTE;
+    return carCell == QUOTE;
   }
 
   public int     basic_length()

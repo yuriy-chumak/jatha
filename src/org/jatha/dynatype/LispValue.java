@@ -64,6 +64,12 @@ public interface LispValue extends Comparable<LispValue>
 	public static final LispList NIL = new StandardLispNIL();
 	public static final LispConstant T = new StandardLispT();
 	
+	public static final LispSymbol QUOTE     = new StandardLispSymbol("QUOTE");
+	public static final LispSymbol BACKQUOTE = new StandardLispSymbol("BACKQUOTE");
+	
+	public static final LispSymbol MACRO     = new StandardLispKeyword(new StandardLispString(null, "MACRO"));
+	public static final LispSymbol PRIMITIVE = new StandardLispKeyword(new StandardLispString(null, "PRIMITIVE"));
+	
 	// =-( unsorted )-=========================================	
 	
 	

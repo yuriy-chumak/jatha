@@ -156,13 +156,6 @@ public class Lisp
   // The symbol T
   public static final LispConstant T = LispValue.T;
 
-	// These are used in macros
-	public LispSymbol MACRO;
-	public LispSymbol PRIMITIVE;
-  
-	public LispSymbol QUOTE;
-	public LispSymbol BACKQUOTE;
-	
   public LispSymbol CONS;
   public LispSymbol LIST;
   public LispSymbol APPEND;
@@ -207,8 +200,8 @@ public class Lisp
     
     // create initial builtin symbols
     symbol("DOT",       DOT = new StandardLispSymbol(this, "."));
-    symbol("QUOTE",     QUOTE = new StandardLispSymbol(this, "QUOTE"));
-    symbol("BACKQUOTE", BACKQUOTE = new StandardLispSymbol(this, "BACKQUOTE"));
+    symbol("QUOTE",     LispValue.QUOTE);// = new StandardLispSymbol(this, "QUOTE"));
+    symbol("BACKQUOTE", LispValue.BACKQUOTE);// = new StandardLispSymbol(this, "BACKQUOTE"));
     symbol("LIST",      LIST = new StandardLispSymbol(this, "LIST"));
     symbol("APPEND",    APPEND = new StandardLispSymbol(this, "APPEND"));
     symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
@@ -232,8 +225,8 @@ public class Lisp
     NEWLINE = new StandardLispCharacter(this, '\n');
     SPACE   = new StandardLispCharacter(this, ' ');
 
-    MACRO     = keyword("MACRO");
-    PRIMITIVE = keyword("PRIMITIVE");
+    symbol("MACRO", LispValue.MACRO);
+    symbol("PRIMITIVE", LispValue.PRIMITIVE);
   }
 
   // Re-initializes the above symbols, after a PACKAGE is available.
@@ -1523,7 +1516,7 @@ public class Lisp
 
 			if (code instanceof LispList) {
 				LispValue a = code.first();
-				LispValue c = code.getLisp().PRIMITIVE;
+				LispValue c = LispValue.PRIMITIVE;
 	        
 				if (a == c)
 					return true;

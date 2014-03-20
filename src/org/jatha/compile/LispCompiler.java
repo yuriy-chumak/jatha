@@ -65,12 +65,16 @@ public class LispCompiler
 	static boolean DEBUG = false;
 
 	static final LispList NIL = LispValue.NIL;
+	
+	static final LispValue QUOTE     = LispValue.QUOTE;
+	
+	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
+	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
   
 	// These are special forms that get expanded in the compiler
 	LispValue COMMENT;
 	LispValue PROGN;
 	LispValue DEFUN;
-	public LispValue QUOTE;
 	LispValue BLOCK;
 	
   LispValue AND;
@@ -80,12 +84,10 @@ public class LispCompiler
   LispValue LET;
   LispValue LETREC;
   LispValue OR;
-  LispValue PRIMITIVE;
   LispValue SETQ;
     //  LispValue WHEN;
 
   LispValue AMP_REST;   // keyword &rest used in parameters list
-  LispValue MACRO;      // keyword used at begenning of macro code to detect macro
   LispValue DUMMY_FUNCTION; // used for recursive definions
   LispValue DUMMY_MACRO;    // used for recursive definions
   
@@ -108,9 +110,6 @@ public class LispCompiler
   // static initializer.
 	private void initializeConstants()
 	{
-		MACRO      = f_lisp.MACRO;
-		PRIMITIVE  = f_lisp.PRIMITIVE;
-		
 		AMP_REST   = f_lisp.symbol("&REST");
 		SETQ       = f_lisp.symbol("SETQ");
     //    WHEN       = f_lisp.EVAL.intern("WHEN");
@@ -135,7 +134,7 @@ public class LispCompiler
 						return compileDefun(machine, car(args), cdr(args), valueList, code);
 					}
 				});
-			put(QUOTE = f_lisp.symbol("QUOTE"), new Compiler() {
+			put(QUOTE/*f_lisp.symbol("QUOTE")*/, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return cons(machine.LDC, cons(args.first(), code));
@@ -1674,9 +1673,9 @@ public class LispCompiler
    * @param code a Lisp list
    * @return true if code is code for a macro (the first element is :MACRO)
    */
-  public boolean isMacroCode(LispValue code)
+  public static boolean isMacroCode(LispValue code)
   {
-    return code instanceof LispList && (f_lisp.car(code) == MACRO);
+    return (code instanceof LispList) && (Lisp.car(code) == MACRO);
   }
 
 	// init

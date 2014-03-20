@@ -498,7 +498,7 @@ public class LispParser
      * read a token and replace the first NIL by the token read.
      */
 
-    newQuotedList = f_lisp.makeCons(f_lisp.QUOTE,
+    newQuotedList = f_lisp.makeCons(LispValue.QUOTE,
                                     f_lisp.makeCons(NIL, NIL));
     newCell = read();
     f_lisp.cdr(newQuotedList).rplaca(newCell);
@@ -519,7 +519,7 @@ public class LispParser
     * read a token and replace the first NIL by the token read.
     */
 
-    newQuotedList = f_lisp.makeCons(f_lisp.BACKQUOTE,
+    newQuotedList = f_lisp.makeCons(LispValue.BACKQUOTE,
                                     f_lisp.makeCons(NIL, NIL));
 
     ++BackQuoteLevel;
