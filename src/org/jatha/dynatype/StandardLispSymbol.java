@@ -28,7 +28,9 @@ import java.util.Map;
 import java.util.HashMap;
 import java.io.*;
 
+import org.jatha.compile.LispCompiler;
 import org.jatha.exception.*;
+import org.jatha.machine.SECDMachine;
 import org.jatha.read.*;
 import org.jatha.Lisp;
 
@@ -58,7 +60,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected  LispString   f_name;           // Print name
   protected  LispValue    f_value;          // Assigned value
   protected  LispValue    f_plist;          // Property list
-  protected  LispPackage  f_package;           // The symbol's home package
+  protected  boolean      f_package;           // The symbol's home package
 
   protected  boolean    f_isExternalInPackage = false;
   protected  boolean    f_isSpecial = false;  // Special? (dynamically-bound)
@@ -69,20 +71,19 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected Map f_documentation;
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
-  public StandardLispSymbol(Lisp lisp, String symbolName)
-  {
-    this(lisp, new StandardLispString(lisp, symbolName));
-  }
+	public StandardLispSymbol(String symbolName)
+	{
+		this(string(symbolName));
+	}
 
   // Only 'name' is required to create a symbol.
-  public StandardLispSymbol(Lisp lisp, LispString symbolNameString)
+  public StandardLispSymbol(LispString symbolNameString)
   {
-    super(lisp);
     f_name       = symbolNameString;
     f_value      = null;              // Default to UNBOUND
     f_function   = null;              // Default to UNBOUND
-    f_plist      = lisp.NIL;        // Default to NIL
-    f_package       = null;              // Default to no package.
+    f_plist      = NIL;        // Default to NIL
+    f_package    = false;              // Default to no package.
 
     // If the symbol contains lower-case letters, or anything other than
     // the following set of letters, we need to print OR-bars around it.
@@ -141,28 +142,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public String toString()
   {
-    String pkg = "";
-
-    // System.err.println("StandardLispSymbol.toString(): pkg = " + f_package + ", PACKAGE=" + f_lisp.PACKAGE);
-    if (f_package == null)
-      pkg = "#:";
-    else if (f_package != f_lisp.PACKAGE)
-    {
-      if (f_lisp.PACKAGE.uses(f_package))
-        pkg = "";
-      else if (f_isExternalInPackage)
-        pkg = f_package.toString() + ":";
-      else
-        pkg = f_package.toString() + "::";
-    }
-
-    /* Don't worry about OR bars for now.
-    // TODO  need *print-case* and *read-case*.
-    if (mixedCase)
-      return pkg + "|" + name.getValue() + "|";
-    else
-    */
-    return pkg + f_name.getValue();
+	  return (f_package ? "" : "#:") + f_name.getValue();
   }
 
 
@@ -173,7 +153,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public String toStringSimple()
   {
     // if (this instanceof LispKeyword)    // would this work?
-    if (f_package == f_lisp.KEYWORD)
+    if (this instanceof LispKeyword)
       return ":" + f_name.getValue();
     else
       return f_name.getValue();
@@ -192,23 +172,10 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   // ********   Packages  *********************************
 
-  public void setPackage(LispPackage newPackage)
+  public void setPackage(boolean has)
   {
-    if (f_package == null)    // Can only have one home package
-      f_package = newPackage;
+    f_package = has;
   }
-
-  public void setExternal(boolean value)
-  {
-    // We really should verify that the package is set, but
-    // we probably can't set this unless it is so we'll assume it is.
-
-    f_isExternalInPackage = value;
-  }
-
-  public boolean externalP() { return f_isExternalInPackage; }
-
-
 /* ------------------  LISP methods   ------------------------------ */
 
   public LispValue  apply(LispValue args)
@@ -219,44 +186,38 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     {
       System.err.println("\nSorry, APPLY is not yet implemented.");
 
-      return f_lisp.NIL;
+      return NIL;
     }
   }
 
-  public LispValue  boundp()
+  public boolean boundp()
   {
-    if (f_value == null)
-      return f_lisp.NIL;
-    else
-      return f_lisp.T;
+    return (f_value != null);
   }
 
-  public LispValue  fboundp()
+  public boolean fboundp()
   {
-    if (f_function == null)
-      return f_lisp.NIL;
-    else
-      return f_lisp.T;
+    return (f_function != null);
   }
 
-  public LispValue  funcall(LispValue args)
+  public LispValue funcall(SECDMachine machine, LispValue args)
   {
     if (f_function == null)
       throw new LispValueNotAFunctionException("The first argument to FUNCALL");
     else
     {
       // push the args back on the stack
-      for (LispValue v = args; v != f_lisp.NIL; v = f_lisp.cdr(v))
-        f_lisp.MACHINE.S.push(f_lisp.car(v));
+      for (LispValue v = args; v != NIL; v = cdr(v))
+    	  machine.S.push(car(v));
 
       // get the function, and push it on the code stack.
       // Note that we don't do error checking on the number
       // of arguments.  This is bad...
-      f_lisp.MACHINE.C.pop();                     // Pop the funcall function off.
-      f_lisp.MACHINE.C.push(((LispFunction)f_function).getCode());   // Push the new one on.
+      machine.C.pop();                     // Pop the funcall function off.
+      machine.C.push(((LispFunction)f_function).getCode());   // Push the new one on.
     }
 
-    return f_lisp.NIL;
+    return NIL;
   }
 
   public LispValue     pop          ()
@@ -265,8 +226,8 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
     if (f_value instanceof LispList)
     {
-      returnValue     = f_lisp.car(f_value);
-      setf_symbol_value(f_lisp.cdr(f_value));
+      returnValue     = car(f_value);
+      setf_symbol_value(cdr(f_value));
       return returnValue;
     }
     else
@@ -278,7 +239,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   {
     if (f_value instanceof LispList)
     {
-      setf_symbol_value(new StandardLispCons(f_lisp, newValue, f_value));
+      setf_symbol_value(new StandardLispCons(newValue, f_value));
       return newValue;
     }
     else
@@ -297,14 +258,14 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     }
 
     // A macro has the symbol :MACRO as the first element.
-    if (f_lisp.getCompiler().isMacroCode(newCode))
+    if (LispCompiler.isMacroCode(newCode))
     {
-      f_function = new StandardLispMacro(f_lisp, this, f_lisp.cdr(newCode));
+      f_function = new StandardLispMacro(this, Lisp.cdr(newCode));
       return f_function;
     }
 
     // Else, create a new function.
-    f_function = new StandardLispFunction(f_lisp, this, newCode);
+    f_function = new StandardLispFunction(this, newCode);
     return f_function;
   }
 
@@ -331,7 +292,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public LispValue string()
   {
-    return new StandardLispString(f_lisp, this.toString());
+    return string(this.toString());
   }
 
   public LispValue symbol_function() throws LispException
@@ -350,10 +311,9 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   public LispValue symbol_package()
   {
-    if (f_package == null)
-      return f_lisp.NIL;
-    else
-      return f_package;
+    if (f_package)
+        return string("SYS");
+    return NIL;
   }
 
   public LispValue symbol_plist()
@@ -370,35 +330,23 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return f_value;
   }
 
-  public LispValue     type_of     ()  { return f_lisp.SYMBOL_TYPE;   }
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.SYMBOL_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
-  }
-
     public LispValue documentation(final LispValue type) {
         if(!(type instanceof LispSymbol)) {
             throw new LispValueNotASymbolException("The second argument to DOCUMENTATION");
         }
         final LispValue val = (LispValue)f_documentation.get(type);
-        return (val == null) ? f_lisp.NIL : val;
+        return (val == null) ? NIL : val;
     }
 
     public LispValue setf_documentation(final LispValue type, final LispValue value) {
         if(!(type instanceof LispSymbol)) {
             throw new LispValueNotASymbolException("The second argument to SETF-DOCUMENTATION");
         }
-        if(!(value instanceof LispString) && value != f_lisp.NIL) {
+        if(!(value instanceof LispString) && value != NIL) {
             throw new LispValueNotAStringException("The third argument to SETF-DOCUMENTATION");
         }
         f_documentation.put(type,value);
         return value;
     }
-
 };
 

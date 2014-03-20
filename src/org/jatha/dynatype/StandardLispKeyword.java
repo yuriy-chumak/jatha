@@ -37,19 +37,17 @@ import org.jatha.exception.LispConstantRedefinedException;
  */
 public class StandardLispKeyword extends StandardLispConstant implements LispKeyword
 {
-  public StandardLispKeyword(Lisp lisp, String symbolName)
-  {
-    super(lisp, symbolName);
-    f_value = this;
-    setExternal(true);   // All keywords are external in the keyword package
-  }
+	public StandardLispKeyword(String symbolName)
+	{
+		super(symbolName);
+		f_value = this;
+	}
 
-  public StandardLispKeyword(Lisp lisp, LispString symbolNameString)
-  {
-    super(lisp, symbolNameString);
-    f_value = this;
-    setExternal(true);   // All keywords are external in the keyword package
-  }
+	public StandardLispKeyword(LispString symbolNameString)
+	{
+		super(symbolNameString);
+		f_value = this;
+	}
 
 
   // ------  BASIC (non-LISP) methods  --------
@@ -84,8 +82,6 @@ public class StandardLispKeyword extends StandardLispConstant implements LispKey
 
 
   // ------  LISP methods  --------
-
-  public LispValue     keywordp     ()  { return f_lisp.T; }
 
   public LispValue setf_symbol_value(LispValue newValue)
   {

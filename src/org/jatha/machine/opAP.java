@@ -68,6 +68,6 @@ class opAP extends SECDop
 		                           cons(machine.C.value(), machine.D.value()))));
 		machine.C.assign(code);
 		machine.E.assign(cons(v, fe.cdr()));
-		machine.S.assign(f_lisp.NIL);
+		machine.S.assign(NIL);
 	}
 }

@@ -58,7 +58,7 @@ class opRTN_IT extends SECDop
 
     machine.C.pop();               /* Pop the RTN_IT command. */
 
-    if (save != f_lisp.NIL)
+    if (save != NIL)
     {
       machine.S.assign(f_lisp.makeCons(save, machine.D.pop()));
       machine.E.assign(machine.D.pop());

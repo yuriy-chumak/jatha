@@ -44,6 +44,7 @@ import org.jatha.Lisp;
  */
 public class StandardLispHashTable extends StandardLispValue implements LispHashTable
 {
+	protected Lisp f_lisp;	// todo: remove this!
 	/* ------------------  Public variables   ------------------------------ */
 	
 	/**
@@ -85,27 +86,27 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   /**
    * Default size is 103.  From Allegro CL 4.3.
    */
-  LispInteger DEFAULT_SIZE = new StandardLispInteger(f_lisp, 103);
+  LispInteger DEFAULT_SIZE = integer(103);
 
   /**
    * Default rehash size is 1.2.  From Allegro CL 4.3.
    */
-  LispReal DEFAULT_REHASH_SIZE = new StandardLispReal(f_lisp, 1.2);
+  LispReal DEFAULT_REHASH_SIZE = real(1.2);
 
 
   /**
    * Default rehash threshold is 640777/999999.  From Allegro CL 4.3.
    */
-  LispReal DEFAULT_REHASH_THRESHOLD = new StandardLispReal(f_lisp, 640777 / 999999.0);
+  LispReal DEFAULT_REHASH_THRESHOLD = real(640777 / 999999.0);
 
 
   public void initializeConstants()
   {
 
-    EQ     = f_lisp.intern("EQ-HASH-TABLE",    f_lisp.KEYWORD);
-    EQL    = f_lisp.intern("EQL-HASH-TABLE",   f_lisp.KEYWORD);
-    EQUAL  = f_lisp.intern("EQUAL-HASH-TABLE", f_lisp.KEYWORD);
-    EQUALP = f_lisp.intern("EQUALP-HASH-TABLE",f_lisp.KEYWORD);
+    EQ     = f_lisp.keyword("EQ-HASH-TABLE");
+    EQL    = f_lisp.keyword("EQL-HASH-TABLE");
+    EQUAL  = f_lisp.keyword("EQUAL-HASH-TABLE");
+    EQUALP = f_lisp.keyword("EQUALP-HASH-TABLE");
 
     DEFAULT_TYPE             = EQL;
   }
@@ -134,7 +135,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
    */
   public StandardLispHashTable(Lisp lisp)
   {
-    super(lisp);
+		f_lisp = lisp;
   }
 
 
@@ -152,27 +153,27 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public StandardLispHashTable(Lisp lisp, LispValue typeArg, LispValue sizeArg,
 		   LispValue rehashSizeArg, LispValue rehashThresholdArg)
   {
-    super(lisp);
+		f_lisp = lisp;
 
     initializeConstants();
 
     // Check parameters
-    if (typeArg != f_lisp.NIL)
+    if (typeArg != NIL)
       type = typeArg;
     else
       type = DEFAULT_TYPE;
 
-    if (sizeArg != f_lisp.NIL)
+    if (sizeArg != NIL)
       size = sizeArg;
     else
       size = DEFAULT_SIZE;
 
-    if (rehashSizeArg != f_lisp.NIL)
+    if (rehashSizeArg != NIL)
       rehashSize = rehashSizeArg;
     else
       rehashSize = DEFAULT_REHASH_SIZE;
 
-    if (rehashThresholdArg != f_lisp.NIL)
+    if (rehashThresholdArg != NIL)
       rehashThreshold = rehashThresholdArg;
     else
       rehashThreshold = DEFAULT_REHASH_THRESHOLD;
@@ -262,7 +263,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 
 
   // Note - 'default' is a reserved word, hence the spelling below.
-  public LispValue gethash(LispValue key) { return gethash(key, f_lisp.NIL); }
+  public LispValue gethash(LispValue key) { return gethash(key, NIL); }
 
   public LispValue gethash(LispValue key, LispValue defawlt)
   {
@@ -279,7 +280,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
     LispValue result = (LispValue)(theHashTable.remove(key));
 
     if (result == null)
-      return f_lisp.NIL;
+      return NIL;
     else
       return result;
   }
@@ -295,36 +296,36 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public LispValue hashtablep   ()  { return f_lisp.T; }
 
   public LispValue hash_table_count ()
-  { return new StandardLispInteger(f_lisp, theHashTable.size()); }
+  { return integer(theHashTable.size()); }
 
   /** This should return the number of possible entries
    *  until the table is full, but Java 1.1 doesn't give us
    *  access to that number.
    */
   public LispValue hash_table_size ()
-  { return new StandardLispInteger(f_lisp, theHashTable.size()); }
+  { return integer(theHashTable.size()); }
 
   /** This should return the rehash-threshold, but
    *  Java 1.1 doesn't let us access that number.
    */
-  public LispValue hash_table_rehash_size () { return new StandardLispReal(f_lisp, 1.0); }
+  public LispValue hash_table_rehash_size () { return real(1.0); }
 
   /** Java 1.1 doesn't let us access this number.
    */
-  public LispValue hash_table_rehash_threshold () { return new StandardLispReal(f_lisp, 1.0); }
+  public LispValue hash_table_rehash_threshold () { return real(1.0); }
 
   public LispValue hash_table_test () { return f_lisp.intern("EQL"); }
 
-  public LispValue type_of      ()  { return f_lisp.HASHTABLE_TYPE; }
-  public LispValue typep(LispValue type)
+//  public LispValue type_of      ()  { return f_lisp.HASHTABLE_TYPE; }
+/*  public LispValue typep(LispValue type)
   {
     LispValue result = super.typep(type);
 
     if ((result == f_lisp.T) || (type == f_lisp.HASHTABLE_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
-  }
+      return NIL;
+  }*/
 
 
 

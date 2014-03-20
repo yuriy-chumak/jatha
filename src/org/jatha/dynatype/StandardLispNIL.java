@@ -39,12 +39,14 @@ import org.jatha.exception.LispConstantRedefinedException;
 // a symbol, it causes some programming difficulties.  Using this resolves
 // those problems.
 
-public class StandardLispNIL extends StandardLispList implements LispNil
+public class StandardLispNIL extends StandardLispList
 {
-	public StandardLispNIL() { }
+	protected StandardLispNIL() {
+		// do nothing
+	}
 	
-	public LispValue car() { return f_lisp.NIL; }
-	public LispValue cdr() { return f_lisp.NIL; }
+	public LispValue car() { return NIL; }
+	public LispValue cdr() { return NIL; }
 	
 	
 	
@@ -54,24 +56,6 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   private  LispValue  value;
   private  LispValue  plist;
   private  LispValue  function = null;
-  private  LispValue  pack = null;   // its package
-
-  public StandardLispNIL(Lisp lisp, String symbolName)
-  {
-    super(lisp);
-    name = new StandardLispString(lisp, symbolName);
-    value = this;
-    plist = this;
-  }
-
-  public StandardLispNIL(Lisp lisp, LispString symbolNameString)
-  {
-    super(lisp);
-    name  = symbolNameString;
-    value = this;
-    plist = this;
-  }
-
 
   public void internal_princ(PrintStream os)        { os.print("NIL"); }
   public void internal_princ_as_cdr(PrintStream os) { /* Do Nothing */ }
@@ -85,7 +69,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {
-    return f_lisp.T;
+    return T;
   }
 
   public String toString()      { return "NIL"; }
@@ -96,80 +80,53 @@ public class StandardLispNIL extends StandardLispList implements LispNil
   public int     basic_length()    { return 0;     }
   public boolean basic_symbolp()   { return true;  }
 
-
-  // Packages
-  public void setPackage(LispPackage newPackage)
-  {
-    if (pack == null)    // Can only have one home package
-      pack = newPackage;
-  }
-
 /* ------------------  LISP functions   ------------------------------ */
 
 
   public LispValue     append(LispValue otherList) { return otherList; }
-  public LispValue     assoc(LispValue index)      { return f_lisp.NIL; }
-  public LispValue     boundp()                    { return f_lisp.T;   }
-  public LispValue     butlast()                   { return f_lisp.NIL; }
-  public LispValue     copy_list()                 { return f_lisp.NIL; }
-  public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
+  public LispValue     assoc(LispValue index)      { return NIL; }
+  public boolean boundp() { return true; }
+  public LispValue     butlast()                   { return NIL; }
+  public LispValue     copy_list()                 { return NIL; }
+  public LispValue     elt(LispValue index)        { return NIL; }
 
-  public LispValue     first        ()  { return f_lisp.NIL; }
-  public LispValue     second       ()  { return f_lisp.NIL; }
-  public LispValue     third        ()  { return f_lisp.NIL; }
-  public LispValue     fourth       ()  { return f_lisp.NIL; }
-  public LispValue     fifth        ()  { return f_lisp.NIL; }
-  public LispValue     sixth        ()  { return f_lisp.NIL; }
-  public LispValue     seventh      ()  { return f_lisp.NIL; }
-  public LispValue     eighth       ()  { return f_lisp.NIL; }
-  public LispValue     ninth        ()  { return f_lisp.NIL; }
-  public LispValue     tenth        ()  { return f_lisp.NIL; }
+  public LispValue     first        ()  { return NIL; }
+  public LispValue     second       ()  { return NIL; }
+  public LispValue     third        ()  { return NIL; }
+  public LispValue     fourth       ()  { return NIL; }
+  public LispValue     fifth        ()  { return NIL; }
+  public LispValue     sixth        ()  { return NIL; }
+  public LispValue     seventh      ()  { return NIL; }
+  public LispValue     eighth       ()  { return NIL; }
+  public LispValue     ninth        ()  { return NIL; }
+  public LispValue     tenth        ()  { return NIL; }
 
-  public LispValue     last()                    { return f_lisp.NIL; }
-  public LispValue     length()                  { return new StandardLispInteger(f_lisp, 0);}
-  public LispValue     member(LispValue elt)     { return f_lisp.NIL; }
-  public LispValue     nreverse(LispValue index) { return f_lisp.NIL; }
+  public LispValue     last()                    { return NIL; }
+  public LispValue     length()                  { return integer(0);}
+  public LispValue     member(LispValue elt)     { return NIL; }
+  public LispValue     nreverse(LispValue index) { return NIL; }
 
-  public LispValue     rassoc(LispValue index)   { return f_lisp.NIL; }
-  public LispValue     remove(LispValue elt)     { return f_lisp.NIL; }
-  public LispValue     rest()                    { return f_lisp.NIL; }
-  public LispValue     reverse(LispValue elt)    { return f_lisp.NIL; }
-  public LispValue     rplaca(LispValue  newCar) { return f_lisp.NIL; }
-  public LispValue     rplacd(LispValue  newCdr) { return f_lisp.NIL; }
+  public LispValue     rassoc(LispValue index)   { return NIL; }
+  public LispValue     remove(LispValue elt)     { return NIL; }
+  public LispValue     rest()                    { return NIL; }
+  public LispValue     reverse(LispValue elt)    { return NIL; }
+  public LispValue     rplaca(LispValue  newCar) { return NIL; }
+  public LispValue     rplacd(LispValue  newCdr) { return NIL; }
 
-  public LispValue setf_symbol_function(LispValue newFunction)
-  {
-    throw new LispConstantRedefinedException(name.getValue());
+  public LispValue     setf_symbol_function(LispValue newFunction) {
+    throw new LispConstantRedefinedException("NIL");
+  }
+  public LispValue     setf_symbol_value(LispValue newValue) {
+    throw new LispConstantRedefinedException("NIL");
   }
 
-  public LispValue     setf_symbol_value(LispValue newValue)
-  {
-    if (value == null)
-      return value = newValue;
-    else
-      throw new LispConstantRedefinedException(name.getValue());
-  }
-
-  public LispString    symbol_name()    { return name;  }
-  public LispValue     symbol_package() { return pack;  }
-  public LispValue     symbol_plist()   { return plist; }
-  public LispValue     symbol_value()   { return value; }
+  public LispString    symbol_name()    { return null;  } // ?
+  public LispValue     symbol_package() { return null;  }
+  public LispValue     symbol_plist()   { return this; }
+  public LispValue     symbol_value()   { return this; }
 
   public LispValue     subst(LispValue oldValue, LispValue newValue)
-  { return f_lisp.NIL; }
-
-  public LispValue     type_of     ()  { return f_lisp.NULL_TYPE;   }
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.NULL_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
-  }
-
-
+  { return this; }
 
 };
 

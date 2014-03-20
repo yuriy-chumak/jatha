@@ -1,5 +1,3 @@
-;;; lisp
-
 (defun second (l) (car (cdr l)))
 
 ;; --- Functions needed to implement macros -----
@@ -23,9 +21,6 @@
 (defmacro backquote (expr)
    (f-backquote expr))
 
-;; ------------------------------------------------
-;; COND
-;; ------------------------------------------------
 (defun f-cond (l)
   (if (null l) nil
     (let ((clause (car l))) 
@@ -35,25 +30,44 @@
 (defmacro cond (&rest l) 
    (f-cond l))
 
-
-
-;; ------------------------------------------------
-;; TEST
-;; ------------------------------------------------
-;; 
-(progn
-(defun quadratic-roots-2 (A B C)
+;; NOD
+(defun nod(a b)
   (cond
-    ((= A 0) (string "Not a quadratic equation."))
-    (t
-    (let ((D (- (* B B) (* 4 A C))))
-      (cond 
-        ((= D 0) (concatenate 'string "x = " (/ (+ (- B) (sqrt D)) (* 2 A))))
-        (t
-        (cons (concatenate 'string "x1 = " (/ (+ (- B) (sqrt D)) (* 2 A)))
-              (concatenate 'string "x2 = " (/ (- (- B) (sqrt D)) (* 2 A))))))))))
-t)
+    ((= a b) a)
+    ((< b a) (nod (- a b) b) )
+    (t (nod a (- b a) ) )
+  )
+)
 
-(let ((xx (quadratic-roots-2 2 4 -6))) 
-  (and (string-equal (car xx) "x1 = 1")
-       (string-equal (cdr xx) "x2 = -3")))
+(= (nod 3 6) 3)
+(= (nod 5 7) 1)
+(= (nod 128 12) 4)
+(= (nod 63 21) 21)
+(= (nod 1234566 7776) 18)
+
+
+; http://protsyk.com/cms/wp-content/uploads/2009/06/PRO38.png
+(DEFUN POW(a i)
+ (COND ((= a 0) 1)
+       ((= i 1) a)
+       (1 (* a (POW a (- i 1))) )
+ )
+)
+ 
+(DEFUN SUM_i(a b i)
+ (COND ((NULL a) 0)
+       ((NULL b) 0)
+       (1 (+ (/ (+ (POW (CAR a) i) (POW (CAR b) i)) (+ (CAR a) (CAR b))) (SUM_i (CDR a) (CDR b) (+ i 1) )) )
+ )
+)
+ 
+(DEFUN SUM(a b)
+  ( SUM_i a b 1)
+)
+
+(print (SUM '(1 2 5) '(3 4 6)))
+(comment
+(let ((f (SUM '(1 2 5) '(3 4 6))))
+  (and (< 34 f) (< f 35))
+)
+)

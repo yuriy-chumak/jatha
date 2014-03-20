@@ -34,7 +34,6 @@ import org.jatha.Lisp;
 
 public class StandardLispCharacter extends StandardLispAtom implements LispCharacter
 {
-
   // ----- fields  ------------
 
   private  char value;
@@ -43,16 +42,14 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
 
   // ----- Constructors  ------------
-  public StandardLispCharacter(Lisp lisp, char theChar)
+  public StandardLispCharacter(char theChar)
   {
-    super(lisp);
     value = theChar;
   }
 
 
-  public StandardLispCharacter(Lisp lisp)
+  public StandardLispCharacter()
   {
-    super(lisp);
     value = 'm';  // For Mike!
   }
 
@@ -82,22 +79,22 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
   public LispValue     characterp ()
   {
-    return f_lisp.T;
+    return T;
   }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {
-    return f_lisp.T;
+    return T;
   }
 
   public LispValue eql(LispValue val)
   {
     if (val instanceof LispCharacter)
       if (this.value == ((LispCharacter)val).getCharacterValue())
-        return f_lisp.T;
+        return T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       return super.eql(val);
   }
@@ -112,19 +109,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
    */
   public LispValue string()
   {
-    return new StandardLispString(f_lisp, this.toString());
-  }
-
-
-  public LispValue     type_of     ()  { return f_lisp.CHARACTER_TYPE;   }
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.CHARACTER_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
+    return new StandardLispString(this.toString());
   }
 
   public char getCharacterValue()

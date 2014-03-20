@@ -26,7 +26,9 @@
  */
 package org.jatha.compile.args;
 
+import org.jatha.dynatype.LispList;
 import org.jatha.dynatype.LispValue;
+import org.jatha.dynatype.StandardLispValue;
 
 /**
  * <p>Info about this class</p>
@@ -35,6 +37,7 @@ import org.jatha.dynatype.LispValue;
  * @version $Revision: 1.1 $
  */
 public class NormalArgument {
+	static final LispValue NIL = LispValue.NIL;
     private LispValue var;
     
     public NormalArgument(final LispValue var) {

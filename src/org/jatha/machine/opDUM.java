@@ -51,7 +51,7 @@ class opDUM extends SECDop
 
   public void Execute(SECDMachine machine)
   {
-    machine.E.push(f_lisp.NIL);
+    machine.E.push(NIL);
     machine.C.pop();
   }
 

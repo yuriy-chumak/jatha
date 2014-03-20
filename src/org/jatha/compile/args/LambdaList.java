@@ -29,13 +29,17 @@ package org.jatha.compile.args;
 import java.util.Map;
 import java.util.List;
 
+import org.jatha.dynatype.LispList;
 import org.jatha.dynatype.LispValue;
+import org.jatha.dynatype.StandardLispValue;
 
 /**
  * @author <a href="mailto:Ola.Bini@itc.ki.se">Ola Bini</a>
  * @version $Revision: 1.2 $
  */
 public interface LambdaList {
+	static final LispValue NIL = LispValue.NIL;
+	
     Map parse(final LispValue arguments);
     List getNormalArguments();
     Map getKeyArguments();

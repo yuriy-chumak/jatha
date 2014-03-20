@@ -1,0 +1,121 @@
+;;; required common functions
+;;; lisp
+; http://www.unicyb.kiev.ua/Library/Lisp/LISP.HTM
+
+(defun second (l) (car (cdr l)))
+
+;; --- Functions needed to implement macros -----
+
+(defun combine-exprs (lft rgt expr)
+  (if (and (constantp lft) (constantp rgt)) (list 'quote expr)
+     (if (null rgt) (list 'list lft)
+       (if (and (consp rgt) (eql (car rgt) 'list))  (cons 'list (cons lft (cdr rgt )))
+         (list 'cons lft rgt ))))) 
+
+
+(defun f-backquote (expr)
+  (if (null expr) nil 
+    (if (atom expr) (list 'quote expr)
+       (if (eq (car expr) :COMMA) (second expr)  
+         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+            (list 'append (second (car expr)) (f-backquote (cdr expr))) 
+         (combine-exprs (f-backquote (car expr)) 
+            (f-backquote (cdr expr)) expr) )))))
+
+(defmacro backquote (expr)
+   (f-backquote expr))
+
+(defun f-cond (l)
+  (if (null l) nil
+    (let ((clause (car l))) 
+      `(if ,(car clause) (progn ,@(cdr clause))
+        ,(f-cond (cdr l))))))
+
+(defmacro cond (&rest l) 
+   (f-cond l))
+
+
+;; ======================================================
+;; solve
+(defun > (a b) (or (< b a) (= b a)))
+
+(defun min2 (c f)
+ (cond 
+  ((null f) c)
+  ((> c (car f)) (min2 (car f) (cdr f)))
+  (T (min2 c (cdr f)))
+ )
+)
+
+(defun min1 (f)
+ (cond 
+  ((null f) nil)
+  (T (min2 (car f) (cdr f)))
+ )
+)
+
+(defun remove(c f)
+ (cond 
+  ((null f) nil)
+  ((= c (car f)) (cdr f))
+  (T (cons (car f) (remove c (cdr f))))
+ )
+)
+
+(defun sort(f)
+ (cond
+   ((null f) nil)
+   (T (cons (min1 f) (sort (remove (min1 f) f))))
+  )
+)
+
+(print (sort '(2 3 1 5 5 6)))
+
+;; --------------------------
+(comment
+(defun sum(n f)
+ (cond
+  ((> n 0) (+ (FUNCALL f n) (sum (- n 1) f)))
+  (t 0)
+ )
+)
+
+(sum 5 '(LAMBDA (x) (/ 1 (sum x '(LAMBDA (x) (sin x)))    )))
+)
+
+;; --------------------------
+(comment
+(defun neq (x y) (not (eq x y)))
+
+(defun scalarMul(a b)
+ (cond
+  ((null a) 0)
+  ((null b) 0)
+  ( 1 (+ (* (car a) (car b)) (scalarMul (cdr a) (cdr b))) )
+ )
+)
+
+(defun len(lst)
+ (cond
+  ((null lst) 0)
+  ( 1 (+ 1 (len (cdr lst))) )
+ )
+)
+
+(defun multiply1(a b n a1 b1)
+ (cond
+  ((= n 0) (cons (scalarMul a1 b1) nil))
+  ((null a) (cons (scalarMul a1 b1) (multiply1 nil nil (- n 1) (cons '0 a1) (append b1 (cons '0 nil)) )) )
+  (1 (cons (scalarMul a1 b1) (multiply1 (cdr a) (cdr b) (- n 1) (cons (car a) a1) (append b1 (cons (car b) nil)) )) )
+ )
+)
+
+(defun multiply(a b)
+ (cond
+  ((neq (len a) (len b)) nil)
+  (1 (multiply1 (cdr a) (cdr b) (- (+ (len a) (len b)) 2) (cons (car a) nil) (cons (car b) nil)))
+ )
+)
+
+(print (multiply '(2 3 5 6) '(7 8 3 0)))
+)

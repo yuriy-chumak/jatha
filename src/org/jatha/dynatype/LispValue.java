@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.jatha.Lisp;
 import org.jatha.exception.LispException;
+import org.jatha.machine.SECDMachine;
 
 /**
  * LispValueInterface defines the root of the Interfaces that define
@@ -57,18 +58,25 @@ import org.jatha.exception.LispException;
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
- *   \
+ *   \------ LispPrimitive
  */
 public interface LispValue extends Comparable<LispValue>
 {
+	public static final LispList NIL = new StandardLispNIL();
+	public static final LispConstant T = new StandardLispT();
+	
+	public static final LispSymbol QUOTE     = new StandardLispSymbol("QUOTE");
+	public static final LispSymbol BACKQUOTE = new StandardLispSymbol("BACKQUOTE");
+	
+	public static final LispSymbol MACRO     = new StandardLispKeyword("MACRO");
+	public static final LispSymbol PRIMITIVE = new StandardLispKeyword("PRIMITIVE");
+	
 	// =-( unsorted )-=========================================	
 	
 	
 	
 	
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
-
-  public Lisp getLisp();
 
   public String internal_getName();
 
@@ -255,7 +263,7 @@ public interface LispValue extends Comparable<LispValue>
 
 
   // Packages
-  public void setPackage(LispPackage newPackage);
+  public void setPackage(boolean has);
 
 
 /* ------------------  LISP functions    ------------------------------ */
@@ -312,7 +320,7 @@ public interface LispValue extends Comparable<LispValue>
   /**
    * Returns T if the symbol has been assigned a value.
    */
-  public LispValue boundp();
+  public boolean boundp();
 
   /**
    * Returns all but the last of the elements of a list.
@@ -397,15 +405,9 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue expt(LispValue n);
 
   /**
-   * Compute the factorial of a non-negative integer.
-   * Reals are truncated to the nearest integer.
-   */
-  public LispValue factorial();
-
-  /**
    * Returns T if the symbol has an assigned function.
    */
-  public LispValue fboundp();
+  public boolean fboundp();
 
   /**
    * Returns T if the object is a floating-point number.
@@ -418,11 +420,6 @@ public interface LispValue extends Comparable<LispValue>
    */
   public LispValue first();
   
-  /**
-   * Calls a functio non a list of arguments.
-   */
-  public LispValue funcall(LispValue args);
-
   /**
    * Retrieves values from a hash table.
    */
@@ -478,11 +475,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns T if the object is an Integer.
    */
   public LispValue integerp();
-
-  /**
-   * Returns T if the object is a keyword.
-   */
-  public LispValue keywordp();
 
   /**
    * Returns the last cons cell in a list.
@@ -624,12 +616,6 @@ public interface LispValue extends Comparable<LispValue>
    * instead of the CAR.
    */
   public LispValue rassoc(LispValue index);
-
-  /**
-   * Reads a value from the given string.
-   * @return a LispValue as read by the LISP Reader
-   */
-  LispValue readFromString();
 
   /**
    * Computes 1/x of the given number.  Only valid for numbers.
@@ -883,11 +869,11 @@ public interface LispValue extends Comparable<LispValue>
    */
   public LispValue radiansToDegrees();
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue type_of();
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue type_of();
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue typep(LispValue type);
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue typep(LispValue type);
 
   public LispValue zerop();
 

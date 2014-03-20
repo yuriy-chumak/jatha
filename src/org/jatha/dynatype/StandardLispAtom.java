@@ -41,18 +41,5 @@ import org.jatha.Lisp;
  */
 abstract public class StandardLispAtom extends StandardLispValue implements LispAtom
 {
-  public StandardLispAtom(Lisp lisp)
-  {
-    super(lisp);
-  }
-
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.ATOM_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
-  }
+	public StandardLispAtom() { }
 }

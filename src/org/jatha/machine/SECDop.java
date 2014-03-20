@@ -42,11 +42,7 @@
 package org.jatha.machine;
 
 import org.jatha.Lisp;
-import org.jatha.compile.LispPrimitive;
 import org.jatha.compile.LispPrimitive0;
-import org.jatha.dynatype.LispCons;
-import org.jatha.dynatype.LispList;
-import org.jatha.dynatype.LispInteger;
 import org.jatha.dynatype.LispValue;
 import org.jatha.exception.CompilerException;
 import org.jatha.exception.LispAssertionException;

@@ -60,7 +60,7 @@ class opTEST extends SECDop
     machine.C.pop();               /* Pop the TEST command. */
     trueValue   = machine.C.pop();
 
-    if (selector != f_lisp.NIL)
+    if (selector != NIL)
        machine.C.assign(trueValue);
   }
 

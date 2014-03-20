@@ -26,6 +26,8 @@ package org.jatha.dynatype;
 
 import java.util.Iterator;
 
+import org.jatha.Lisp;
+
 
 // @date    Thu Mar 27 13:35:07 1997
 /**
@@ -36,25 +38,25 @@ import java.util.Iterator;
  * @see LispReal
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class LispConsIterator extends StandardLispValue implements Iterator
+public class LispConsIterator extends StandardLispValue
+		implements Iterator<LispValue>
 {
-  protected LispValue m_list = null;
+	protected LispValue m_list = null;
 
   public LispConsIterator(LispValue list)
   {
-    super(list.getLisp());
     m_list = list;
   }
 
   public boolean hasNext()
   {
-    return (m_list != f_lisp.NIL);
+    return (m_list != NIL);
   }
 
-  public Object next()
+  public LispValue next()
   {
-    LispValue result = f_lisp.car(m_list);
-    m_list = f_lisp.cdr(m_list);
+    LispValue result = Lisp.car(m_list);
+    m_list = Lisp.cdr(m_list);
     return result;
   }
 

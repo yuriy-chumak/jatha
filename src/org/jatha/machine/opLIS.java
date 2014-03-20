@@ -55,7 +55,7 @@ class opLIS extends SECDop
   public void Execute(SECDMachine machine)
   {
     long      numArgs;
-    LispValue argList = f_lisp.NIL;
+    LispValue argList = NIL;
 
     machine.C.pop();               /* Pop the LIS command. */
 

@@ -41,15 +41,13 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
   public void internal_prin1(PrintStream os) { os.print(f_value); }
   public void internal_princ(PrintStream os) { os.print(f_value); }
 
-  public StandardLispReal(Lisp lisp, double theValue)
+  public StandardLispReal(double theValue)
   {
-    super(lisp);
     f_value = theValue;
   }
 
-  public StandardLispReal(Lisp lisp)
+  public StandardLispReal()
   {
-    super(lisp);
     f_value = 0.0;
   }
 
@@ -111,9 +109,9 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
     {
       //System.err.println("StandardLispReal.eql: comparing " + this.f_value + " to " + ((LispReal)val).getDoubleValue());
       if (this.f_value == ((LispReal)val).getDoubleValue())
-        return f_lisp.T;
+        return T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
     else
       return super.eql(val);
@@ -124,25 +122,14 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
     return eql(val);
   }
 
-  public LispValue floatp   ()  { return f_lisp.T; }
-
-  public LispValue type_of  ()  { return f_lisp.DOUBLE_FLOAT_TYPE;   }
-  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.REAL_TYPE) || (type == f_lisp.FLOAT_TYPE) || (type == f_lisp.DOUBLE_FLOAT_TYPE))
-      return f_lisp.T;
-    else
-      return f_lisp.NIL;
-  }
+  public LispValue floatp   ()  { return T; }
 
   public LispValue zerop    ()
   {
     if (f_value == 0.0)
-      return f_lisp.T;
+      return T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
 };

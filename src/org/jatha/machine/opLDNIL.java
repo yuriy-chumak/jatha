@@ -16,29 +16,37 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *�
+ *
  * For further information, please contact Micheal Hewett at
  *   hewett@cs.stanford.edu
  *
  */
-package org.jatha.dynatype;
 
+package org.jatha.machine;
 
+import org.jatha.Lisp;
 
-// See LispValue.java for documentation
-
-
-
-//--------------------------------  LispNil  --------------------------------
-//
-// This is used only for NIL.  Since NIL is both a degenerate list and
-// a symbol, it causes some programming difficulties.  Using this resolves
-// those problems.
-
-public interface LispNil extends LispList
+/**
+ * opNIL pushes the constant NIL onto the S register and pops the C register.
+ * Modifes S register.
+ * @see SECDMachine
+ * @author  Micheal S. Hewett    hewett@cs.stanford.edu
+ */
+class opLDNIL extends SECDop
 {
+	/**
+	 * It calls <tt>SECDop()</tt> with the machine argument
+	 * and the label of this instruction.
+	 * @see SECDMachine
+	 */
+	public opLDNIL(Lisp lisp)
+	{
+		super(lisp, "CONST_NIL");
+	}
 
-
+	public void Execute(SECDMachine machine)
+	{
+		machine.S.push(NIL);
+		machine.C.pop();
+	}
 }
-
-

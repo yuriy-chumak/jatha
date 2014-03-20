@@ -64,7 +64,7 @@ public class OrdinaryLambdaList implements LambdaList {
         keyArguments = new HashMap<LispValue, LispValue>();
         allowOtherKeys = false;
         auxArguments = new LinkedList<LispValue>();
-        allowOtherKeysKey = lisp.intern(":ALLOW-OTHER-KEYS");
+        allowOtherKeysKey = lisp.keyword(":ALLOW-OTHER-KEYS");
     }
 
     public Map<LispValue, LispValue> parse(final LispValue arguments) {
@@ -72,7 +72,7 @@ public class OrdinaryLambdaList implements LambdaList {
         int state = 0; // 0 = regular, 1 = optional, 2 = rest, 3 = key
         final Set<LispValue> keyArgsLeft = new HashSet<LispValue>(keyArguments.keySet());
         final Set<LispValue> optArgsLeft = new HashSet<LispValue>(optionalArguments);
-        LispValue vals = lisp.NIL;
+        LispValue vals = NIL;
             
         Iterator<LispValue> next = normalArguments.iterator();
         LispValue rests = null;
@@ -80,7 +80,7 @@ public class OrdinaryLambdaList implements LambdaList {
 
         if(!tempAllow) {
             for(final Iterator<LispValue> iter = arguments.iterator();iter.hasNext();) {
-                if ((iter.next().eql(allowOtherKeysKey) == lisp.T) && iter.next() != lisp.NIL) {
+                if ((iter.next().eql(allowOtherKeysKey) == lisp.T) && iter.next() != NIL) {
                     tempAllow = true;
                     break;
                 }
@@ -102,7 +102,7 @@ public class OrdinaryLambdaList implements LambdaList {
                     break;
                 case 2:
                     if(restArgument != null) {
-                        rests = lisp.NIL;
+                        rests = NIL;
                     }
                     next = null;
                     break;
@@ -134,7 +134,7 @@ public class OrdinaryLambdaList implements LambdaList {
                         keyArgsLeft.remove(val);
                         final LispValue theVal = iter.next();
                         if(null != rests) {
-                            rests = rests.append(lisp.makeCons(val,lisp.makeCons(theVal,lisp.NIL)));
+                            rests = rests.append(lisp.makeCons(val,lisp.makeCons(theVal,NIL)));
                         }
                         if(null != key) {
                             ret.put(key.getVar(),theVal);
@@ -148,7 +148,7 @@ public class OrdinaryLambdaList implements LambdaList {
                         throw new IllegalArgumentException("Bad key argument: " + val); //TODO: fix good exception here
                     }
                 } else if(null != rests) {
-                    rests = rests.append(lisp.makeCons(val,lisp.NIL));
+                    rests = rests.append(lisp.makeCons(val,NIL));
                 } else {
                     throw new IllegalArgumentException("Bad arguments"); //TODO: fix good exception here
                 }
@@ -168,12 +168,12 @@ public class OrdinaryLambdaList implements LambdaList {
                 ret.put(arg.getVar(),val);
                 vals = lisp.makeCons(lisp.makeCons(arg.getVar(),val),vals);
             } else {
-                ret.put(arg.getVar(),lisp.NIL);
-                vals = lisp.makeCons(lisp.makeCons(arg.getVar(),lisp.NIL),vals);
+                ret.put(arg.getVar(),NIL);
+                vals = lisp.makeCons(lisp.makeCons(arg.getVar(),NIL),vals);
             }
             if(arg.getSupplied() != null) {
-                ret.put(arg.getSupplied(),lisp.NIL);
-                vals = lisp.makeCons(lisp.makeCons(arg.getSupplied(),lisp.NIL),vals);
+                ret.put(arg.getSupplied(),NIL);
+                vals = lisp.makeCons(lisp.makeCons(arg.getSupplied(),NIL),vals);
             }
         }
         for(final Iterator<LispValue> iter = keyArgsLeft.iterator();iter.hasNext();) {
@@ -184,12 +184,12 @@ public class OrdinaryLambdaList implements LambdaList {
                 ret.put(arg.getVar(),val);
                 vals = lisp.makeCons(lisp.makeCons(arg.getVar(),val),vals);
             } else {
-                ret.put(arg.getVar(),lisp.NIL);
-                vals = lisp.makeCons(lisp.makeCons(arg.getVar(),lisp.NIL),vals);
+                ret.put(arg.getVar(),NIL);
+                vals = lisp.makeCons(lisp.makeCons(arg.getVar(),NIL),vals);
             }
             if(arg.getSupplied() != null) {
-                ret.put(arg.getSupplied(),lisp.NIL);
-                vals = lisp.makeCons(lisp.makeCons(arg.getSupplied(),lisp.NIL),vals);
+                ret.put(arg.getSupplied(),NIL);
+                vals = lisp.makeCons(lisp.makeCons(arg.getSupplied(),NIL),vals);
             }
         }
         if(restArgument != null) {
@@ -197,8 +197,8 @@ public class OrdinaryLambdaList implements LambdaList {
                 ret.put(restArgument.getVar(),rests);
                 vals = lisp.makeCons(lisp.makeCons(restArgument.getVar(),rests),vals);
             } else {
-                ret.put(restArgument.getVar(),lisp.NIL);
-                vals = lisp.makeCons(lisp.makeCons(restArgument.getVar(),lisp.NIL),vals);
+                ret.put(restArgument.getVar(),NIL);
+                vals = lisp.makeCons(lisp.makeCons(restArgument.getVar(),NIL),vals);
             }
         }
 

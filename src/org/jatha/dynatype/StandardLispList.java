@@ -42,19 +42,14 @@ import java.util.Iterator;
 public abstract class StandardLispList extends StandardLispValue  implements LispList
 {
 	public StandardLispList() {}
-	public StandardLispList(Lisp lisp) // todo: remove this
-	{
-		super(lisp);
-	}
-
 
   // ------ LISP methods  ----------
 
   public LispValue butlast()
   {
     if (cdr() instanceof LispCons)
-      return (f_lisp.makeCons(car(), cdr().butlast()));
-    return f_lisp.NIL;
+      return (cons(car(), cdr().butlast()));
+    return NIL;
   }
 
   public LispValue elt (LispValue index)
@@ -72,9 +67,9 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
       // All is okay
       LispValue element = this;
 
-      for (int i = 0; i < indexValue; ++i)  element = f_lisp.cdr(element);
+      for (int i = 0; i < indexValue; ++i)  element = cdr(element);
 
-      return f_lisp.car(element);
+      return Lisp.car(element);
     }
   }
 
@@ -84,9 +79,9 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
     long       count = 0;
     LispValue  ptr   = this;
 
-    while (ptr != f_lisp.NIL) { ++count; ptr = f_lisp.cdr(ptr); }
+    while (ptr != NIL) { ++count; ptr = Lisp.cdr(ptr); }
 
-    return new StandardLispInteger(f_lisp, count);
+    return integer(count);
   }
 
   /**
@@ -102,7 +97,7 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
       e.printStackTrace();
     }
 
-    if (this == f_lisp.NIL)
+    if (this == NIL)
       return arg;
 
     else if (arg instanceof LispCons)
@@ -115,12 +110,12 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
   {
     LispValue head    = this;
     LispValue next    = cdr();
-    LispValue result  = f_lisp.NIL;
+    LispValue result  = NIL;
 
     // p stays one ahead of the main list pointer.
-    while (head != f_lisp.NIL)
+    while (head != NIL)
     {
-      next = f_lisp.cdr(head);     // Save pointer to next element in list.
+      next = Lisp.cdr(head);     // Save pointer to next element in list.
       head.rplacd(result);   // Alter cdr of head.
       result = head;         // Reset pointer to top of result
       head = next;           // Start over with the next element of the list.
@@ -145,24 +140,24 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
   {
     LispValue ptr = this;
     int index = 0;
-    while ((ptr != f_lisp.NIL) && (f_lisp.car(ptr).eql(element) instanceof LispNil))
+    while ((ptr != NIL) && (Lisp.car(ptr).eql(element) == NIL))
     {
-      ptr = f_lisp.cdr(ptr);
+      ptr = Lisp.cdr(ptr);
       index++;
     }
 
-    if (ptr == f_lisp.NIL)
-      return f_lisp.NIL;
+    if (ptr == NIL)
+      return NIL;
     else
-      return f_lisp.makeInteger(index);
+      return integer(index);
   }
 
   public LispValue reverse ()
   {
-    LispValue result = f_lisp.NIL;
+    LispValue result = NIL;
 
-    for (LispValue p=this; p != f_lisp.NIL; p = f_lisp.cdr(p) )
-      result = new StandardLispCons(f_lisp, f_lisp.car(p), result);
+    for (LispValue p=this; p != NIL; p = Lisp.cdr(p) )
+      result = cons(car(p), result);
 
     return result;
   }
@@ -173,7 +168,7 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
    * Returns an iterator over the clauses of the path.
    * Each element type is a Clause.
    */
-  public Iterator iterator()
+  public Iterator<LispValue> iterator()
   {
     return new LispConsIterator(this);
   }

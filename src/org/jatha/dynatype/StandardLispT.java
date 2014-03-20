@@ -16,38 +16,27 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  *
- *
+ *�
  * For further information, please contact Micheal Hewett at
  *   hewett@cs.stanford.edu
  *
  */
+package org.jatha.dynatype;
 
-package org.jatha.machine;
+import java.io.PrintStream;
 
 import org.jatha.Lisp;
+import org.jatha.exception.LispConstantRedefinedException;
 
 /**
- * opT pushes a constant T onto the stack.
- * Uses C register (2 values).
- * Modifes S register.
- * @see SECDMachine
- * @author  Micheal S. Hewett    hewett@cs.stanford.edu
+ * 
+ * @author ychumak
+ *
  */
-class opT extends SECDop
+public class StandardLispT extends StandardLispConstant
 {
-	/**
-	 * It calls <tt>SECDop()</tt> with the machine argument
-	 * and the label of this instruction.
-	 * @see SECDMachine
-	 */
-	public opT(final Lisp lisp)
-	{
-		super(lisp, "CONST_T");
+	protected StandardLispT() {
+		super("T");
+		f_value = this; // setf_symbol_value(this)
 	}
-
-	public void Execute(SECDMachine machine)
-	{
-		machine.S.push(f_lisp.T);
-		machine.C.pop();
-	}
-}
+};

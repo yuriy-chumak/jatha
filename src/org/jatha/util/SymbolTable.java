@@ -42,24 +42,19 @@ public class SymbolTable extends TreeMap<String, LispSymbol>
 	public static final int   HASH_TABLE_DEFAULT_SIZE        = 4096;
 	public static final float HASH_TABLE_DEFAULT_LOAD_FACTOR = (float) 0.8;
 
-	final Lisp f_lisp;
-
-	public SymbolTable(final Lisp lisp)
+	public SymbolTable()
 	{
 		super(); // HASH_TABLE_DEFAULT_SIZE, HASH_TABLE_DEFAULT_LOAD_FACTOR);
-		f_lisp = lisp;
 	}
 
 	public SymbolTable(final Lisp lisp, int defaultSize)
 	{
 		super(); // defaultSize, HASH_TABLE_DEFAULT_LOAD_FACTOR);
-		f_lisp = lisp;
 	}
 
 	public SymbolTable(final Lisp lisp, int initialSize, float loadFactor)
 	{
 		super(); // initialSize, loadFactor);
-		f_lisp = lisp;
 	}
 
 	// Use the Hashtable methods PUT and GET.
@@ -74,7 +69,19 @@ public class SymbolTable extends TreeMap<String, LispSymbol>
 		super.put(key.getValue(), value);
 		return value;
 	}
+	public synchronized LispSymbol put(String key, LispSymbol value)
+	{
+		assert value != null;
+		
+		super.put(key, value);
+		return value;
+	}
 
+	public synchronized LispSymbol get(String key)
+	{
+		return super.get(key);
+	}
+	
 	// Returns NIL if the entry is not there.
 	public synchronized LispSymbol get(LispString key)
 	{

@@ -57,6 +57,7 @@ package org.jatha.dynatype;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -84,18 +85,6 @@ import org.jatha.exception.*;
 public abstract class StandardLispValue implements LispValue    // Base class for all the LISP data types
 {
 	public StandardLispValue() { }
-	
-	
-	protected Lisp f_lisp;	// todo: remove this!
-	public StandardLispValue(final Lisp lisp)
-	{
-		f_lisp = lisp;
-	}
-
-	public Lisp getLisp()
-	{
-		return f_lisp;
-	}
 
   public String internal_getName()
   {
@@ -283,7 +272,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCar_internal(long length, long level)
   {
-    if (level > Lisp.PRINT_LEVEL_VALUE)//f_lisp.getPrintLevel().getLongValue())
+    if (level > Lisp.PRINT_LEVEL_VALUE)
     {
       System.err.println("Printing list deeper than *PRINT-LEVEL*.  Truncated.");
       return "...";
@@ -298,7 +287,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCdr_internal(long length, long level)
   {
-    if (length > Lisp.PRINT_LENGTH_VALUE)//f_lisp.getPrintLength().getLongValue())
+    if (length > Lisp.PRINT_LENGTH_VALUE)
     {
       System.err.println("Printing list...longer than *PRINT-LENGTH*.  Truncated.");
       System.err.println("Next few items are: ");
@@ -307,8 +296,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
       {
         if (! (ptr instanceof LispCons))
           break;
-        System.err.println("    " + f_lisp.car(ptr));
-        ptr = f_lisp.cdr(ptr);
+        System.err.println("    " + Lisp.car(ptr));
+        ptr = Lisp.cdr(ptr);
       }
       return "...";
     }
@@ -344,9 +333,9 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
 
   // Packages
-  public void setPackage(LispPackage newPackage)
+  public void setPackage(boolean has)
   {
-    System.err.println("\n*** INTERNAL ERROR: LispValue.setPackage() '" + this + "'" + " to " + newPackage);
+    System.err.println("\n*** INTERNAL ERROR: LispValue.setPackage() '" + this + "'" + " to PACKAGE");
   }
 
 
@@ -381,7 +370,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { 
     throw new LispValueNotAnArrayException("The first argument to ARRAY-DIMENSIONS"); 
   }
-  public LispValue     arrayp   ()  { return f_lisp.NIL; }
+  public LispValue     arrayp   ()  { return NIL; }
 
   public LispValue     append       (LispValue otherList)
   { throw new LispValueNotAListException("The first argument to APPEND");  }
@@ -392,9 +381,9 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     assoc        (LispValue index)
   { throw new LispValueNotAListException("The second argument to ASSOC"); }
 
-  public LispValue     bignump      ()  { return f_lisp.NIL; }
+  public LispValue     bignump      ()  { return NIL; }
 
-  public LispValue     boundp       ()
+  public boolean boundp       ()
   { throw new LispValueNotASymbolException("The argument to BOUNDP");  }
 
   public LispValue     butlast      ()
@@ -415,7 +404,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     ceiling      ()
   { throw new LispValueNotANumberException("The first argument to CEILING"); }
 
-  public LispValue     characterp   ()  { return f_lisp.NIL; }
+  public LispValue     characterp   ()  { return NIL; }
 
   public LispValue     clrhash      ()
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
@@ -423,7 +412,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     constantp    ()
   {
-    return basic_constantp() ? f_lisp.T : f_lisp.NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
+    return basic_constantp() ? T : NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
   }
 
   public LispValue     copy_list    ()
@@ -477,25 +466,25 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     eq           (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   public LispValue     eql          (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   public LispValue     equal        (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   /**
@@ -506,19 +495,10 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     throw new LispValueNotANumberException("The argument to EXPT");
   }
 
-  /**
-   * Compute the factorial of a non-negative integer.
-   * Reals are truncated to the nearest integer.
-   */
-  public LispValue factorial()
-  {
-    throw new LispValueNotANumberException("The argument to FACTORIAL");
-  }
-
-  public LispValue     fboundp      ()
+  public boolean fboundp      ()
   { throw new LispValueNotASymbolException("The argument to FBOUNDP");  }
 
-  public LispValue floatp()  { return f_lisp.NIL; }
+  public LispValue floatp()  { return NIL; }
 
   public LispValue     fifth        ()
   { throw new LispValueNotASequenceException("The first argument to FIFTH"); }
@@ -532,11 +512,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     fourth       ()
   { throw new LispValueNotASequenceException("The first argument to FOURTH"); }
 
-  public LispValue     funcall      (LispValue args)
-  { throw new LispValueNotAFunctionException("The first argument to FUNCALL"); }
-
   public LispValue functionp()
-  { return f_lisp.NIL; }
+  { return NIL; }
 
   public LispValue     gethash      (LispValue key)
   { throw new LispValueNotAHashtableException("The second argument to GETHASH"); }
@@ -547,7 +524,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue setf_gethash(LispValue key, LispValue value)
   { throw new LispValueNotAHashtableException("The second argument to SETF-GETHASH"); }
 
-  public LispValue     hashtablep   ()  { return f_lisp.NIL; }
+  public LispValue     hashtablep   ()  { return NIL; }
 
   public LispValue hash_table_count ()
   { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-COUNT"); }
@@ -564,17 +541,13 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue hash_table_test ()
   { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-TEST"); }
 
-  public LispValue     integerp     ()  { return f_lisp.NIL; }
-
-  public LispValue     keywordp     ()  { return f_lisp.NIL; }
+  public LispValue     integerp     ()  { return NIL; }
 
   public LispValue     last         ()
   { throw new LispValueNotAListException("The argument to LAST");  }
 
   public LispValue     length       ()
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
-
-//  public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }
@@ -605,10 +578,10 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public LispValue     neql          (LispValue val)
   {
-    if (eql(val) == f_lisp.T)
-      return f_lisp.NIL;
+    if (eql(val) == T)
+      return NIL;
     else
-      return f_lisp.T;
+      return T;
   }
 
   public LispValue     ninth        ()
@@ -617,7 +590,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     nreverse     ()
   { throw new LispValueNotAListException("The argument to NREVERSE");  }
 
-  public LispValue     numberp      () { return f_lisp.NIL; }
+  public LispValue     numberp      () { return NIL; }
 
   /**
    * Pops a list and returns the first element.
@@ -703,15 +676,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotAListException("The second argument to RASSOC");  }
 
   /**
-   * Reads a value from the given string.
-   * @return a LispValue as read by the LISP Reader
-   */
-  public LispValue readFromString()
-  {
-    throw new LispValueNotAStringException("The argument to READ-FROM-STRING");
-  }
-
-  /**
    * Computes 1/x of the given number.  Only valid for numbers.
    * @return a LispReal
    */
@@ -779,7 +743,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     sqrt         ()
   { throw new LispValueNotANumberException("The argument to SQRT"); }
 
-  public LispValue     stringp      ()     { return f_lisp.NIL; }
+  public LispValue     stringp      ()     { return NIL; }
 
   /**
    * For Common LISP compatibility, but identical to stringCapitalize.
@@ -1032,11 +996,11 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     third       ()
   { throw new LispValueNotASequenceException("The first argument to THIRD"); }
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue     type_of     ()  { return f_lisp.T;   }
+// // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue     type_of     ()  { return T;   }
 
-  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-  public LispValue     typep       (LispValue type)  { return f_lisp.NIL;   }
+//  // Everything not anything else is a T, although this return value is illegal in CLTL2.
+//  public LispValue     typep       (LispValue type)  { return NIL;   }
 
   public LispValue     zerop       ()
   { throw new LispValueNotANumberException("The argument to ZEROP"); }
@@ -1087,4 +1051,137 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
       }
     }
 
+	/**
+	 * This functions does not generate LispExceptions and assumes that all
+	 * agruments are correct
+	 */
+	public static LispValue car(LispValue arg)
+	{
+		return ((LispList)arg).car();
+	}
+	public static LispValue cdr(LispValue arg) 
+	{
+		return ((LispList)arg).cdr();
+	}
+	public static LispValue nth(long i, LispCons arg)
+	{
+		while (--i > 0)
+			arg = (LispCons)arg.cdr();
+		return arg.car();
+	}
+/*	public static LispValue nth(LispCons ij, LispCons arg)
+	{
+		long i = ((LispInteger)(car(ij))).getLongValue();
+		long j = ((LispInteger)(cdr(ij))).getLongValue();
+		
+		arg = (LispCons)Lisp.nth(i, arg);
+		while (--j > 0)
+			arg = (LispCons)arg.cdr();
+		
+		return arg;
+	}*/
+	
+	public static LispValue cddr(LispValue arg)
+	{
+		return cdr(cdr(arg));
+	}
+
+	public static LispValue cons(LispValue car, LispValue cdr)
+	{
+		return new StandardLispCons(car, cdr);
+	}
+	public static LispValue list(LispValue... parts)
+	{
+		LispValue result = NIL;
+		for (int i = parts.length-1 ; i >= 0; i--)
+			result = cons(parts[i], result);
+		return result;
+	}
+	
+	public static LispInteger integer(Long value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static LispInteger integer(long value)
+	{
+		return new StandardLispInteger(value);
+	}
+
+	public static LispInteger integer(Integer value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static LispInteger integer(int value)
+	{
+		return new StandardLispInteger(value);
+	}
+
+	public static LispInteger integer()
+	{
+		return new StandardLispInteger(0);
+	}
+
+	/**
+	 * Creates a LispBignum type initialized with the value provided.
+	 * @see LispBignum
+	 * @see java.math.BigInteger
+	 */
+	public static LispBignum bignum(BigInteger value)
+	{
+		return new StandardLispBignum(value);
+	}
+
+	public static LispBignum bignum(LispInteger value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value.getLongValue()));
+	}
+
+	public static LispBignum bignum(double value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf((long) value));
+	}
+
+	public static LispBignum bignum(long value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value));
+	}
+
+	/**
+	 * Creates an instance of LispReal initialized with
+	 * the given value.
+	 * @see LispInteger
+	 * @see LispValue
+	 * @return LispReal
+	 */
+	public static LispReal real(Double value)
+	{
+		return new StandardLispReal(value.doubleValue());
+	}
+
+	public static LispReal real(double value)
+	{
+		return new StandardLispReal(value);
+	}
+
+	public static LispReal real(Float value)
+	{
+		return new StandardLispReal(value.doubleValue());
+	}
+
+	public static LispReal real(float value)
+	{
+		return new StandardLispReal(value);
+	}
+
+	public static LispReal real()
+	{
+		return new StandardLispReal(0.0);
+	}
+	
+	public static LispString string(String value)
+	{
+		return new StandardLispString(value);
+	}
 }

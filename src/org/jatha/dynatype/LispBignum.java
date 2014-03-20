@@ -36,8 +36,9 @@ import java.math.BigInteger;
 public interface LispBignum extends LispInteger
 {
   public static final BigInteger  ZERO   = BigInteger.valueOf(0L);
-  public static final BigInteger  MAXINT = BigInteger.valueOf(Long.MAX_VALUE);
-  public static final BigInteger  MININT = BigInteger.valueOf(Long.MIN_VALUE);
+  public static final BigInteger  BIGZERO = BigInteger.valueOf(0L);
+  public static final BigInteger  MAXINT  = BigInteger.valueOf(Long.MAX_VALUE);
+  public static final BigInteger  MININT  = BigInteger.valueOf(Long.MIN_VALUE);
 
 
 

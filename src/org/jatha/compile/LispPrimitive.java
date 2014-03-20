@@ -52,6 +52,8 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
+	protected Lisp f_lisp;	// todo: remove this!
+	
 	public static LispValue s_PRIMITIVE_TAG = null;
   
 	/**
@@ -64,7 +66,7 @@ public abstract class LispPrimitive extends StandardLispValue
   public void initConstants()
   {
     if (s_PRIMITIVE_TAG == null)
-      s_PRIMITIVE_TAG = f_lisp.intern("PRIMITIVE", f_lisp.KEYWORD); //todo: change to f_lisp.PRIMITIVE
+      s_PRIMITIVE_TAG = LispValue.PRIMITIVE; //todo: change to f_lisp.PRIMITIVE
   }
   
   /**
@@ -103,14 +105,14 @@ public abstract class LispPrimitive extends StandardLispValue
 
   public void printCode(LispValue code, int indentAmount)
   {
-    while (code != f_lisp.NIL)
+    while (code != NIL)
     {
       // Cleaned up code handler to handle all cases correctly (mh) 9 Mar 2008
       //System.out.println("Printing code: " + code);
-      if (f_lisp.car(code).eql(s_PRIMITIVE_TAG) == f_lisp.T)
+      if (car(code).eql(s_PRIMITIVE_TAG) == T)
         code = ((LispPrimitive)code.second()).grindef(code, indentAmount);  // handles built-in functions
       else
-        code = ((LispPrimitive)f_lisp.car(code)).grindef(code, indentAmount);  // handles user-defined functions
+        code = ((LispPrimitive)car(code)).grindef(code, indentAmount);  // handles user-defined functions
     }
   }
 
@@ -121,7 +123,7 @@ public abstract class LispPrimitive extends StandardLispValue
     System.out.print(functionName);
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return Lisp.cdr(code);
+    return cdr(code);
   }
 
 
@@ -142,9 +144,9 @@ public abstract class LispPrimitive extends StandardLispValue
 	 */
 	public LispPrimitive(final Lisp lisp, String fnName)
 	{
-		super(lisp);
+		f_lisp = lisp;
 		functionName        = fnName;
-		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
+		functionNameSymbol  = new StandardLispSymbol(fnName);
     
 		initConstants();
 	}
@@ -321,10 +323,6 @@ public abstract class LispPrimitive extends StandardLispValue
 
 	public LispValue bool(boolean arg)
 	{
-		return arg ? f_lisp.T : f_lisp.NIL;
-	}
-	protected LispCons cons(LispValue car, LispValue cdr)
-	{
-		return new StandardLispCons(f_lisp, car, cdr);
+		return arg ? T : NIL;
 	}
 }

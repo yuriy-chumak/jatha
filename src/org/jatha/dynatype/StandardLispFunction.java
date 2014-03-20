@@ -42,45 +42,36 @@ import org.jatha.compile.LispCompiler;
  */
 public class StandardLispFunction extends StandardLispValue implements LispFunction
 {
-
   private boolean   f_isBuiltin = false;
   private LispValue f_symbol    = null;
   private LispValue f_code      = null;
 
 
 /* ------------------  Constructors   ------------------------------ */
-  /**
-   * Creates a function with no content - not recommended.
-   */
-  public StandardLispFunction(Lisp lisp)
-  {
-    super(lisp);
-  }
-
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
   /**
    * Send in the instance of Jatha and the code for this function.
    */
-  public StandardLispFunction(Lisp lisp, LispValue symbol, LispValue code)
+  public StandardLispFunction(LispValue symbol, LispValue code)
   {
-    super(lisp);
-
     f_code   = code;
     f_symbol = symbol;
-    f_isBuiltin = LispCompiler.isBuiltinFunction(code);
+    f_isBuiltin = Lisp.isBuiltinFunction(code);
   }
 
 
-  public String toString()
-  {
-    LispValue aPackage = f_lisp.findPackage("LISP");
-    String aSymbol     = (f_symbol == null) ? "anonymous" : f_symbol.toStringSimple();
-
-    if (f_symbol != null)
-      aPackage = f_symbol.symbol_package();
-
-    return "#<standardFunction " + aPackage.toString() + " " + aSymbol + ">";
+	public String toString()
+	{
+		return toString("standardFunction");
+	}
+	protected String toStringNamed(String name)
+	{
+		return "#<" + name + " " +
+				(f_symbol != null ? f_symbol.symbol_package().toString() : "NIL")
+	        	+ " " +
+	        	(f_symbol != null ? f_symbol.toStringSimple() : "anonymous")
+	        	+ ">";
   }
 
 

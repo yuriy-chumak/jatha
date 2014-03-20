@@ -26,8 +26,8 @@ package org.jatha.read;
 
 import java.io.*;
 import java.math.BigInteger;
-
 import java.util.regex.Pattern;
+
 import org.jatha.dynatype.*;
 import org.jatha.Lisp;
 import org.jatha.exception.*;
@@ -61,6 +61,9 @@ import org.jatha.exception.*;
  */
 public class LispParser
 {
+	
+	static final LispValue NIL = LispValue.NIL;
+	
   public static final int UPCASE         = 1;
   public static final int DOWNCASE       = 2;
   public static final int PRESERVE       = 3;
@@ -335,7 +338,7 @@ public class LispParser
           else if (isRparen(ch))
           {
             System.err.println("WARNING: Too many right parentheses.  NIL assumed.");
-            return(f_lisp.NIL);
+            return(NIL);
           }
           else if (isQuote(ch))
           {
@@ -378,7 +381,7 @@ public class LispParser
     if (token.length() > 0)
       return(tokenToLispValue(token.toString()));
     else
-      return(f_lisp.NIL);
+      return(NIL);
   }
 
 
@@ -395,10 +398,10 @@ public class LispParser
     LispValue      newToken;
     LispValue      newList, newCell;
 
-    newList =  f_lisp.NIL;
-    newCell =  f_lisp.NIL;
+    newList =  NIL;
+    newCell =  NIL;
 
-    LispValue newListLast = f_lisp.NIL;
+    LispValue newListLast = NIL;
 
     while (true)
     {
@@ -419,7 +422,7 @@ public class LispParser
           if (haveDot)
           {
             System.err.println("WARNING: Illegal dotted syntax.  NIL assumed.");
-            return f_lisp.NIL;
+            return NIL;
           }
           haveDot = true;
           continue;             // Skip to end of while loop.
@@ -456,7 +459,7 @@ public class LispParser
 
         if (firstTime)
         {
-          newList   = f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL);
+          newList   = f_lisp.makeCons(NIL, NIL);
           newList.rplaca(newToken);
           newListLast = newList;
           firstTime = false;
@@ -470,7 +473,7 @@ public class LispParser
           }
           else
           {
-            newCell  = f_lisp.makeCons(newToken, f_lisp.NIL);  /* (NIL . NIL) */
+            newCell  = f_lisp.makeCons(newToken, NIL);  /* (NIL . NIL) */
             
             newListLast.rplacd(newCell);
             newListLast = newCell;
@@ -479,7 +482,7 @@ public class LispParser
       }  // if (!isSpace())
     }    // while ()...
 
-    return f_lisp.NIL;     // Shouldn't get here.
+    return NIL;     // Shouldn't get here.
   }
 
   /**
@@ -488,15 +491,15 @@ public class LispParser
    */
   LispValue read_quoted_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
 
     /* Construct the quoted list (QUOTE . (NIL . NIL)) then
      * read a token and replace the first NIL by the token read.
      */
 
-    newQuotedList = f_lisp.makeCons(f_lisp.QUOTE,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+    newQuotedList = f_lisp.makeCons(LispValue.QUOTE,
+                                    f_lisp.makeCons(NIL, NIL));
     newCell = read();
     f_lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
@@ -509,15 +512,15 @@ public class LispParser
    */
   public LispValue read_backquoted_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
 
     /* Construct the quoted list (SYS::BACKQUOTE . (NIL . NIL)) then
     * read a token and replace the first NIL by the token read.
     */
 
-    newQuotedList = f_lisp.makeCons(f_lisp.BACKQUOTE,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+    newQuotedList = f_lisp.makeCons(LispValue.BACKQUOTE,
+                                    f_lisp.makeCons(NIL, NIL));
 
     ++BackQuoteLevel;
     newCell = read();
@@ -534,20 +537,20 @@ public class LispParser
    */
   LispValue read_comma_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
-    LispValue identifier       = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
+    LispValue identifier       = NIL;
     int  intCh;
     char ch;
 
     if (BackQuoteLevel <= 0)
     {
       System.err.println(";; *** ERROR: Comma not inside backquote.");
-      return f_lisp.NIL;
+      return NIL;
     }
 
     try { intCh = inputReader.read(); }
-    catch (IOException e) { return f_lisp.NIL; }
+    catch (IOException e) { return NIL; }
 
     if (intCh < 0)  { throw new EOFException("Premature end of LISP input."); }
     else
@@ -569,11 +572,11 @@ public class LispParser
     }
 
     newQuotedList = f_lisp.makeCons(identifier,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+                                    f_lisp.makeCons(NIL, NIL));
 
     newCell = read();
 
-    f_lisp.cdr(newQuotedList).rplaca(newCell);
+    Lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -729,7 +732,7 @@ public class LispParser
           ch = token.charAt(0);
       }
 
-      return new StandardLispCharacter(f_lisp, ch);
+      return new StandardLispCharacter(ch);
     }
 
     // #< usually starts a structure
@@ -752,7 +755,7 @@ public class LispParser
       else
         ch = (char) intCh;
 
-      return f_lisp.NIL;
+      return NIL;
     }
 
     // -- #| ... |# is a block comment
@@ -775,13 +778,13 @@ public class LispParser
       } catch (IOException e) {
         System.err.println("\n *** I/O error while reading a block comment.  Not terminated?");
       }
-    return f_lisp.NIL;
+    return NIL;
     }
 
     else
     {
       System.err.println("\n *** unknown '#' construct.");
-      return f_lisp.NIL;
+      return NIL;
     }
   }
 
@@ -792,126 +795,91 @@ public class LispParser
   public LispValue read_backquoted_list_token(PushbackReader stream)
   {
     System.err.println("\n *** Parser can't read backquoted lists yet.");
-    return f_lisp.NIL;
+    return NIL;
   }
 
-  /**
-   * Converts a string to a LISP value such as
-   * NIL, T, an integer, a real number, a string or a symbol.
-   */
-  public LispValue tokenToLispValue(String token)
-  {
-    LispValue newCell = null;
-    LispValue keywordPackage = f_lisp.KEYWORD;
+	/**
+	 * Converts a string to a LISP value such as
+	 * NIL, T, an integer, a real number, a string or a symbol.
+	 */
+	public LispValue tokenToLispValue(String token)
+	{
+		LispValue newCell = null;
 
-    if (T_token_p(token))
-      newCell = f_lisp.T;
-    else if (NIL_token_p(token))
-      newCell = f_lisp.NIL;
-    else if (INTEGER_token_p(token))
-    {
-      // It may be an Fixnum or a Bignum.
-      // Let Java tell us by generating a NumberFormatException
-      // when the number is too big (or too negatively big).
+		if (T_token_p(token))
+			newCell = f_lisp.T;
+		else if (NIL_token_p(token))
+			newCell = NIL;
+		else if (INTEGER_token_p(token))
+		{
+			// It may be an Fixnum or a Bignum.
+			// Let Java tell us by generating a NumberFormatException
+			// when the number is too big (or too negatively big).
 
-      // SK: java cannot parse integer with '+' in front of it?  25 Jul 2009
-      if( token.charAt(0) == '+' ){
-        token = token.substring(1);
-      }
+			// SK: java cannot parse integer with '+' in front of it?  25 Jul 2009
+			if (token.charAt(0) == '+' )
+				token = token.substring(1);
 
-      try {
-        newCell = f_lisp.makeInteger(new Long(token)); 
-      } catch (NumberFormatException e) {
-        newCell = f_lisp.makeBignum(new BigInteger(token)); 
-      }
-    }
-    else if (REAL_token_p(token))
-      newCell = f_lisp.makeReal(new Double(token));
-    else if (STRING_token_p(token))
-    { /* remove the first and last double quotes. */
-      try
-      { newCell = f_lisp.makeString(token.substring(1, token.length() - 1)); }
-      catch (StringIndexOutOfBoundsException e)
-      { System.err.println("Hey, got a bad string index in 'tokenToLispValue'!"); }
+			try {
+				newCell = StandardLispValue.integer(new Long(token)); 
+			} catch (NumberFormatException e) {
+				newCell = StandardLispValue.bignum(new BigInteger(token)); 
+			}
+		}
+		else if (REAL_token_p(token))
+			newCell = StandardLispValue.real(new Double(token));
+		else if (STRING_token_p(token))
+		{ /* remove the first and last double quotes. */
+			try
+			{
+				newCell = f_lisp.makeString(token.substring(1, token.length() - 1));
+			}
+			catch (StringIndexOutOfBoundsException e)
+			{
+				System.err.println("Hey, got a bad string index in 'tokenToLispValue'!");
+			}
+		}
+		else if (SYMBOL_token_p(token))
+		{
+			// Added packages, 10 May 1997 (mh)
+			// Removed packages, 19 Mar 2014 (yc)
+			if (token.indexOf(':') >= 0)
+			{
+				String packageStr = token.substring(0, token.indexOf(':'));
+				token = token.substring(packageStr.length() + 1, token.length());
 
-    }
-    else if (SYMBOL_token_p(token))
-    {
-      // default package.
-      LispValue pkg      = f_lisp.PACKAGE_SYMBOL.symbol_value();
-      String packageStr  = "";
-      boolean   external = false;
+				// assertion!
+				if (token.startsWith(":")) {
+					System.err.println("Warning: ignored extra ':' in '" + packageStr + token + "'.");
+					token = token.substring(token.lastIndexOf(':')+1, token.length());
+				}
+				
+				if (packageStr.equals("#"))   // Uninterned symbol
+					newCell = f_lisp.makeSymbol(token);	// no package
+				else {
+					if (!"".equals(packageStr))
+						throw(new LispUndefinedPackageException(packageStr));
+					
+					newCell = f_lisp.keyword(token.toUpperCase());
+				}
+			}
+			else
+				newCell = f_lisp.intern(token);
+		}
+		else {
+			System.err.println("ERROR: Unrecognized input: \"" + token + "\"");
+			newCell = NIL;
+		}
 
-      // Added packages, 10 May 1997 (mh)
-      if (token.indexOf(':') >= 0)
-      {
-        packageStr = token.substring(0, token.indexOf(':'));
-        if (packageStr.equals("#"))   // Uninterned symbol
-          pkg = null;
-        else
-        {
-          pkg = f_lisp.findPackage(packageStr);
-          if (pkg == f_lisp.NIL)
-          {
-            // throw(new LispUndefinedPackageException(packageStr));
-            System.err.println("Warning: package '" + packageStr +
-                               "' undefined.  Using current package.");
-            pkg = f_lisp.PACKAGE_SYMBOL.symbol_value();
-          }
-        }
+		if (newCell == null)
+		{
+			System.err.println("MEMORY_ERROR in  \"tokenToLispValue\" " + "for token \""
+					+ token + "\", returning NIL.");
+			newCell = NIL;
+		}
 
-        // Strip off the package.
-        token = token.substring(packageStr.length(), token.length());
-
-        if (token.startsWith(":::"))
-        {
-          System.err.println("Warning: ignored extra ':' in '" +
-                             packageStr + token + "'.");
-          token = token.substring(token.lastIndexOf(':')+1, token.length());
-        }
-        else if (token.startsWith("::"))
-          token = token.substring(2, token.length());
-        else if (token.startsWith(":"))
-        {
-          if (pkg != null)
-            external = true;
-          token    = token.substring(1, token.length());
-        }
-      }  // end of package parsing
-
-      // Handle external symbols separately, except for keywords
-      if (external && (pkg != null) && (! packageStr.equals("")))
-      {
-        newCell = ((LispPackage)pkg).getExternalSymbol(f_lisp.makeString(token));
-        if (newCell == f_lisp.NIL)
-          System.err.println(";; *** ERROR: " + packageStr + ":" + token +
-                             " is not an external symbol in " + packageStr +
-                             ".\n;; *** Creating new symbol in current package.");
-        newCell = f_lisp.intern(token, (LispPackage) f_lisp.PACKAGE_SYMBOL.symbol_value());
-      }
-      // keywords must always be uppercase.
-      else if (pkg == keywordPackage)
-        newCell = f_lisp.intern(token.toUpperCase(), (LispPackage)pkg);
-      else if (pkg != null)
-        newCell = f_lisp.intern(token, (LispPackage) pkg);
-      else
-        newCell= f_lisp.makeSymbol(token);
-    }
-    else
-    {
-      System.err.println("ERROR: Unrecognized input: \"" + token + "\"");
-      newCell = f_lisp.NIL;
-    }
-
-    if (newCell == null)
-    {
-      System.err.println("MEMORY_ERROR in  \"tokenToLispValue\" " + "for token \""
-                         + token + "\", returning NIL.");
-      newCell = f_lisp.NIL;
-    }
-
-    return(newCell);
-  }
+		return(newCell);
+	}
 
   // ----  Utility functions  ----------------------------------
 
@@ -1135,9 +1103,9 @@ public class LispParser
         //    setq(STARSTAR, symbol_value(temp));
         temp = read();
         // System.out.println(); temp.prin1();
-        temp = f_lisp.COMPILER.compile(f_lisp.MACHINE, temp, f_lisp.NIL);  // No globals for now
+        temp = f_lisp.COMPILER.compile(f_lisp.MACHINE, temp, NIL);  // No globals for now
         // System.out.println(); temp.prin1();
-        temp = f_lisp.MACHINE.Execute(temp, f_lisp.NIL);
+        temp = f_lisp.MACHINE.Execute(temp, NIL);
         System.out.println(); temp.prin1();
       }
       while (temp != exit);
@@ -1165,7 +1133,7 @@ public class LispParser
    */
   public static boolean hasBalancedParentheses(Lisp lisp, String input)
   {
-    LispValue result = lisp.NIL;
+    LispValue result = NIL;
 
     if (f_myParser == null)
       f_myParser = new LispParser(lisp, input);
