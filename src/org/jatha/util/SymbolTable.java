@@ -69,7 +69,19 @@ public class SymbolTable extends TreeMap<String, LispSymbol>
 		super.put(key.getValue(), value);
 		return value;
 	}
+	public synchronized LispSymbol put(String key, LispSymbol value)
+	{
+		assert value != null;
+		
+		super.put(key, value);
+		return value;
+	}
 
+	public synchronized LispSymbol get(String key)
+	{
+		return super.get(key);
+	}
+	
 	// Returns NIL if the entry is not there.
 	public synchronized LispSymbol get(LispString key)
 	{

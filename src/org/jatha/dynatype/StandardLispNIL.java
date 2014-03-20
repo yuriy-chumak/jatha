@@ -56,7 +56,6 @@ public class StandardLispNIL extends StandardLispList
   private  LispValue  value;
   private  LispValue  plist;
   private  LispValue  function = null;
-  private  LispValue  pack = null;   // its package
 
   public void internal_princ(PrintStream os)        { os.print("NIL"); }
   public void internal_princ_as_cdr(PrintStream os) { /* Do Nothing */ }
@@ -80,14 +79,6 @@ public class StandardLispNIL extends StandardLispList
   public boolean basic_constantp() { return true;  }
   public int     basic_length()    { return 0;     }
   public boolean basic_symbolp()   { return true;  }
-
-
-  // Packages
-  public void setPackage(LispPackage newPackage)
-  {
-    if (pack == null)    // Can only have one home package
-      pack = newPackage;
-  }
 
 /* ------------------  LISP functions   ------------------------------ */
 

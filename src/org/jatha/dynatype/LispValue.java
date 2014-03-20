@@ -263,7 +263,7 @@ public interface LispValue extends Comparable<LispValue>
 
 
   // Packages
-  public void setPackage(LispPackage newPackage);
+  public void setPackage(boolean has);
 
 
 /* ------------------  LISP functions    ------------------------------ */

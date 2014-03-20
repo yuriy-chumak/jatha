@@ -107,7 +107,8 @@ public class Lisp
 //public LispSymbol    PACKAGE_SYMBOL;  // ptr to *package*
   
 //public LispPackage KEYWORD;
-  public LispPackage SYSTEM;
+//  public LispPackage SYSTEM;
+//  public LispPackage TMP;
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -188,8 +189,6 @@ public class Lisp
       e.printStackTrace();
     }
 
-    SYSTEM = new StandardLispPackage(this, makeString("SYSTEM"));
-
     // NIL is special case - not a symbol but require be in system symbol table(?)
 //	NIL.setPackage(f_systemPackage);
     
@@ -200,15 +199,15 @@ public class Lisp
 //    symbol("APPEND",    APPEND = new StandardLispSymbol("APPEND"));
 //    symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
     
-    symbol("DOT",       DOT = new StandardLispSymbol("."));
-    symbol("STRING",    STRING = new StandardLispSymbol("STRING"));
+    intern("DOT",       DOT = new StandardLispSymbol("."));
+    intern("STRING",    STRING = new StandardLispSymbol("STRING"));
     
 	// this functions must be registered as symbols:
-	symbol("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
+    intern("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
 	
-    symbol("COMMA",        COMMA_FN        = new StandardLispKeyword("COMMA"));
-    symbol("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
-    symbol("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
+    intern("COMMA",        COMMA_FN        = new StandardLispKeyword("COMMA"));
+    intern("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
+    intern("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
 
 //    symbol("T", T);
 
@@ -219,27 +218,9 @@ public class Lisp
     NEWLINE = new StandardLispCharacter('\n');
     SPACE   = new StandardLispCharacter(' ');
 
-    symbol("MACRO", LispValue.MACRO);
-    symbol("PRIMITIVE", LispValue.PRIMITIVE);
+    intern("MACRO", LispValue.MACRO);
+    intern("PRIMITIVE", LispValue.PRIMITIVE);
   }
-
-  // Re-initializes the above symbols, after a PACKAGE is available.
-  public void initConstants2()
-  {
-    if (SYMTAB == null)
-    {
-      System.err.println("In LispValue.init(), symtab is null!");
-      System.exit(1);
-    }
-
-    if (SYSTEM == null)
-    {
-      System.err.println("In LispValue.init(), package is null!");
-      System.exit(1);
-    }
-
-  }
-
 
 /* ------------------  PRIVATE VARIABLES   ------------------------------ */
 
@@ -328,13 +309,10 @@ public class Lisp
     initializeConstants();
 
     // Create the rest of the packages
-    packages = makeList(SYSTEM);
-
-    initConstants2();
-
+    
+    PARSER       = new LispParser(this, new InputStreamReader(System.in));
     COMPILER     = new LispCompiler(this);
     MACHINE      = new SECDMachine(this);
-    PARSER       = new LispParser(this, new InputStreamReader(System.in));
 
 
     // Need to allow *TOP-LEVEL-PROMPT* to change this.
@@ -992,16 +970,6 @@ public class Lisp
   }
 
   // ----------------  PACKAGE stuff  -----------------------
-  /**
-   * This is not yet implemented.  Returns the current value of Jatha.PACKAGE.
-   * @param args is not used
-   * @return Jatha.PACKAGE
-   */
-  public LispPackage defpackage(LispValue args)
-  {
-    return SYSTEM;
-  }
-
   // -----  ActionListener interface  ------------------
   // ---------------------  methods formerly in LispValueFactory  ------------------
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -1282,110 +1250,50 @@ public class Lisp
 	
 	
 	////////////// EVAL
-	public LispSymbol intern(String str)
+	public LispSymbol intern(String symbolString, LispSymbol symbol)
 	{
-		return intern(makeString(str));
-	}
-	
-	public LispSymbol symbol(String symbolString)
-	{
-		return intern(symbolString, SYSTEM);
-	}
-	public LispSymbol symbol(String symbolString, LispSymbol symbol)
-	{
-		return symbol(makeString(symbolString), symbol);
-	}
-	public LispSymbol symbol(LispString symbolString, LispSymbol symbol)
-	{
-		symbol.setPackage(SYSTEM);
-		SYSTEM.addSymbol(symbolString, symbol);
+		symbol.setPackage(true);
+		SYMTAB.put(symbolString, symbol);
 		return symbol;
 	}
+	public LispSymbol intern(LispString symbolString, LispSymbol symbol)
+	{
+		return intern(symbolString.getValue(), symbol);
+	}
 	
-	  public LispSymbol intern(LispString symbolString)
-	  {
-	    if (COLON.eql(symbolString.basic_elt(0)) != NIL)
-	      return keyword((LispString)(symbolString.substring(StandardLispValue.integer(1))));
+
+	public LispSymbol symbol(String symbolString)
+	{
+		LispSymbol symbol = SYMTAB.get(symbolString);
+		if (symbol != null)
+			return symbol;
+        symbol = makeSymbol(symbolString);
+		return intern(symbolString, symbol);
+	}
+	
+	public LispSymbol keyword(String symbolString)
+	{
+		LispSymbol symbol = SYMTAB.get(symbolString);
+		if (symbol != null)
+			return symbol;
+        symbol = new StandardLispKeyword(symbolString);
+		return intern(symbolString, symbol);
+	}
+	
+	
+	public LispSymbol intern(String symbolString)
+	{
+	    if (symbolString.charAt(0) == ':')
+	    	return keyword(symbolString.substring(1));
 	    else
-	      return intern(symbolString, SYSTEM);
-	  }
+	    	return symbol(symbolString);
+	}
+	public LispSymbol intern(LispString symbolString)
+	{
+		return intern(symbolString.getValue());
+	}
 
-
-	  public LispSymbol intern(LispString symbolString, LispPackage pkg)
-	  {
-		  LispSymbol newSymbol;
-
-	    // First, check to see whether one exists already.
-	    newSymbol = pkg.getSymbol(symbolString);
-
-	    if (newSymbol != null)    // Already there, don't add it again.
-	    {
-	      // System.out.println("Package " + pkg + " already owns " + newSymbol);
-	      return newSymbol;
-	    }
-	    else
-	    {
-	        newSymbol = makeSymbol(symbolString);
-
-	        return intern(symbolString, newSymbol);
-	    }
-	  }
-
-	  // We need this for the startup when we create NIL and LispValue.T.
-	  // Actually, LispValue is always a LispSymbol, but because of NIL's strange
-	  // properties, we must make the type be LispValue.
-	  public LispSymbol intern(LispString symbolString, LispSymbol symbol)
-	  {
-	      symbol.setPackage(SYSTEM);
-	      SYSTEM.addSymbol(symbolString, symbol);
-	      return symbol;
-	  }
-
-/*	  // We need this for the startup when we create NIL and LispValue.T.
-	  // Actually, LispValue is always a LispSymbol, but because of NIL's strange
-	  // properties, we must make the type be LispValue.
-	  public LispSymbol intern(LispString symbolString, LispSymbol symbol,
-	                          LispPackage pkg)
-	  {
-	    if (pkg == null)   // uninterned symbol
-	      return symbol;
-	    else
-	    {
-	      symbol.setPackage(pkg);
-	      pkg.addSymbol(symbolString, symbol);
-	      return symbol;
-	    }
-	  }*/
-
-	  public LispSymbol intern(String str, LispPackage pkg)
-	  {
-	    return intern(makeString(str), pkg);
-	  }
-	  
-	  public LispSymbol keyword(String str)
-	  {
-		  return keyword(makeString(str));
-	  }
-	  public LispSymbol keyword(LispString symbolString)
-	  {
-		  LispSymbol newSymbol;
-
-		  // First, check to see whether one exists already.
-	    newSymbol = SYSTEM.getSymbol(symbolString);
-
-	    if (newSymbol == null)    // Already there, don't add it again.
-	    {
-	        String newString = symbolString.toStringSimple().toUpperCase();
-	        // Symbols must be uppercase
-	        newSymbol = new StandardLispKeyword(makeString(newString));
-
-	        newSymbol.setPackage(SYSTEM);
-	        SYSTEM.addSymbol(symbolString, newSymbol);
-	        return newSymbol;
-	    }
-	    return newSymbol;
-	  }
-
+	
 	public LispValue setf_symbol_value(LispValue symbol, LispValue value)
 	{
 		return symbol.setf_symbol_value(value);

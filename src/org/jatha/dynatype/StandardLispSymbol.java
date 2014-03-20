@@ -60,7 +60,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected  LispString   f_name;           // Print name
   protected  LispValue    f_value;          // Assigned value
   protected  LispValue    f_plist;          // Property list
-  protected  LispPackage  f_package;           // The symbol's home package
+  protected  boolean      f_package;           // The symbol's home package
 
   protected  boolean    f_isExternalInPackage = false;
   protected  boolean    f_isSpecial = false;  // Special? (dynamically-bound)
@@ -83,7 +83,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     f_value      = null;              // Default to UNBOUND
     f_function   = null;              // Default to UNBOUND
     f_plist      = NIL;        // Default to NIL
-    f_package    = null;              // Default to no package.
+    f_package    = false;              // Default to no package.
 
     // If the symbol contains lower-case letters, or anything other than
     // the following set of letters, we need to print OR-bars around it.
@@ -142,7 +142,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public String toString()
   {
-	  return (f_package == null ? "#:" : "") + f_name.getValue();
+	  return (f_package ? "" : "#:") + f_name.getValue();
   }
 
 
@@ -172,10 +172,9 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   // ********   Packages  *********************************
 
-  public void setPackage(LispPackage newPackage)
+  public void setPackage(boolean has)
   {
-    if (f_package == null)    // Can only have one home package
-      f_package = newPackage;
+    f_package = has;
   }
 /* ------------------  LISP methods   ------------------------------ */
 
@@ -312,10 +311,9 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
   public LispValue symbol_package()
   {
-    if (f_package == null)
-      return NIL;
-    else
-      return f_package;
+    if (f_package)
+        return string("SYS");
+    return NIL;
   }
 
   public LispValue symbol_plist()

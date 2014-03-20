@@ -1534,7 +1534,7 @@ public class LispCompiler
          LispValue valueList, LispValue code)
       throws CompilerException
   {
-      LispValue tempNew = f_lisp.intern("%%%" + ((LispSymbol)name).symbol_name().toStringSimple(), f_lisp.SYSTEM);
+      LispValue tempNew = f_lisp.intern("%%%" + ((LispSymbol)name).symbol_name().toStringSimple());
       compileDefun(machine,tempNew,argsAndBody,valueList,code); // TODO, fix an ew method for doing this.
     //  ##JPG
     // for compilation of recursive macros, we need to know if the symbol under compilation is a

@@ -333,9 +333,9 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
 
   // Packages
-  public void setPackage(LispPackage newPackage)
+  public void setPackage(boolean has)
   {
-    System.err.println("\n*** INTERNAL ERROR: LispValue.setPackage() '" + this + "'" + " to " + newPackage);
+    System.err.println("\n*** INTERNAL ERROR: LispValue.setPackage() '" + this + "'" + " to PACKAGE");
   }
 
 
