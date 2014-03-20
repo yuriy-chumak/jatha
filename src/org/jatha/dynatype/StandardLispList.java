@@ -41,10 +41,12 @@ import java.util.Iterator;
  */
 public abstract class StandardLispList extends StandardLispValue  implements LispList
 {
+	protected Lisp f_lisp;	// todo: remove this!
+	
 	public StandardLispList() {}
 	public StandardLispList(Lisp lisp) // todo: remove this
 	{
-		super(lisp);
+		f_lisp = lisp;
 	}
 
 

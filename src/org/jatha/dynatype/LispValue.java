@@ -57,7 +57,7 @@ import org.jatha.exception.LispException;
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
- *   \
+ *   \------ LispPrimitive
  */
 public interface LispValue extends Comparable<LispValue>
 {
@@ -76,8 +76,6 @@ public interface LispValue extends Comparable<LispValue>
 	
 	
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
-
-  public Lisp getLisp();
 
   public String internal_getName();
 

@@ -45,9 +45,10 @@ import java.util.Iterator;
  */
 abstract public class StandardLispNumber extends StandardLispAtom implements LispNumber
 {
+	protected Lisp f_lisp;	// todo: remove this!
   public StandardLispNumber(Lisp lisp)
   {
-    super(lisp);
+		f_lisp = lisp;
   }
 
 

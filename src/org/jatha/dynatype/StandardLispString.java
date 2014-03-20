@@ -36,13 +36,14 @@ import org.jatha.exception.*;
 
 public class StandardLispString extends StandardLispAtom implements LispString
 {
+	protected Lisp f_lisp;	// todo: remove this!
   // -----  Fields  -----
   private  String str;
 
   // -----  Constructors  -----
   public StandardLispString(Lisp lisp, String strName)
   {
-    super(lisp);
+		f_lisp = lisp;
     str = strName;
   }
 

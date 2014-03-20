@@ -44,6 +44,7 @@ import org.jatha.Lisp;
  */
 public class StandardLispHashTable extends StandardLispValue implements LispHashTable
 {
+	protected Lisp f_lisp;	// todo: remove this!
 	/* ------------------  Public variables   ------------------------------ */
 	
 	/**
@@ -134,7 +135,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
    */
   public StandardLispHashTable(Lisp lisp)
   {
-    super(lisp);
+		f_lisp = lisp;
   }
 
 
@@ -152,7 +153,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public StandardLispHashTable(Lisp lisp, LispValue typeArg, LispValue sizeArg,
 		   LispValue rehashSizeArg, LispValue rehashThresholdArg)
   {
-    super(lisp);
+		f_lisp = lisp;
 
     initializeConstants();
 

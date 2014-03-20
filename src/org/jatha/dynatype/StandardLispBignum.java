@@ -38,7 +38,6 @@ import org.jatha.Lisp;
  */
 public class StandardLispBignum extends StandardLispInteger implements LispBignum
 {
-
   private  BigInteger value;
 
   // ---  static initializer  ---

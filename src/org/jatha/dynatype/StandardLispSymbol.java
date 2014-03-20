@@ -51,6 +51,7 @@ import org.jatha.Lisp;
  */
 public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 {
+	protected Lisp f_lisp;	// todo: remove this!
 
 /* ------------------  PRIVATE vars   ------------------------------ */
 
@@ -83,12 +84,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   // Only 'name' is required to create a symbol.
   public StandardLispSymbol(Lisp lisp, LispString symbolNameString)
   {
-    super(lisp);
+		f_lisp = lisp;
     f_name       = symbolNameString;
     f_value      = null;              // Default to UNBOUND
     f_function   = null;              // Default to UNBOUND
     f_plist      = NIL;        // Default to NIL
-    f_package       = null;              // Default to no package.
+    f_package    = null;              // Default to no package.
 
     // If the symbol contains lower-case letters, or anything other than
     // the following set of letters, we need to print OR-bars around it.

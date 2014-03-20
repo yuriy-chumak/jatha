@@ -52,6 +52,8 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
+	protected Lisp f_lisp;	// todo: remove this!
+	
 	public static LispValue s_PRIMITIVE_TAG = null;
   
 	/**
@@ -64,7 +66,7 @@ public abstract class LispPrimitive extends StandardLispValue
   public void initConstants()
   {
     if (s_PRIMITIVE_TAG == null)
-      s_PRIMITIVE_TAG = f_lisp.keyword("PRIMITIVE"); //todo: change to f_lisp.PRIMITIVE
+      s_PRIMITIVE_TAG = LispValue.PRIMITIVE; //todo: change to f_lisp.PRIMITIVE
   }
   
   /**
@@ -107,10 +109,10 @@ public abstract class LispPrimitive extends StandardLispValue
     {
       // Cleaned up code handler to handle all cases correctly (mh) 9 Mar 2008
       //System.out.println("Printing code: " + code);
-      if (f_lisp.car(code).eql(s_PRIMITIVE_TAG) == f_lisp.T)
+      if (Lisp.car(code).eql(s_PRIMITIVE_TAG) == T)
         code = ((LispPrimitive)code.second()).grindef(code, indentAmount);  // handles built-in functions
       else
-        code = ((LispPrimitive)f_lisp.car(code)).grindef(code, indentAmount);  // handles user-defined functions
+        code = ((LispPrimitive)Lisp.car(code)).grindef(code, indentAmount);  // handles user-defined functions
     }
   }
 
@@ -142,7 +144,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	 */
 	public LispPrimitive(final Lisp lisp, String fnName)
 	{
-		super(lisp);
+		f_lisp = lisp;
 		functionName        = fnName;
 		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
     

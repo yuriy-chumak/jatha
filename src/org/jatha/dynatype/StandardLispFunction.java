@@ -42,6 +42,7 @@ import org.jatha.compile.LispCompiler;
  */
 public class StandardLispFunction extends StandardLispValue implements LispFunction
 {
+	protected Lisp f_lisp;	// todo: remove this!
 	// there no internal f_lisp dependencies now.
 	
   private boolean   f_isBuiltin = false;
@@ -55,7 +56,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
    */
   public StandardLispFunction(Lisp lisp)
   {
-    super(lisp);
+		f_lisp = lisp;
   }
 
 
@@ -65,7 +66,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
    */
   public StandardLispFunction(Lisp lisp, LispValue symbol, LispValue code)
   {
-    super(lisp);
+		f_lisp = lisp;
 
     f_code   = code;
     f_symbol = symbol;

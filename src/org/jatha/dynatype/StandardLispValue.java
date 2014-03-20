@@ -85,16 +85,16 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 {
 	public StandardLispValue() { }
 
-	protected Lisp f_lisp;	// todo: remove this!
-	public StandardLispValue(final Lisp lisp)
+//	protected Lisp f_lisp;	// todo: remove this!
+/*	public StandardLispValue(final Lisp lisp)
 	{
 		f_lisp = lisp;
-	}
+	}*/
 
-	public Lisp getLisp()
+/*	public Lisp getLisp()
 	{
 		return f_lisp;
-	}
+	}*/
 
   public String internal_getName()
   {
@@ -422,7 +422,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     constantp    ()
   {
-    return basic_constantp() ? f_lisp.T : NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
+    return basic_constantp() ? T : NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
   }
 
   public LispValue     copy_list    ()
@@ -476,7 +476,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     eq           (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
       return NIL;
   }
@@ -484,7 +484,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     eql          (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
       return NIL;
   }
@@ -492,7 +492,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     equal        (LispValue val)
   {
     if (this == val)
-      return f_lisp.T;
+      return T;
     else
       return NIL;
   }
@@ -602,10 +602,10 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public LispValue     neql          (LispValue val)
   {
-    if (eql(val) == f_lisp.T)
+    if (eql(val) == T)
       return NIL;
     else
-      return f_lisp.T;
+      return T;
   }
 
   public LispValue     ninth        ()
@@ -1030,7 +1030,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotASequenceException("The first argument to THIRD"); }
 
 // // Everything not anything else is a T, although this return value is illegal in CLTL2.
-//  public LispValue     type_of     ()  { return f_lisp.T;   }
+//  public LispValue     type_of     ()  { return T;   }
 
 //  // Everything not anything else is a T, although this return value is illegal in CLTL2.
 //  public LispValue     typep       (LispValue type)  { return NIL;   }

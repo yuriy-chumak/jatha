@@ -26,6 +26,8 @@ package org.jatha.dynatype;
 
 import java.math.BigInteger;
 
+import org.jatha.Lisp;
+
 /**
  * LispNumber is an abstract class that implements
  * the Common LISP NUMBER type.  It contains the
@@ -41,7 +43,6 @@ import java.math.BigInteger;
  */
 public interface LispNumber extends LispAtom
 {
-
 	/**
 	 * Returns a double value corresponding to this value.
 	 */
