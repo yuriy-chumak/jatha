@@ -36,8 +36,8 @@ public abstract class LispPrimitiveC extends LispPrimitive
 	protected long minNumberOfArgs;
 	protected long maxNumberOfArgs;
 
-	public LispPrimitiveC(Lisp lisp, String fnName, long minArgs) {
-		super(lisp, fnName);
+	public LispPrimitiveC(String fnName, long minArgs) {
+		super(fnName);
 		minNumberOfArgs = minArgs;
 		maxNumberOfArgs = Long.MAX_VALUE;
 	}

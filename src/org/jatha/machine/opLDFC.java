@@ -49,9 +49,9 @@ class opLDFC extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLDFC(Lisp lisp)
+  public opLDFC()
   {
-    super(lisp, "LDFC");
+    super("LDFC");
   }
 
 
@@ -64,8 +64,8 @@ class opLDFC extends SECDop
     if (code instanceof LispFunction)
       code = ((LispFunction)code).getCode();
 
-    machine.S.assign(f_lisp.makeCons(f_lisp.makeCons(code, machine.E.value()),
-                                     machine.S.value()));
+    machine.S.assign(cons(cons(code, machine.E.value()),
+                          machine.S.value()));
   }
 
 
@@ -77,8 +77,8 @@ class opLDFC extends SECDop
     indent(4);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

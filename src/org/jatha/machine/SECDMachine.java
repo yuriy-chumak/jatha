@@ -77,31 +77,31 @@ public class SECDMachine    // extends Abstract Machine !
 
 	// ------------------  BASIC MACHINE OPS   ------------------------------
 
-	public SECDop AP = null;
-	public SECDop BLK = null; //OB: new opcode June 2005
-	public SECDop DAP = null;
-	public SECDop DUM = null;
-	public SECDop JOIN = null;
-	public SECDop LD = null;         // 
+	public SECDop AP    = null;
+	public SECDop BLK   = null; //OB: new opcode June 2005
+	public SECDop DAP   = null;
+	public SECDop DUM   = null;
+	public SECDop JOIN  = null;
+	public SECDop LD    = null;         // 
 	public SECDop LD_GLOBAL = null;
-	public SECDop LDC = null;
-	public SECDop LDF = null;
-	public SECDop LDFC = null;
-	public SECDop LDR = null;    //##JPG new opcode  April 2005
-	public SECDop LIS = null;
+	public SECDop LDC   = null;
+	public SECDop LDF   = null;
+	public SECDop LDFC  = null;
+	public SECDop LDR   = null;    //##JPG new opcode  April 2005
+	public SECDop LIS   = null;
 	public SECDop LDNIL = null;
-	public SECDop RAP = null;
-	public SECDop RTN = null;
+	public SECDop RAP   = null;
+	public SECDop RTN   = null;
 	public SECDop RTN_IF = null;
 	public SECDop RTN_IT = null;
-	public SECDop SEL = null;
-	public SECDop SP_BIND = null;
+	public SECDop SEL   = null;
+	public SECDop SP_BIND   = null;
 	public SECDop SP_UNBIND = null;
-	public SECDop STOP = null;
-	public SECDop LDT = null;
+	public SECDop STOP  = null;
+	public SECDop LDT   = null;
 	public SECDop TAG_B = null;
 	public SECDop TAG_E = null;
-	public SECDop TEST = null;
+	public SECDop TEST  = null;
 
 	public SECDMachine(final Lisp lisp)
 	{
@@ -117,43 +117,34 @@ public class SECDMachine    // extends Abstract Machine !
 				NIL, NIL,
 				NIL, NIL);
 		
-    AP     = new opAP(f_lisp);
-    BLK    = new opBLK(f_lisp);
-    DAP    = new opDAP(f_lisp);
-    DUM    = new opDUM(f_lisp);
-    JOIN   = new opJOIN(f_lisp);
-    LD     = new opLD(f_lisp);
-    LD_GLOBAL = new opLD_GLOBAL(f_lisp);
-    LDC    = new opLDC(f_lisp);
-    LDF    = new opLDF(f_lisp);
-    LDFC   = new opLDFC(f_lisp);
-    LDR    = new opLDR(f_lisp);  //##JPG init new opcode LDR  April 2005
-    LIS    = new opLIS(f_lisp);
-    LDNIL   = new opLDNIL(f_lisp);
-    RAP    = new opRAP(f_lisp);
-    RTN    = new opRTN(f_lisp);
-    RTN_IF = new opRTN_IF(f_lisp);
-    RTN_IT = new opRTN_IT(f_lisp);
-    SEL    = new opSEL(f_lisp);
-    SP_BIND   = new opSP_BIND(f_lisp);
-    SP_UNBIND = new opSP_UNBIND(f_lisp);
-    STOP   = new opSTOP(f_lisp);
-    LDT      = new opLDT(f_lisp);
-    TAG_B  = new opTAG_B(f_lisp);
-    TAG_E  = new opTAG_E(f_lisp);
-    TEST   = new opTEST(f_lisp);
+    AP     = new opAP();
+    BLK    = new opBLK();
+    DAP    = new opDAP();
+    DUM    = new opDUM();
+    JOIN   = new opJOIN();
+    LD     = new opLD();
+    LD_GLOBAL = new opLD_GLOBAL();
+    LDC    = new opLDC();
+    LDF    = new opLDF();
+    LDFC   = new opLDFC();
+    LDR    = new opLDR();  //##JPG init new opcode LDR  April 2005
+    LIS    = new opLIS();
+    LDNIL   = new opLDNIL();
+    RAP    = new opRAP();
+    RTN    = new opRTN();
+    RTN_IF = new opRTN_IF();
+    RTN_IT = new opRTN_IT();
+    SEL    = new opSEL();
+    SP_BIND   = new opSP_BIND();
+    SP_UNBIND = new opSP_UNBIND();
+    STOP   = new opSTOP();
+    LDT      = new opLDT();
+    TAG_B  = new opTAG_B();
+    TAG_E  = new opTAG_E();
+    TEST   = new opTEST();
  }
 
-
-  public Lisp getLisp()
-  {
-    return f_lisp;
-  }
-
-
 /* ------------------  SPECIAL BINDING   ------------------------------ */
-
-
 
   // Assume the caller has verified that this is a special variable.
   public void special_bind(LispValue symbol, LispValue value)

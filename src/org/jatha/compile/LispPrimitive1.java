@@ -58,9 +58,9 @@ public abstract class LispPrimitive1 extends LispPrimitive
 	 * @see org.jatha.compile.LispCompiler
 	 * @param fnName The LISP function name being implemented.
 	 */
-	public LispPrimitive1(final Lisp lisp, String fnName)
+	public LispPrimitive1(String fnName)
 	{
-		super(lisp, fnName);
+		super(fnName);
 	}
 	
 	public void Execute(SECDMachine machine)

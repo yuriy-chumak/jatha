@@ -47,9 +47,9 @@ class opAP extends SECDop
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opAP(Lisp lisp)
+	public opAP()
 	{
-		super(lisp, "AP");
+		super("AP");
 	}
 
 	public void Execute(SECDMachine machine)

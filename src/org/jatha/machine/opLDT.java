@@ -40,14 +40,14 @@ class opLDT extends SECDop
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opLDT(final Lisp lisp)
+	public opLDT()
 	{
-		super(lisp, "CONST_T");
+		super("CONST_T");
 	}
 
 	public void Execute(SECDMachine machine)
 	{
-		machine.S.push(f_lisp.T);
+		machine.S.push(T);
 		machine.C.pop();
 	}
 }

@@ -43,12 +43,12 @@ class opTAG_B extends SECDop {
      * and the label of this instruction.
      * @see SECDMachine
      */
-    public opTAG_B(final Lisp lisp) {
-        super(lisp, "TAG_B");
+    public opTAG_B() {
+        super("TAG_B");
     }
     
     public void Execute(final SECDMachine machine) {
         machine.C.pop();
-        machine.X.assign(f_lisp.makeCons(f_lisp.makeList(machine.E.value(),machine.D.value(),new StandardLispHashTable((StandardLispHashTable)machine.B)),machine.X.value()));
+        machine.X.assign(cons(list(machine.E.value(), machine.D.value(), new StandardLispHashTable((StandardLispHashTable)machine.B)), machine.X.value()));
     }
 }

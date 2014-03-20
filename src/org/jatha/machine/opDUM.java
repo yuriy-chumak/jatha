@@ -43,9 +43,9 @@ class opDUM extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opDUM(Lisp lisp)
+  public opDUM()
   {
-    super(lisp, "DUM");
+    super("DUM");
   }
 
 

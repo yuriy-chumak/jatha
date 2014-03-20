@@ -71,6 +71,10 @@ public interface LispValue extends Comparable<LispValue>
 	public static final LispSymbol MACRO     = new StandardLispKeyword("MACRO");
 	public static final LispSymbol PRIMITIVE = new StandardLispKeyword("PRIMITIVE");
 	
+	public static final LispValue COLON   = new StandardLispCharacter(':');
+	public static final LispValue NEWLINE = new StandardLispCharacter('\n');
+	public static final LispValue SPACE   = new StandardLispCharacter(' ');
+	
 	// =-( unsorted )-=========================================	
 	
 	

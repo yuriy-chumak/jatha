@@ -21,11 +21,13 @@
  *   hewett@cs.stanford.edu
  *
  */
-package org.jatha.exception
-;
+package org.jatha.exception;
+
+import org.jatha.dynatype.LispValue;
 
 public class LispValueNotAStringException extends LispException
 {
-  LispValueNotAStringException()            { super();  }
-  public LispValueNotAStringException(String s)    { super(s + " is not a STRING."); }
+	public LispValueNotAStringException()            { super();  }
+	public LispValueNotAStringException(String s)    { super(s + " is not a STRING."); }
+	public LispValueNotAStringException(LispValue v) { this(v.toString()); }
 }

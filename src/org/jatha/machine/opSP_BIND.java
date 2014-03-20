@@ -38,9 +38,9 @@ import org.jatha.dynatype.LispValue;
  */
 class opSP_BIND extends SECDop
 {
-  public opSP_BIND(Lisp lisp)
+  public opSP_BIND()
   {
-    super(lisp, "SP_BIND");
+    super("SP_BIND");
   }
 
 
@@ -61,8 +61,8 @@ class opSP_BIND extends SECDop
     indent(1);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

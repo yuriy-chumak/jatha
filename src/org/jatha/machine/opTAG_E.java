@@ -42,8 +42,8 @@ class opTAG_E extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opTAG_E(final Lisp lisp) {
-    super(lisp, "TAG_E");
+  public opTAG_E() {
+    super("TAG_E");
   }
 
   public void Execute(final SECDMachine machine) {

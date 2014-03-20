@@ -46,9 +46,9 @@ class opDAP extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opDAP(Lisp lisp)
+  public opDAP()
   {
-    super(lisp, "DAP");
+    super("DAP");
   }
 
 
@@ -65,8 +65,8 @@ class opDAP extends SECDop
 
     machine.C.pop();  // Pop DAD instruction
 
-    machine.C.assign(f_lisp.car(fe));
-    machine.E.assign(f_lisp.makeCons(v, f_lisp.cdr(fe)));
+    machine.C.assign(car(fe));
+    machine.E.assign(cons(v, cdr(fe)));
     machine.S.assign(NIL);
   }
 }

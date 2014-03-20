@@ -46,9 +46,9 @@ class opTEST extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opTEST(Lisp lisp)
+  public opTEST()
   {
-    super(lisp, "TEST");
+    super("TEST");
   }
 
 
@@ -70,11 +70,11 @@ class opTEST extends SECDop
     indent(indentAmount);
 
     System.out.print(functionName);
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
     printCode(code.second(), indentAmount + 8);
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }
