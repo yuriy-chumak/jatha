@@ -39,9 +39,9 @@ class opLDNIL extends SECDop
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opLDNIL(Lisp lisp)
+	public opLDNIL()
 	{
-		super(lisp, "CONST_NIL");
+		super("CONST_NIL");
 	}
 
 	public void Execute(SECDMachine machine)

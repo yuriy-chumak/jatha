@@ -45,9 +45,9 @@ class opLDC extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opLDC(Lisp lisp)
+  public opLDC()
   {
-    super(lisp, "LDC");
+    super("LDC");
   }
 
 
@@ -68,8 +68,8 @@ class opLDC extends SECDop
     indent(5);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

@@ -52,9 +52,9 @@ class opLDR extends SECDop
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opLDR(Lisp lisp)
+	public opLDR()
 	{
-		super(lisp, "LDR");
+		super("LDR");
 	}
 
 
@@ -97,8 +97,8 @@ class opLDR extends SECDop
 		indent(6);
 		code.second().internal_princ(System.out);
 
-		f_lisp.NEWLINE.internal_princ(System.out);
+		NEWLINE.internal_princ(System.out);
 
-		return f_lisp.cdr(f_lisp.cdr(code));
+		return cdr(cdr(code));
 	}
 }

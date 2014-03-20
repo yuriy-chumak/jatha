@@ -164,11 +164,6 @@ public class Lisp
   public LispSymbol COMMA_ATSIGN_FN;
   public LispSymbol COMMA_DOT_FN;
   
-
-  public LispValue COLON;
-  public LispValue NEWLINE;
-  public LispValue SPACE;
-
   // Used in CONCATENATE
   public LispSymbol STRING;
 
@@ -213,10 +208,6 @@ public class Lisp
 
     E    = StandardLispValue.real(StrictMath.E);
     PI   = StandardLispValue.real(StrictMath.PI);
-
-    COLON   = new StandardLispCharacter(':');
-    NEWLINE = new StandardLispCharacter('\n');
-    SPACE   = new StandardLispCharacter(' ');
 
     intern("MACRO", LispValue.MACRO);
     intern("PRIMITIVE", LispValue.PRIMITIVE);

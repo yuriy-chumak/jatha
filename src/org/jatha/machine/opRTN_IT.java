@@ -46,9 +46,9 @@ class opRTN_IT extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opRTN_IT(Lisp lisp)
+  public opRTN_IT()
   {
-    super(lisp, "RTN_IT");
+    super("RTN_IT");
   }
 
 
@@ -60,7 +60,7 @@ class opRTN_IT extends SECDop
 
     if (save != NIL)
     {
-      machine.S.assign(f_lisp.makeCons(save, machine.D.pop()));
+      machine.S.assign(cons(save, machine.D.pop()));
       machine.E.assign(machine.D.pop());
       machine.C.assign(machine.D.pop());
     }

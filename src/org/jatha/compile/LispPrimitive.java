@@ -28,8 +28,7 @@ import java.io.*;
 
 import org.jatha.Lisp;
 import org.jatha.dynatype.*;
-import org.jatha.exception.CompilerException;
-import org.jatha.exception.UndefinedFunctionException;
+import org.jatha.exception.*;
 import org.jatha.machine.*;
 
 // @date    Fri Jan 31 17:31:40 1997
@@ -52,9 +51,7 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
-	protected Lisp f_lisp;	// todo: remove this!
-	
-	public static LispValue s_PRIMITIVE_TAG = null;
+	public static LispValue s_PRIMITIVE_TAG = LispValue.PRIMITIVE;
   
 	/**
 	 * the <tt>functionName</tt> is part of the string that
@@ -63,12 +60,6 @@ public abstract class LispPrimitive extends StandardLispValue
 	protected String    functionName;
 	protected LispValue functionNameSymbol;
 
-  public void initConstants()
-  {
-    if (s_PRIMITIVE_TAG == null)
-      s_PRIMITIVE_TAG = LispValue.PRIMITIVE; //todo: change to f_lisp.PRIMITIVE
-  }
-  
   /**
    * The output of this function is printed when the
    * instruction needs to be printed.
@@ -121,7 +112,7 @@ public abstract class LispPrimitive extends StandardLispValue
   {
     indent(indentAmount);
     System.out.print(functionName);
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
     return cdr(code);
   }
@@ -130,7 +121,7 @@ public abstract class LispPrimitive extends StandardLispValue
   public void indent(int amount)
   {
     for (int i=0; i<amount; ++i)
-      f_lisp.SPACE.internal_princ(System.out);
+      SPACE.internal_princ(System.out);
   }
 
 
@@ -142,13 +133,10 @@ public abstract class LispPrimitive extends StandardLispValue
 	 * @param minArgs      The minimum number of Arguments to this function.
 	 * @param maxArgs      The maximum number of Arguments to this function.
 	 */
-	public LispPrimitive(final Lisp lisp, String fnName)
+	public LispPrimitive(String fnName)
 	{
-		f_lisp = lisp;
 		functionName        = fnName;
 		functionNameSymbol  = new StandardLispSymbol(fnName);
-    
-		initConstants();
 	}
 
   public String    LispFunctionNameString() { return functionName; }
@@ -317,12 +305,32 @@ public abstract class LispPrimitive extends StandardLispValue
 
       LispValue fncode = ((LispFunction)function).getCode().second();
 
-      return  CompileArgs(compiler, machine, args, valueList, f_lisp.makeCons(fncode, code));
+      return  CompileArgs(compiler, machine, args, valueList, cons(fncode, code));
   }
 
 
 	public LispValue bool(boolean arg)
 	{
 		return arg ? T : NIL;
+	}
+	
+	// util function for assert argument type:
+	
+	/**
+	 * If argument not a number throws NOT A NUMBER exception
+	 * @param arg
+	 * @return
+	 */
+	public LispNumber assertNumber(LispValue arg)
+	{
+		if (arg instanceof LispNumber)
+			return (LispNumber)arg;
+		throw new LispValueNotANumberException(arg);
+	}
+	public LispString assertString(LispValue arg)
+	{
+		if (arg instanceof LispString)
+			return (LispString)arg;
+		throw new LispValueNotAStringException(arg);
 	}
 }

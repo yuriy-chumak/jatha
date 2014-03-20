@@ -43,9 +43,9 @@ class opJOIN extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opJOIN(Lisp lisp)
+  public opJOIN()
   {
-    super(lisp, "JOIN");
+    super("JOIN");
   }
 
 

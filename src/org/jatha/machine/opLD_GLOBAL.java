@@ -45,9 +45,9 @@ class opLD_GLOBAL extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLD_GLOBAL(Lisp lisp)
+  public opLD_GLOBAL()
   {
-    super(lisp, "LD_GLOBAL");
+    super("LD_GLOBAL");
   }
 
 
@@ -70,8 +70,8 @@ class opLD_GLOBAL extends SECDop
     indent(2);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

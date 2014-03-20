@@ -42,9 +42,9 @@ class opSTOP extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opSTOP(Lisp lisp)
+  public opSTOP()
   {
-    super(lisp, "STOP");
+    super("STOP");
   }
 
 

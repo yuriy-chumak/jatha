@@ -47,9 +47,9 @@ class opLDF extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLDF(Lisp lisp)
+  public opLDF()
   {
-    super(lisp, "LDF");
+    super("LDF");
   }
 
 
@@ -61,9 +61,8 @@ class opLDF extends SECDop
 
     // todo: should we copy the value of E here?  My notes in book say to.
     //
-    machine.S.assign(f_lisp.makeCons(f_lisp.makeCons(code,
-                                                     machine.E.value()),
-                                     machine.S.value())); 
+    machine.S.assign(cons(cons(code, machine.E.value()),
+                          machine.S.value())); 
     // machine.S.push(f_lisp.makeCons(code, machine.E.value()));
   }
 
@@ -73,11 +72,11 @@ class opLDF extends SECDop
     indent(indentAmount);
 
     System.out.print(functionName);
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
     printCode(code.second(), indentAmount + 8);
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

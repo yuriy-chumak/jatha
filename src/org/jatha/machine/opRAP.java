@@ -48,9 +48,9 @@ class opRAP extends SECDop
    * and the label of this instruction.
    * @see SECDMachine
    */
-  public opRAP(Lisp lisp)
+  public opRAP()
   {
-    super(lisp, "RAP");
+    super("RAP");
   }
 
 
@@ -85,13 +85,13 @@ class opRAP extends SECDop
 
                                                                      */
     LispValue e2 = machine.E.value();
-    machine.D.assign(f_lisp.makeCons(machine.S.value(),
-                                     f_lisp.makeCons(f_lisp.cdr(e2),
-                                                     f_lisp.makeCons(machine.C.value(),
-                                                                     machine.D.value()))));
+    machine.D.assign(cons(machine.S.value(),
+                          cons(cdr(e2),
+                               cons(machine.C.value(),
+                                    machine.D.value()))));
 
 
-    machine.C.assign(f_lisp.car(recursiveClosure));  /* f */
+    machine.C.assign(car(recursiveClosure));  /* f */
 
     // The car of E should be rplaca'd with the list of closures
     //machine.E.assign(f_lisp.makeCons(v, recursiveClosure.cdr().cdr())); //  (v . e1)

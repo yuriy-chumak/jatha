@@ -47,9 +47,9 @@ class opLIS extends SECDop
    * @see SECDMachine
    */
   //@author  Micheal S. Hewett    hewett@cs.stanford.edu
-  public opLIS(Lisp lisp)
+  public opLIS()
   {
-    super(lisp, "LIS");
+    super("LIS");
   }
 
   public void Execute(SECDMachine machine)
@@ -61,7 +61,7 @@ class opLIS extends SECDop
 
     numArgs = ((LispInteger)machine.C.pop()).getLongValue();    /* Pop the number of args. */
     for (int i=0; i < numArgs; ++i)
-       argList = f_lisp.makeCons(machine.S.pop(), argList);
+       argList = cons(machine.S.pop(), argList);
 
     machine.S.push(argList);
   }
@@ -75,8 +75,8 @@ class opLIS extends SECDop
     indent(5);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

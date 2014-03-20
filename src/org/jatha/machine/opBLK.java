@@ -44,8 +44,8 @@ class opBLK extends SECDop{
      * and the label of this instruction.
      * @see SECDMachine
      */
-    public opBLK(final Lisp lisp) {
-        super(lisp, "BLK");
+    public opBLK() {
+        super("BLK");
     }
 
 
@@ -59,7 +59,7 @@ class opBLK extends SECDop{
         System.out.print(functionName);
         indent(5);
         code.second().internal_princ(System.out);
-        f_lisp.NEWLINE.internal_princ(System.out);
-        return f_lisp.cdr(f_lisp.cdr(code));
+        NEWLINE.internal_princ(System.out);
+        return cdr(cdr(code));
     }
 }// opBLK

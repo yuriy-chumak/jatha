@@ -38,9 +38,9 @@ import org.jatha.dynatype.LispValue;
  */
 class opSP_UNBIND extends SECDop
 {
-  public opSP_UNBIND(Lisp lisp)
+  public opSP_UNBIND()
   {
-    super(lisp, "SP_UNBIND");
+    super("SP_UNBIND");
   }
 
 
@@ -60,8 +60,8 @@ class opSP_UNBIND extends SECDop
     indent(2);
     code.second().internal_princ(System.out);
 
-    f_lisp.NEWLINE.internal_princ(System.out);
+    NEWLINE.internal_princ(System.out);
 
-    return f_lisp.cdr(f_lisp.cdr(code));
+    return cdr(cdr(code));
   }
 }

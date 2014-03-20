@@ -61,9 +61,9 @@ public abstract class SECDop extends LispPrimitive0
 	/**
 	 * @see SECDMachine
 	 */
-	public SECDop(final Lisp lisp, String opName)
+	public SECDop(String opName)
 	{
-		super(lisp, opName);
+		super(opName);
 	}
 
 	/**
