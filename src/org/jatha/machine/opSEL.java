@@ -65,7 +65,7 @@ class opSEL extends SECDop
 
     machine.D.push(machine.C.value());  // push remaining code.
 
-    if (selector == f_lisp.NIL)
+    if (selector == NIL)
        machine.C.assign(falseCodeBranch);
     else
        machine.C.assign(trueCodeBranch);

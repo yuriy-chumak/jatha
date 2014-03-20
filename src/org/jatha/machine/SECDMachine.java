@@ -54,6 +54,7 @@ import org.jatha.compile.*;
 public class SECDMachine    // extends Abstract Machine !
 {
 	final Lisp f_lisp;
+	static final LispValue NIL = LispValue.NIL;
 
 	public static boolean DEBUG = false;
 
@@ -113,8 +114,8 @@ public class SECDMachine    // extends Abstract Machine !
 		X = new SECDRegister(f_lisp, "X-02324255");
 		
 		B = new StandardLispHashTable(f_lisp,
-				StandardLispValue.NIL, StandardLispValue.NIL,
-				StandardLispValue.NIL, StandardLispValue.NIL);
+				NIL, NIL,
+				NIL, NIL);
 		
     AP     = new opAP(f_lisp);
     BLK    = new opBLK(f_lisp);
@@ -166,7 +167,7 @@ public class SECDMachine    // extends Abstract Machine !
     }
     else
     {
-      LispValue bindings = B.gethash(symbol, StandardLispValue.NIL);
+      LispValue bindings = B.gethash(symbol, NIL);
 
       B.setf_gethash(symbol, f_lisp.makeCons(value, bindings));
       symbol.adjustSpecialCount(+1);
@@ -176,7 +177,7 @@ public class SECDMachine    // extends Abstract Machine !
 
   public void special_unbind(LispValue symbol)
   {
-    LispValue bindings = B.gethash(symbol, StandardLispValue.NIL);
+    LispValue bindings = B.gethash(symbol, NIL);
 
     // System.err.println("Special unbind called on: " + symbol);
 
@@ -190,7 +191,7 @@ public class SECDMachine    // extends Abstract Machine !
   {
     if (symbol.get_specialCount() > 0)
     {
-      LispValue bindings = B.gethash(symbol, StandardLispValue.NIL);
+      LispValue bindings = B.gethash(symbol, NIL);
       B.setf_gethash(symbol, f_lisp.makeCons(value, Lisp.cdr(bindings)));
     }
     else
@@ -219,14 +220,14 @@ public class SECDMachine    // extends Abstract Machine !
     // System.out.print("\nExecuting code: ");
     // code.prin1();
 
-    S.assign(StandardLispValue.NIL);
+    S.assign(NIL);
     E.assign(globals);
     C.assign(code);
-    D.assign(StandardLispValue.NIL);
+    D.assign(NIL);
 
     opcode = Lisp.car(C.value());
 
-    while ((opcode != STOP) && (opcode != StandardLispValue.NIL))
+    while ((opcode != STOP) && (opcode != NIL))
     {
       if (DEBUG)
       {
@@ -278,7 +279,7 @@ public class SECDMachine    // extends Abstract Machine !
         System.err.print("\n" + opcode);   // Testing
         System.err.flush();
 
-        opcode = StandardLispValue.NIL;
+        opcode = NIL;
       }
     }
 

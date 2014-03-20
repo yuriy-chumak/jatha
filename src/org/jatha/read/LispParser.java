@@ -26,8 +26,8 @@ package org.jatha.read;
 
 import java.io.*;
 import java.math.BigInteger;
-
 import java.util.regex.Pattern;
+
 import org.jatha.dynatype.*;
 import org.jatha.Lisp;
 import org.jatha.exception.*;
@@ -61,6 +61,9 @@ import org.jatha.exception.*;
  */
 public class LispParser
 {
+	
+	static final LispValue NIL = LispValue.NIL;
+	
   public static final int UPCASE         = 1;
   public static final int DOWNCASE       = 2;
   public static final int PRESERVE       = 3;
@@ -335,7 +338,7 @@ public class LispParser
           else if (isRparen(ch))
           {
             System.err.println("WARNING: Too many right parentheses.  NIL assumed.");
-            return(f_lisp.NIL);
+            return(NIL);
           }
           else if (isQuote(ch))
           {
@@ -378,7 +381,7 @@ public class LispParser
     if (token.length() > 0)
       return(tokenToLispValue(token.toString()));
     else
-      return(f_lisp.NIL);
+      return(NIL);
   }
 
 
@@ -395,10 +398,10 @@ public class LispParser
     LispValue      newToken;
     LispValue      newList, newCell;
 
-    newList =  f_lisp.NIL;
-    newCell =  f_lisp.NIL;
+    newList =  NIL;
+    newCell =  NIL;
 
-    LispValue newListLast = f_lisp.NIL;
+    LispValue newListLast = NIL;
 
     while (true)
     {
@@ -419,7 +422,7 @@ public class LispParser
           if (haveDot)
           {
             System.err.println("WARNING: Illegal dotted syntax.  NIL assumed.");
-            return f_lisp.NIL;
+            return NIL;
           }
           haveDot = true;
           continue;             // Skip to end of while loop.
@@ -456,7 +459,7 @@ public class LispParser
 
         if (firstTime)
         {
-          newList   = f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL);
+          newList   = f_lisp.makeCons(NIL, NIL);
           newList.rplaca(newToken);
           newListLast = newList;
           firstTime = false;
@@ -470,7 +473,7 @@ public class LispParser
           }
           else
           {
-            newCell  = f_lisp.makeCons(newToken, f_lisp.NIL);  /* (NIL . NIL) */
+            newCell  = f_lisp.makeCons(newToken, NIL);  /* (NIL . NIL) */
             
             newListLast.rplacd(newCell);
             newListLast = newCell;
@@ -479,7 +482,7 @@ public class LispParser
       }  // if (!isSpace())
     }    // while ()...
 
-    return f_lisp.NIL;     // Shouldn't get here.
+    return NIL;     // Shouldn't get here.
   }
 
   /**
@@ -488,15 +491,15 @@ public class LispParser
    */
   LispValue read_quoted_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
 
     /* Construct the quoted list (QUOTE . (NIL . NIL)) then
      * read a token and replace the first NIL by the token read.
      */
 
     newQuotedList = f_lisp.makeCons(f_lisp.QUOTE,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+                                    f_lisp.makeCons(NIL, NIL));
     newCell = read();
     f_lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
@@ -509,15 +512,15 @@ public class LispParser
    */
   public LispValue read_backquoted_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
 
     /* Construct the quoted list (SYS::BACKQUOTE . (NIL . NIL)) then
     * read a token and replace the first NIL by the token read.
     */
 
     newQuotedList = f_lisp.makeCons(f_lisp.BACKQUOTE,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+                                    f_lisp.makeCons(NIL, NIL));
 
     ++BackQuoteLevel;
     newCell = read();
@@ -534,20 +537,20 @@ public class LispParser
    */
   LispValue read_comma_token(PushbackReader stream) throws EOFException
   {
-    LispValue newCell          = f_lisp.NIL;
-    LispValue newQuotedList    = f_lisp.NIL;
-    LispValue identifier       = f_lisp.NIL;
+    LispValue newCell          = NIL;
+    LispValue newQuotedList    = NIL;
+    LispValue identifier       = NIL;
     int  intCh;
     char ch;
 
     if (BackQuoteLevel <= 0)
     {
       System.err.println(";; *** ERROR: Comma not inside backquote.");
-      return f_lisp.NIL;
+      return NIL;
     }
 
     try { intCh = inputReader.read(); }
-    catch (IOException e) { return f_lisp.NIL; }
+    catch (IOException e) { return NIL; }
 
     if (intCh < 0)  { throw new EOFException("Premature end of LISP input."); }
     else
@@ -569,7 +572,7 @@ public class LispParser
     }
 
     newQuotedList = f_lisp.makeCons(identifier,
-                                    f_lisp.makeCons(f_lisp.NIL, f_lisp.NIL));
+                                    f_lisp.makeCons(NIL, NIL));
 
     newCell = read();
 
@@ -752,7 +755,7 @@ public class LispParser
       else
         ch = (char) intCh;
 
-      return f_lisp.NIL;
+      return NIL;
     }
 
     // -- #| ... |# is a block comment
@@ -775,13 +778,13 @@ public class LispParser
       } catch (IOException e) {
         System.err.println("\n *** I/O error while reading a block comment.  Not terminated?");
       }
-    return f_lisp.NIL;
+    return NIL;
     }
 
     else
     {
       System.err.println("\n *** unknown '#' construct.");
-      return f_lisp.NIL;
+      return NIL;
     }
   }
 
@@ -792,7 +795,7 @@ public class LispParser
   public LispValue read_backquoted_list_token(PushbackReader stream)
   {
     System.err.println("\n *** Parser can't read backquoted lists yet.");
-    return f_lisp.NIL;
+    return NIL;
   }
 
 	/**
@@ -806,7 +809,7 @@ public class LispParser
 		if (T_token_p(token))
 			newCell = f_lisp.T;
 		else if (NIL_token_p(token))
-			newCell = f_lisp.NIL;
+			newCell = NIL;
 		else if (INTEGER_token_p(token))
 		{
 			// It may be an Fixnum or a Bignum.
@@ -865,14 +868,14 @@ public class LispParser
 		}
 		else {
 			System.err.println("ERROR: Unrecognized input: \"" + token + "\"");
-			newCell = Lisp.NIL;
+			newCell = NIL;
 		}
 
 		if (newCell == null)
 		{
 			System.err.println("MEMORY_ERROR in  \"tokenToLispValue\" " + "for token \""
 					+ token + "\", returning NIL.");
-			newCell = Lisp.NIL;
+			newCell = NIL;
 		}
 
 		return(newCell);
@@ -1100,9 +1103,9 @@ public class LispParser
         //    setq(STARSTAR, symbol_value(temp));
         temp = read();
         // System.out.println(); temp.prin1();
-        temp = f_lisp.COMPILER.compile(f_lisp.MACHINE, temp, f_lisp.NIL);  // No globals for now
+        temp = f_lisp.COMPILER.compile(f_lisp.MACHINE, temp, NIL);  // No globals for now
         // System.out.println(); temp.prin1();
-        temp = f_lisp.MACHINE.Execute(temp, f_lisp.NIL);
+        temp = f_lisp.MACHINE.Execute(temp, NIL);
         System.out.println(); temp.prin1();
       }
       while (temp != exit);
@@ -1130,7 +1133,7 @@ public class LispParser
    */
   public static boolean hasBalancedParentheses(Lisp lisp, String input)
   {
-    LispValue result = lisp.NIL;
+    LispValue result = NIL;
 
     if (f_myParser == null)
       f_myParser = new LispParser(lisp, input);

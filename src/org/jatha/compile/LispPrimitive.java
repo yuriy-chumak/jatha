@@ -103,7 +103,7 @@ public abstract class LispPrimitive extends StandardLispValue
 
   public void printCode(LispValue code, int indentAmount)
   {
-    while (code != f_lisp.NIL)
+    while (code != NIL)
     {
       // Cleaned up code handler to handle all cases correctly (mh) 9 Mar 2008
       //System.out.println("Printing code: " + code);
@@ -321,7 +321,7 @@ public abstract class LispPrimitive extends StandardLispValue
 
 	public LispValue bool(boolean arg)
 	{
-		return arg ? f_lisp.T : f_lisp.NIL;
+		return arg ? f_lisp.T : NIL;
 	}
 	protected LispCons cons(LispValue car, LispValue cdr)
 	{

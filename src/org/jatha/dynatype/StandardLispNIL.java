@@ -41,10 +41,12 @@ import org.jatha.exception.LispConstantRedefinedException;
 
 public class StandardLispNIL extends StandardLispList implements LispNil
 {
-	public StandardLispNIL() { }
+	public StandardLispNIL() {
+		System.out.println("StandardLispNIL()");
+	}
 	
-	public LispValue car() { return f_lisp.NIL; }
-	public LispValue cdr() { return f_lisp.NIL; }
+	public LispValue car() { return NIL; }
+	public LispValue cdr() { return NIL; }
 	
 	
 	
@@ -91,34 +93,34 @@ public class StandardLispNIL extends StandardLispList implements LispNil
 
 
   public LispValue     append(LispValue otherList) { return otherList; }
-  public LispValue     assoc(LispValue index)      { return f_lisp.NIL; }
+  public LispValue     assoc(LispValue index)      { return NIL; }
   public boolean boundp() { return true; }
-  public LispValue     butlast()                   { return f_lisp.NIL; }
-  public LispValue     copy_list()                 { return f_lisp.NIL; }
-  public LispValue     elt(LispValue index)        { return f_lisp.NIL; }
+  public LispValue     butlast()                   { return NIL; }
+  public LispValue     copy_list()                 { return NIL; }
+  public LispValue     elt(LispValue index)        { return NIL; }
 
-  public LispValue     first        ()  { return f_lisp.NIL; }
-  public LispValue     second       ()  { return f_lisp.NIL; }
-  public LispValue     third        ()  { return f_lisp.NIL; }
-  public LispValue     fourth       ()  { return f_lisp.NIL; }
-  public LispValue     fifth        ()  { return f_lisp.NIL; }
-  public LispValue     sixth        ()  { return f_lisp.NIL; }
-  public LispValue     seventh      ()  { return f_lisp.NIL; }
-  public LispValue     eighth       ()  { return f_lisp.NIL; }
-  public LispValue     ninth        ()  { return f_lisp.NIL; }
-  public LispValue     tenth        ()  { return f_lisp.NIL; }
+  public LispValue     first        ()  { return NIL; }
+  public LispValue     second       ()  { return NIL; }
+  public LispValue     third        ()  { return NIL; }
+  public LispValue     fourth       ()  { return NIL; }
+  public LispValue     fifth        ()  { return NIL; }
+  public LispValue     sixth        ()  { return NIL; }
+  public LispValue     seventh      ()  { return NIL; }
+  public LispValue     eighth       ()  { return NIL; }
+  public LispValue     ninth        ()  { return NIL; }
+  public LispValue     tenth        ()  { return NIL; }
 
-  public LispValue     last()                    { return f_lisp.NIL; }
+  public LispValue     last()                    { return NIL; }
   public LispValue     length()                  { return new StandardLispInteger(f_lisp, 0);}
-  public LispValue     member(LispValue elt)     { return f_lisp.NIL; }
-  public LispValue     nreverse(LispValue index) { return f_lisp.NIL; }
+  public LispValue     member(LispValue elt)     { return NIL; }
+  public LispValue     nreverse(LispValue index) { return NIL; }
 
-  public LispValue     rassoc(LispValue index)   { return f_lisp.NIL; }
-  public LispValue     remove(LispValue elt)     { return f_lisp.NIL; }
-  public LispValue     rest()                    { return f_lisp.NIL; }
-  public LispValue     reverse(LispValue elt)    { return f_lisp.NIL; }
-  public LispValue     rplaca(LispValue  newCar) { return f_lisp.NIL; }
-  public LispValue     rplacd(LispValue  newCdr) { return f_lisp.NIL; }
+  public LispValue     rassoc(LispValue index)   { return NIL; }
+  public LispValue     remove(LispValue elt)     { return NIL; }
+  public LispValue     rest()                    { return NIL; }
+  public LispValue     reverse(LispValue elt)    { return NIL; }
+  public LispValue     rplaca(LispValue  newCar) { return NIL; }
+  public LispValue     rplacd(LispValue  newCdr) { return NIL; }
 
   public LispValue     setf_symbol_function(LispValue newFunction) {
     throw new LispConstantRedefinedException("NIL");
@@ -143,7 +145,7 @@ public class StandardLispNIL extends StandardLispList implements LispNil
     if ((result == f_lisp.T) || (type == f_lisp.NULL_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
 

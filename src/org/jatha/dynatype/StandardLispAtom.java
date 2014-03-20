@@ -53,6 +53,6 @@ abstract public class StandardLispAtom extends StandardLispValue implements Lisp
     if ((result == f_lisp.T) || (type == f_lisp.ATOM_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 }

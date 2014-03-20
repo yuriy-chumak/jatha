@@ -54,7 +54,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 			System.err.println("** LispCons: attempting to create a CONS when CAR=null.  Substituting NIL");
 			if (DEBUG)
 				showStackTrace();
-			theCar = lisp.NIL;
+			theCar = NIL;
 		}
 		carCell = theCar;
 
@@ -62,7 +62,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 			System.err.println("** LispCons: attempting to create a CONS when CDR=null.  Substituting NIL");
 			if (DEBUG)
 				showStackTrace();
-			theCdr = lisp.NIL;
+			theCdr = NIL;
 		}
 		cdrCell = theCdr;
 	}
@@ -70,8 +70,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
 	public  StandardLispCons(Lisp lisp)
 	{
 		super(lisp);
-		carCell = f_lisp.NIL;
-		cdrCell = f_lisp.NIL;
+		carCell = NIL;
+		cdrCell = NIL;
 	}
 
 
@@ -232,7 +232,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     long maxLength = Lisp.PRINT_LENGTH_VALUE;//f_lisp.getPrintLength().getLongValue();
     while (length <= maxLength)
     {
-      if (ptr == f_lisp.NIL)
+      if (ptr == NIL)
         return buf.toString();
       buf.append(" ");
       buf.append(f_lisp.car(ptr).toString_internal(length, level+1));
@@ -241,7 +241,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
       if (! (ptr instanceof LispCons))
       {
         buf.append(ptr.toStringAsCdr());
-        ptr = f_lisp.NIL;
+        ptr = NIL;
       }
     }
 
@@ -275,7 +275,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
    */
   public boolean contains(LispValue object)
   {
-    return (member(object) != f_lisp.NIL);
+    return (member(object) != NIL);
   }
 
   /**
@@ -298,7 +298,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   public LispValue append(LispValue otherList)
   {
-    LispValue rest = f_lisp.NIL.append(otherList);
+    LispValue rest = NIL.append(otherList);
       
     List list = toRandomAccess();
     for (int i = list.size() - 1; i >= 0; i--)
@@ -314,7 +314,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue  ptr = this;
     LispValue  value;
 
-    while (!(ptr instanceof LispNil))
+    while (ptr != NIL)
     {
       value = f_lisp.car(ptr);
 
@@ -329,7 +329,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
       }
       ptr = f_lisp.cdr(ptr);
     }
-    return f_lisp.NIL;
+    return NIL;
   }
 
   public LispValue     copy_list    ()
@@ -352,15 +352,15 @@ public class StandardLispCons extends StandardLispList implements LispCons
   public LispValue     equal        (LispValue value)
   {
     if (! (value instanceof LispCons))
-      return f_lisp.NIL;
+      return NIL;
     else
     {
-      boolean result = ((carCell.equal(f_lisp.car(value)) != f_lisp.NIL) &&
-              (cdrCell.equal(f_lisp.cdr(value)) != f_lisp.NIL));
+      boolean result = ((carCell.equal(f_lisp.car(value)) != NIL) &&
+              (cdrCell.equal(f_lisp.cdr(value)) != NIL));
       if (result)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
   }
 
@@ -374,7 +374,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     long      len = 0;  // To prevent runaway lists.
     long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
-    while (!(f_lisp.cdr(ptr) instanceof LispNil))
+    while (Lisp.cdr(ptr) != NIL)
       if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("An argument to LAST");
@@ -403,7 +403,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     long      len = 0;
     long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
-    while (!(ptr instanceof LispNil))
+    while (ptr != NIL)
     {
       ++len;
       if (len > maxLength)
@@ -462,7 +462,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     long       len = 0;  // To prevent runaway lists.
     long       maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
 
-    while (!(ptr instanceof LispNil))
+    while (ptr != NIL)
     {
       value = f_lisp.car(ptr);
 
@@ -479,7 +479,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
         throw new LispValueNotAListException("Encountered a list whose length is greater than " +
                                              maxLength + ".  This is probably an error.  Adjust *MAX-LIST-LENGTH* if necessary.");
     }
-    return f_lisp.NIL;
+    return NIL;
   }
 
   public LispValue rest()
@@ -520,7 +520,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     if ((result == f_lisp.T) || (type == f_lisp.CONS_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
 };

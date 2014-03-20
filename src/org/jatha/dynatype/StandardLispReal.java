@@ -113,7 +113,7 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
       if (this.f_value == ((LispReal)val).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
     else
       return super.eql(val);
@@ -134,7 +134,7 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
     if ((result == f_lisp.T) || (type == f_lisp.REAL_TYPE) || (type == f_lisp.FLOAT_TYPE) || (type == f_lisp.DOUBLE_FLOAT_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
   public LispValue zerop    ()
@@ -142,7 +142,7 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
     if (f_value == 0.0)
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
 };

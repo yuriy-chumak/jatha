@@ -129,7 +129,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
       if (this.f_value == ((LispInteger)val).getLongValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
     else
       return super.eql(val);
@@ -150,7 +150,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
     if ((result == f_lisp.T) || (type == f_lisp.INTEGER_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
   public LispValue zerop     ()
@@ -158,7 +158,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
     if (f_value == 0)
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
 };

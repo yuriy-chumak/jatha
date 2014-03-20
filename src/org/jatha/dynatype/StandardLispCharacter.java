@@ -97,7 +97,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
       if (this.value == ((LispCharacter)val).getCharacterValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       return super.eql(val);
   }
@@ -124,7 +124,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
     if ((result == f_lisp.T) || (type == f_lisp.CHARACTER_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
   public char getCharacterValue()

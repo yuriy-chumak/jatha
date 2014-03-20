@@ -85,8 +85,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 {
 	public StandardLispValue() { }
 
-	public static final LispList NIL = new StandardLispNIL();
-	
 	protected Lisp f_lisp;	// todo: remove this!
 	public StandardLispValue(final Lisp lisp)
 	{
@@ -382,7 +380,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { 
     throw new LispValueNotAnArrayException("The first argument to ARRAY-DIMENSIONS"); 
   }
-  public LispValue     arrayp   ()  { return f_lisp.NIL; }
+  public LispValue     arrayp   ()  { return NIL; }
 
   public LispValue     append       (LispValue otherList)
   { throw new LispValueNotAListException("The first argument to APPEND");  }
@@ -393,7 +391,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     assoc        (LispValue index)
   { throw new LispValueNotAListException("The second argument to ASSOC"); }
 
-  public LispValue     bignump      ()  { return f_lisp.NIL; }
+  public LispValue     bignump      ()  { return NIL; }
 
   public boolean boundp       ()
   { throw new LispValueNotASymbolException("The argument to BOUNDP");  }
@@ -416,7 +414,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     ceiling      ()
   { throw new LispValueNotANumberException("The first argument to CEILING"); }
 
-  public LispValue     characterp   ()  { return f_lisp.NIL; }
+  public LispValue     characterp   ()  { return NIL; }
 
   public LispValue     clrhash      ()
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
@@ -424,7 +422,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     constantp    ()
   {
-    return basic_constantp() ? f_lisp.T : f_lisp.NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
+    return basic_constantp() ? f_lisp.T : NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
   }
 
   public LispValue     copy_list    ()
@@ -480,7 +478,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     if (this == val)
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   public LispValue     eql          (LispValue val)
@@ -488,7 +486,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     if (this == val)
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   public LispValue     equal        (LispValue val)
@@ -496,7 +494,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     if (this == val)
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
   /**
@@ -519,7 +517,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public boolean fboundp      ()
   { throw new LispValueNotASymbolException("The argument to FBOUNDP");  }
 
-  public LispValue floatp()  { return f_lisp.NIL; }
+  public LispValue floatp()  { return NIL; }
 
   public LispValue     fifth        ()
   { throw new LispValueNotASequenceException("The first argument to FIFTH"); }
@@ -537,7 +535,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   { throw new LispValueNotAFunctionException("The first argument to FUNCALL"); }
 
   public LispValue functionp()
-  { return f_lisp.NIL; }
+  { return NIL; }
 
   public LispValue     gethash      (LispValue key)
   { throw new LispValueNotAHashtableException("The second argument to GETHASH"); }
@@ -548,7 +546,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue setf_gethash(LispValue key, LispValue value)
   { throw new LispValueNotAHashtableException("The second argument to SETF-GETHASH"); }
 
-  public LispValue     hashtablep   ()  { return f_lisp.NIL; }
+  public LispValue     hashtablep   ()  { return NIL; }
 
   public LispValue hash_table_count ()
   { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-COUNT"); }
@@ -565,7 +563,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue hash_table_test ()
   { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-TEST"); }
 
-  public LispValue     integerp     ()  { return f_lisp.NIL; }
+  public LispValue     integerp     ()  { return NIL; }
 
   public LispValue     last         ()
   { throw new LispValueNotAListException("The argument to LAST");  }
@@ -573,7 +571,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     length       ()
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
 
-//  public LispValue     list         ()  { return new StandardLispCons(f_lisp, f_lisp.NIL, f_lisp.NIL);  }
+//  public LispValue     list         ()  { return new StandardLispCons(f_lisp, NIL, NIL);  }
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }
@@ -605,7 +603,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     neql          (LispValue val)
   {
     if (eql(val) == f_lisp.T)
-      return f_lisp.NIL;
+      return NIL;
     else
       return f_lisp.T;
   }
@@ -616,7 +614,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     nreverse     ()
   { throw new LispValueNotAListException("The argument to NREVERSE");  }
 
-  public LispValue     numberp      () { return f_lisp.NIL; }
+  public LispValue     numberp      () { return NIL; }
 
   /**
    * Pops a list and returns the first element.
@@ -778,7 +776,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue     sqrt         ()
   { throw new LispValueNotANumberException("The argument to SQRT"); }
 
-  public LispValue     stringp      ()     { return f_lisp.NIL; }
+  public LispValue     stringp      ()     { return NIL; }
 
   /**
    * For Common LISP compatibility, but identical to stringCapitalize.
@@ -1035,7 +1033,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 //  public LispValue     type_of     ()  { return f_lisp.T;   }
 
 //  // Everything not anything else is a T, although this return value is illegal in CLTL2.
-//  public LispValue     typep       (LispValue type)  { return f_lisp.NIL;   }
+//  public LispValue     typep       (LispValue type)  { return NIL;   }
 
   public LispValue     zerop       ()
   { throw new LispValueNotANumberException("The argument to ZEROP"); }

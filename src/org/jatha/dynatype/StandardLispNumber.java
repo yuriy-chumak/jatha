@@ -189,14 +189,14 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       LispValue arg = f_lisp.car(arglist);
 
       if (! arg.basic_numberp())
       {
         super.max(f_lisp.car(arglist));  // generates an error.
-        return(f_lisp.NIL);
+        return(NIL);
       }
 
       // Keep a flag to see whether the final value
@@ -244,14 +244,14 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       LispValue arg = f_lisp.car(arglist);
 
       if (! arg.basic_numberp())
       {
         super.max(f_lisp.car(arglist));  // generates an error.
-        return(f_lisp.NIL);
+        return(NIL);
       }
 
       // Keep a flag to see whether the final value
@@ -280,7 +280,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    */
   public LispValue    negate()
   {
-    return this.sub(f_lisp.NIL);  // Returns the negative.
+    return this.sub(NIL);  // Returns the negative.
   }
 
   public LispValue    numberp()  { return f_lisp.T; }
@@ -348,13 +348,13 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       addend = f_lisp.car(arglist);
       if (! addend.basic_numberp())
       {
         super.add(f_lisp.car(arglist));  // generates an error.
-        return null;//(f_lisp.NIL);// todo: add exception
+        return null;//(NIL);// todo: add exception
       }
 
       // Might need to convert to a double
@@ -459,13 +459,13 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       term = f_lisp.car(arglist);             /* Arglist is already evaluated. */
       if (! term.basic_numberp())
       {
         super.div(f_lisp.car(arglist));  // Generate an error
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
 
@@ -478,7 +478,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
         d_quotient  = l_quotient;
       }
 
-      if (term.zerop() == f_lisp.NIL)
+      if (term.zerop() == NIL)
       {
         if (!allIntegers)
         {
@@ -503,7 +503,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       arglist = f_lisp.cdr(arglist);
@@ -520,7 +520,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
     if (allIntegers)
@@ -570,7 +570,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (! term.basic_numberp())    // generates an error
       {
         super.mul(term);
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       // Multiplying by one?
@@ -676,13 +676,13 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       addend = f_lisp.car(arglist);
       if (! addend.basic_numberp())
       {
         super.sub(f_lisp.car(arglist));  // generates an error.
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       // Might need to convert to a double
@@ -800,7 +800,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if ((result == f_lisp.T) || (type == f_lisp.NUMBER_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
   public LispValue greaterThan(LispValue arg)
@@ -809,7 +809,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (this.getDoubleValue() > ((LispNumber)arg).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotANumberException("> " + arg);
   }
@@ -820,7 +820,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (this.getDoubleValue() >= ((LispNumber)arg).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotANumberException(">= " + arg);
   }
@@ -831,7 +831,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (this.getDoubleValue() < ((LispNumber)arg).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotANumberException("< " + arg);
   }
@@ -842,7 +842,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (this.getDoubleValue() <= ((LispNumber)arg).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotANumberException("<= " + arg);
   }
@@ -856,7 +856,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (this.getDoubleValue() == ((LispNumber)arg).getDoubleValue())
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotANumberException("= " + arg);
   }
@@ -866,7 +866,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     if (arg instanceof LispNumber)
       return equalNumeric(arg);
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
 

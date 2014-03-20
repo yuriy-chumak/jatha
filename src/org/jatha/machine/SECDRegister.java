@@ -42,6 +42,7 @@ import org.jatha.Lisp;
  */
 public class SECDRegister //extends StandardLispSymbol
 {
+	static final LispValue NIL = LispValue.NIL;
 	protected final LispSymbol f_registerSymbol;
 
 	public SECDRegister(final Lisp lisp, String name)
@@ -49,7 +50,7 @@ public class SECDRegister //extends StandardLispSymbol
 		long rand = (long)(Math.rint(Math.random() * 1000.0));
 		f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
 
-		assign(lisp.NIL);
+		assign(NIL);
 	}
 
 	public LispValue pop()

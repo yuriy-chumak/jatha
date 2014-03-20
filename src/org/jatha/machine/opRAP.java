@@ -97,6 +97,6 @@ class opRAP extends SECDop
     //machine.E.assign(f_lisp.makeCons(v, recursiveClosure.cdr().cdr())); //  (v . e1)
     machine.E.value().rplaca(v);
 
-    machine.S.assign(f_lisp.NIL);
+    machine.S.assign(NIL);
   }
 }

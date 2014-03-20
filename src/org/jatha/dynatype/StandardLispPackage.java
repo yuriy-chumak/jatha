@@ -155,7 +155,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
     super(lisp);
 
     if (pname == null) {
-        f_name = f_lisp.NIL;
+        f_name = NIL;
     } else if (pname instanceof LispSymbol) {
         f_name = ((LispSymbol)pname).symbol_name();
     } else {
@@ -165,12 +165,12 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 
 
     if (pnicknames == null)
-      f_nicknames = f_lisp.NIL;
+      f_nicknames = NIL;
     else
       f_nicknames  = transformToStrings(pnicknames);
 
     if (puses == null)
-      f_uses = f_lisp.NIL;
+      f_uses = NIL;
     else
       f_uses       = puses;
 
@@ -205,7 +205,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 
   public String toString()
   {
-      if (f_nicknames != f_lisp.NIL && f_nicknames != null)
+      if (f_nicknames != NIL && f_nicknames != null)
       return getAsString(f_lisp.car(f_nicknames)).getValue();
     else
       return ((LispString)(f_name)).getValue();
@@ -213,8 +213,8 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 
     private LispValue transformToStrings(final LispValue list) {
         LispValue internal = list;
-        LispValue build = f_lisp.NIL;
-        while(internal != f_lisp.NIL) {
+        LispValue build = NIL;
+        while(internal != NIL) {
             build = f_lisp.makeCons(getAsString(f_lisp.car(internal)),build);
             internal = f_lisp.cdr(internal);
         }
@@ -261,7 +261,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
 
 /*		// ELSE - search used packages
 		LispValue p = f_uses;
-		while (p != f_lisp.NIL)
+		while (p != NIL)
 		{
 			symbol = ((LispPackage)(f_lisp.findPackage(f_lisp.car(p)))).getExternalSymbol(str);
 			if (symbol != null)

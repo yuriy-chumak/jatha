@@ -67,6 +67,6 @@ class opDAP extends SECDop
 
     machine.C.assign(f_lisp.car(fe));
     machine.E.assign(f_lisp.makeCons(v, f_lisp.cdr(fe)));
-    machine.S.assign(f_lisp.NIL);
+    machine.S.assign(NIL);
   }
 }

@@ -152,7 +152,7 @@ public class Lisp
   public LispSymbol DOT;
 
   // The list/symbol NIL.
-  public static final LispList NIL = StandardLispValue.NIL;
+  static final LispList NIL = LispValue.NIL;
   // The symbol T
   public LispConstant T;
 

@@ -36,6 +36,7 @@ import org.jatha.dynatype.LispMacro;
 import org.jatha.dynatype.LispValue;
 import org.jatha.dynatype.LispCons;
 import org.jatha.dynatype.LispConstant;
+import org.jatha.dynatype.StandardLispValue;
 import org.jatha.read.LispParser;
 
 public class Tests extends Object
@@ -74,7 +75,7 @@ public class Tests extends Object
 //							continue;
 						
 						if ((r instanceof LispConstant && !r.toString().equals("T"))
-						 || (r == Lisp.NIL)
+						 || (r == LispValue.NIL)
 						) {
 							errors.add(s.toString() + " -> " + r.toString());
 						}

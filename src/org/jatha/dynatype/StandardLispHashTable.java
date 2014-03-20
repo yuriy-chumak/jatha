@@ -157,22 +157,22 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
     initializeConstants();
 
     // Check parameters
-    if (typeArg != f_lisp.NIL)
+    if (typeArg != NIL)
       type = typeArg;
     else
       type = DEFAULT_TYPE;
 
-    if (sizeArg != f_lisp.NIL)
+    if (sizeArg != NIL)
       size = sizeArg;
     else
       size = DEFAULT_SIZE;
 
-    if (rehashSizeArg != f_lisp.NIL)
+    if (rehashSizeArg != NIL)
       rehashSize = rehashSizeArg;
     else
       rehashSize = DEFAULT_REHASH_SIZE;
 
-    if (rehashThresholdArg != f_lisp.NIL)
+    if (rehashThresholdArg != NIL)
       rehashThreshold = rehashThresholdArg;
     else
       rehashThreshold = DEFAULT_REHASH_THRESHOLD;
@@ -262,7 +262,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 
 
   // Note - 'default' is a reserved word, hence the spelling below.
-  public LispValue gethash(LispValue key) { return gethash(key, f_lisp.NIL); }
+  public LispValue gethash(LispValue key) { return gethash(key, NIL); }
 
   public LispValue gethash(LispValue key, LispValue defawlt)
   {
@@ -279,7 +279,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
     LispValue result = (LispValue)(theHashTable.remove(key));
 
     if (result == null)
-      return f_lisp.NIL;
+      return NIL;
     else
       return result;
   }
@@ -323,7 +323,7 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
     if ((result == f_lisp.T) || (type == f_lisp.HASHTABLE_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
 

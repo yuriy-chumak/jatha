@@ -118,7 +118,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.equals(((LispString)other).getValue()))
         return f_lisp.T;
 
-    return f_lisp.NIL;
+    return NIL;
   }
 
 
@@ -194,7 +194,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       int index = str.indexOf(elt);
 
       if (index < 0)
-        return f_lisp.NIL;
+        return NIL;
       else
         return f_lisp.makeInteger(index);
     }
@@ -253,7 +253,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.endsWith(((LispString)arg).getValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringEndsWith (" + arg + ")");
   }
@@ -269,7 +269,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.equals(((LispString)arg).getValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringEq (" + arg + ")");
   }
@@ -285,7 +285,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.equalsIgnoreCase(((LispString)arg).getValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringEqual (" + arg + ")");
   }
@@ -300,7 +300,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) > 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringGreaterP (" + arg + ")");
   }
@@ -315,7 +315,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareTo(((LispString)arg).getValue()) > 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringGreaterThan (" + arg + ")");
   }
@@ -330,7 +330,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareTo(((LispString)arg).getValue()) >= 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringGreaterThanOrEqual (" + arg + ")");
   }
@@ -372,7 +372,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) < 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringLessP (" + arg + ")");
   }
@@ -387,7 +387,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareTo(((LispString)arg).getValue()) < 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringLessThan (" + arg + ")");
   }
@@ -402,7 +402,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareTo(((LispString)arg).getValue()) <= 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringLessThanOrEqual (" + arg + ")");
   }
@@ -414,7 +414,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   {
     if (arg instanceof LispString)
       if (str.equals(((LispString)arg).getValue()))
-        return f_lisp.NIL;
+        return NIL;
       else
         return f_lisp.T;
     else
@@ -431,7 +431,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) <= 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringNotGreaterP (" + arg + ")");
   }
@@ -446,7 +446,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.compareToIgnoreCase(((LispString)arg).getValue()) >= 0)
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringNotLessP (" + arg + ")");
   }
@@ -485,7 +485,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (str.startsWith(((LispString)arg).getValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     else
       throw new LispValueNotAStringException("The argument to stringStartsWith (" + arg + ")");
   }
@@ -567,7 +567,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
     if ((result == f_lisp.T) || (type == f_lisp.STRING_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
 };

@@ -81,7 +81,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     f_name       = symbolNameString;
     f_value      = null;              // Default to UNBOUND
     f_function   = null;              // Default to UNBOUND
-    f_plist      = lisp.NIL;        // Default to NIL
+    f_plist      = NIL;        // Default to NIL
     f_package       = null;              // Default to no package.
 
     // If the symbol contains lower-case letters, or anything other than
@@ -186,7 +186,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     {
       System.err.println("\nSorry, APPLY is not yet implemented.");
 
-      return f_lisp.NIL;
+      return NIL;
     }
   }
 
@@ -207,7 +207,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     else
     {
       // push the args back on the stack
-      for (LispValue v = args; v != f_lisp.NIL; v = f_lisp.cdr(v))
+      for (LispValue v = args; v != NIL; v = f_lisp.cdr(v))
         f_lisp.MACHINE.S.push(f_lisp.car(v));
 
       // get the function, and push it on the code stack.
@@ -217,7 +217,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
       f_lisp.MACHINE.C.push(((LispFunction)f_function).getCode());   // Push the new one on.
     }
 
-    return f_lisp.NIL;
+    return NIL;
   }
 
   public LispValue     pop          ()
@@ -312,7 +312,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public LispValue symbol_package()
   {
     if (f_package == null)
-      return f_lisp.NIL;
+      return NIL;
     else
       return f_package;
   }
@@ -339,7 +339,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     if ((result == f_lisp.T) || (type == f_lisp.SYMBOL_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
     public LispValue documentation(final LispValue type) {
@@ -347,14 +347,14 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
             throw new LispValueNotASymbolException("The second argument to DOCUMENTATION");
         }
         final LispValue val = (LispValue)f_documentation.get(type);
-        return (val == null) ? f_lisp.NIL : val;
+        return (val == null) ? NIL : val;
     }
 
     public LispValue setf_documentation(final LispValue type, final LispValue value) {
         if(!(type instanceof LispSymbol)) {
             throw new LispValueNotASymbolException("The second argument to SETF-DOCUMENTATION");
         }
-        if(!(value instanceof LispString) && value != f_lisp.NIL) {
+        if(!(value instanceof LispString) && value != NIL) {
             throw new LispValueNotAStringException("The third argument to SETF-DOCUMENTATION");
         }
         f_documentation.put(type,value);

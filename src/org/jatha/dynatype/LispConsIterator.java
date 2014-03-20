@@ -48,7 +48,7 @@ public class LispConsIterator extends StandardLispValue implements Iterator
 
   public boolean hasNext()
   {
-    return (m_list != f_lisp.NIL);
+    return (m_list != NIL);
   }
 
   public Object next()

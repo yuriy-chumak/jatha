@@ -142,7 +142,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (value.equals(((LispBignum)val).getBigIntegerValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
 
     if (val instanceof LispInteger)
     {
@@ -150,7 +150,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (value.equals(n.getBigIntegerValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
 
     if (val instanceof LispReal)
@@ -158,13 +158,13 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       LispReal r = ((LispReal)val);
 
       if (StrictMath.round(r.getDoubleValue()) != r.getDoubleValue())  // If not integral
-        return f_lisp.NIL;
+        return NIL;
 
       LispBignum n = new StandardLispBignum(f_lisp, r.getDoubleValue());
       if (value.equals(n.getBigIntegerValue()))
         return f_lisp.T;
       else
-        return f_lisp.NIL;
+        return NIL;
     }
 
 
@@ -185,14 +185,14 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     BigInteger sum = this.value;
     LispValue addend;
 
-    while (args != f_lisp.NIL)
+    while (args != NIL)
     {
       // System.out.println("LispBignum.add: " + sum + " and " + args);
       addend = f_lisp.car(args);
       if (addend.numberp() != f_lisp.T)
       {
         this.add(f_lisp.car(args));
-        return null;//(f_lisp.NIL);	// todo: throw exception?
+        return null;//(NIL);	// todo: throw exception?
       }
 
       // If an addend is a float, we need to convert the
@@ -237,13 +237,13 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     LispValue  term;
     int        argCount     = 1;
 
-    while (args != f_lisp.NIL)
+    while (args != NIL)
     {
       term = f_lisp.car(args);             /* Arglist is already evaluated. */
       if (term.numberp() != f_lisp.T)
       {
         this.div(f_lisp.car(args));  // generate error
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       ++argCount;
@@ -279,7 +279,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return null;//(f_lisp.NIL); todo: return NaN
+        return null;//(NIL); todo: return NaN
       }
 
       args = f_lisp.cdr(args);
@@ -291,7 +291,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       else
       {
         System.out.print("\n;; *** ERROR: Attempt to divide by 0.\n");
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
 
@@ -321,7 +321,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     if (! (arglist instanceof LispList))
       arglist = f_lisp.makeList(arglist);
 
-    while (arglist != f_lisp.NIL)
+    while (arglist != NIL)
     {
       term = f_lisp.car(arglist);
 
@@ -329,7 +329,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       if (term.numberp() != f_lisp.T)
       {
         super.mul(f_lisp.car(arglist));  // generates an error
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       // If a term is a float, we need to convert the
@@ -381,14 +381,14 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     LispValue term;
     int       argCount = 1;
 
-    while (args != f_lisp.NIL)
+    while (args != NIL)
     {
       // System.out.println("LispBignum.subtract: " + sum + " and " + args);
       term = f_lisp.car(args);
       if (term.numberp() != f_lisp.T)
       {
         this.sub(f_lisp.car(args));  // generate error
-        return null;//(f_lisp.NIL);
+        return null;//(NIL);
       }
 
       // If a term is a float, we need to convert the
@@ -441,7 +441,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     if ((result == f_lisp.T) || (type == f_lisp.BIGNUM_TYPE))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }*/
 
   public LispValue zerop     ()
@@ -449,7 +449,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     if (value.equals(ZERO))
       return f_lisp.T;
     else
-      return f_lisp.NIL;
+      return NIL;
   }
 
 }

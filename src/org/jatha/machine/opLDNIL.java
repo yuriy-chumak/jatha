@@ -46,7 +46,7 @@ class opLDNIL extends SECDop
 
 	public void Execute(SECDMachine machine)
 	{
-		machine.S.push(Lisp.NIL);
+		machine.S.push(NIL);
 		machine.C.pop();
 	}
 }
