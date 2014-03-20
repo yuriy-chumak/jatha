@@ -158,7 +158,7 @@ public class Lisp
 
 //  public LispSymbol CONS;
 //  public LispSymbol LIST;
-  public LispSymbol APPEND;
+//  public LispSymbol APPEND;
   public LispSymbol COMMA_FN;
   public LispSymbol COMMA_ATSIGN_FN;
   public LispSymbol COMMA_DOT_FN;
@@ -197,10 +197,11 @@ public class Lisp
 //    LIST = new StandardLispSymbol(this, "LIST");
 //	symbol("QUOTE",     LispValue.QUOTE); 
 //    symbol("LIST",      LIST = new StandardLispSymbol(this, "LIST"));
-    symbol("APPEND",    APPEND = new StandardLispSymbol(this, "APPEND"));
+//    symbol("APPEND",    APPEND = new StandardLispSymbol("APPEND"));
 //    symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
     
-    symbol("DOT",       DOT = new StandardLispSymbol(this, "."));
+    symbol("DOT",       DOT = new StandardLispSymbol("."));
+    symbol("STRING",    STRING = new StandardLispSymbol("STRING"));
     
 	// this functions must be registered as symbols:
 	symbol("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
@@ -209,8 +210,6 @@ public class Lisp
     symbol("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
     symbol("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
 
-    symbol("STRING",    STRING = new StandardLispSymbol(this, "STRING"));
-    
 //    symbol("T", T);
 
     E    = StandardLispValue.real(StrictMath.E);
@@ -324,7 +323,7 @@ public class Lisp
   public void init()
   {
     // EVAL must be before SYMTAB.
-    SYMTAB  = new SymbolTable(this);
+    SYMTAB  = new SymbolTable();
 
     initializeConstants();
 
@@ -1146,12 +1145,12 @@ public class Lisp
    */
   public LispSymbol makeSymbol(String symbolName)
   {
-    return new StandardLispSymbol(this, symbolName);
+    return new StandardLispSymbol(symbolName);
   }
 
   public LispSymbol makeSymbol(LispString symbolName)
   {
-    return new StandardLispSymbol(this, symbolName);
+    return new StandardLispSymbol(symbolName);
   }
 
 

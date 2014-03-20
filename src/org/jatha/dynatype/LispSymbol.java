@@ -25,6 +25,7 @@
 package org.jatha.dynatype;
 
 import org.jatha.exception.LispException;
+import org.jatha.machine.SECDMachine;
 
 
 
@@ -59,5 +60,7 @@ public interface LispSymbol extends LispAtom
    */
   public LispString symbol_name();
 
+  public LispValue funcall(SECDMachine machine, LispValue args);
+  
 }
 

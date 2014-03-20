@@ -426,17 +426,6 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
   }
   
 
-//  public LispValue type_of   ()  { return f_lisp.BIGNUM_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == T) || (type == f_lisp.BIGNUM_TYPE))
-      return T;
-    else
-      return NIL;
-  }*/
-
   public LispValue zerop     ()
   {
     if (value.equals(BIGZERO))

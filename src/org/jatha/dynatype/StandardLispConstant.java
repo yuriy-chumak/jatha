@@ -23,7 +23,6 @@
  */
 package org.jatha.dynatype;
 
-import org.jatha.Lisp;
 import org.jatha.exception.LispConstantRedefinedException;
 
 // See LispValue.java for documentation
@@ -41,30 +40,30 @@ public class StandardLispConstant extends StandardLispSymbol
 	// CONSTRUCTORS
 	public StandardLispConstant(String symbolName)
 	{
-		super(null, symbolName);
+		super(symbolName);
 	}
 	
 	public StandardLispConstant(LispString symbolNameString)
 	{
-		super(null, symbolNameString);
+		super(symbolNameString);
 	}
 
 	public StandardLispConstant(String symbolName, LispValue value)
 	{
-		super(null, symbolName);
+		super(symbolName);
 		f_value = value;
 	}
 
 	public StandardLispConstant(LispString symbolNameString, LispValue value)
 	{
-		super(null, symbolNameString);
+		super(symbolNameString);
 		f_value = value;
 	}
 
 	// Used for turning a symbol into a constant.
 	public StandardLispConstant(LispSymbol oldSymbol)
 	{
-		super(null, oldSymbol.symbol_name());
+		super(oldSymbol.symbol_name());
 
 		if (oldSymbol.boundp())
 			f_value    = oldSymbol.symbol_value();

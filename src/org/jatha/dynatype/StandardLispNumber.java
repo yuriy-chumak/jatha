@@ -132,35 +132,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   }
   
   /**
-   * Compute the factorial of a non-negative integer.
-   * Reals are truncated to the nearest integer.
-   */
-  public LispValue factorial()
-  {
-    LispNumber value = this;
-
-    // Truncate real numbers, if passed in.
-    if (! (value instanceof LispInteger))
-      value = integer(value.getLongValue());
-
-    // Need to handle this through the multiply function
-    // in order to convert to BigNums as necessary.
-    if (value.getLongValue() <= 1)
-      return ONE;
-    else {
-        // changed algorithm, due to stack overflow when factorizing big numbers. (n > 1000 ca)
-        LispNumber total = ONE;
-        long index = 2L;
-        while(index <= value.getLongValue()) {
-            total = total.mul(integer(index++));
-        }
-        return total;
-    }
-    //      return value.multiply(value.subtract(f_lisp.ONE).factorial());
-  }
-
-
-  /**
    * Returns the max of this number and its arguments, which may
    * be a list of numbers or a single number.
    * @param args a number or a list of numbers
@@ -788,16 +759,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   {
     return real(StrictMath.sqrt(getDoubleValue()));
   }
-
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.NUMBER_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
 
   public LispValue greaterThan(LispValue arg)
   {

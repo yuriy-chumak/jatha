@@ -146,7 +146,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	{
 		f_lisp = lisp;
 		functionName        = fnName;
-		functionNameSymbol  = new StandardLispSymbol(f_lisp, fnName);
+		functionNameSymbol  = new StandardLispSymbol(fnName);
     
 		initConstants();
 	}

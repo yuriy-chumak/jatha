@@ -48,7 +48,7 @@ public class SECDRegister //extends StandardLispSymbol
 	public SECDRegister(final Lisp lisp, String name)
 	{
 		long rand = (long)(Math.rint(Math.random() * 1000.0));
-		f_registerSymbol = new StandardLispSymbol(lisp, "*REGISTER-" + rand + "*");
+		f_registerSymbol = new StandardLispSymbol("*REGISTER-" + rand + "*");
 
 		assign(NIL);
 	}

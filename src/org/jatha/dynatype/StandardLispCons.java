@@ -209,7 +209,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
    */
   public String toStringAsCar_internal(long length, long level)
   {
-    if (level > Lisp.PRINT_LEVEL_VALUE)//f_lisp.getPrintLevel().getLongValue())
+    if (level > Lisp.PRINT_LEVEL_VALUE)
     {
       System.err.println("Printing list deeper than *PRINT-LEVEL*.  Truncated.");
       return "...";
@@ -227,7 +227,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue    ptr = this;
     StringBuffer buf = new StringBuffer();
 
-    long maxLength = Lisp.PRINT_LENGTH_VALUE;//f_lisp.getPrintLength().getLongValue();
+    long maxLength = Lisp.PRINT_LENGTH_VALUE;
     while (length <= maxLength)
     {
       if (ptr == NIL)
@@ -370,7 +370,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   {
     LispValue ptr = this;
     long      len = 0;  // To prevent runaway lists.
-    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
+    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;
 
     while (Lisp.cdr(ptr) != NIL)
       if (!(ptr instanceof LispCons))
@@ -399,7 +399,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   {
     LispValue ptr = this;
     long      len = 0;
-    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
+    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;
 
     while (ptr != NIL)
     {
@@ -458,7 +458,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue  ptr   = this;
     LispValue  value;
     long       len = 0;  // To prevent runaway lists.
-    long       maxLength = Lisp.MAX_LIST_LENGTH_VALUE;//f_lisp.getMaxListLength().getLongValue();
+    long       maxLength = Lisp.MAX_LIST_LENGTH_VALUE;
 
     while (ptr != NIL)
     {
@@ -509,17 +509,6 @@ public class StandardLispCons extends StandardLispList implements LispCons
     else
       return cons(car(), cdr().subst(newValue, oldValue));
   }
-
-//  public LispValue     type_of     ()  { return f_lisp.CONS_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.CONS_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
 
 };
 

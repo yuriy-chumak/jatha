@@ -124,17 +124,6 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
 
   public LispValue floatp   ()  { return T; }
 
-//  public LispValue type_of  ()  { return f_lisp.DOUBLE_FLOAT_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.REAL_TYPE) || (type == f_lisp.FLOAT_TYPE) || (type == f_lisp.DOUBLE_FLOAT_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
-
   public LispValue zerop    ()
   {
     if (f_value == 0.0)

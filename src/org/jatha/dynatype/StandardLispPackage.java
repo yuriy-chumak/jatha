@@ -179,12 +179,12 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
     if (symtab instanceof SymbolTable)
       f_symbolTable = symtab;
     else
-      f_symbolTable = new SymbolTable(f_lisp);
+      f_symbolTable = new SymbolTable();
 
     if (shadows instanceof SymbolTable)
       f_shadowingSymbols = shadows;
     else
-      f_shadowingSymbols = new SymbolTable(f_lisp);
+      f_shadowingSymbols = new SymbolTable();
   }
 
 

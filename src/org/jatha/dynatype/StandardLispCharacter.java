@@ -112,18 +112,6 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
     return new StandardLispString(this.toString());
   }
 
-
-//  public LispValue     type_of     ()  { return f_lisp.CHARACTER_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.CHARACTER_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
-
   public char getCharacterValue()
   {
     return value;

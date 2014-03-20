@@ -30,6 +30,7 @@ import java.io.*;
 
 import org.jatha.compile.LispCompiler;
 import org.jatha.exception.*;
+import org.jatha.machine.SECDMachine;
 import org.jatha.read.*;
 import org.jatha.Lisp;
 
@@ -51,7 +52,6 @@ import org.jatha.Lisp;
  */
 public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 {
-	protected Lisp f_lisp;	// todo: remove this!
 
 /* ------------------  PRIVATE vars   ------------------------------ */
 
@@ -73,18 +73,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 /* ------------------  CONSTRUCTORS   ------------------------------ */
 	public StandardLispSymbol(String symbolName)
 	{
-		this(null, string(symbolName));
+		this(string(symbolName));
 	}
 
-  public StandardLispSymbol(Lisp lisp, String symbolName)
-  {
-    this(lisp, string(symbolName));
-  }
-
   // Only 'name' is required to create a symbol.
-  public StandardLispSymbol(Lisp lisp, LispString symbolNameString)
+  public StandardLispSymbol(LispString symbolNameString)
   {
-		f_lisp = lisp;
     f_name       = symbolNameString;
     f_value      = null;              // Default to UNBOUND
     f_function   = null;              // Default to UNBOUND
@@ -207,7 +201,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return (f_function != null);
   }
 
-  public LispValue  funcall(LispValue args)
+  public LispValue funcall(SECDMachine machine, LispValue args)
   {
     if (f_function == null)
       throw new LispValueNotAFunctionException("The first argument to FUNCALL");
@@ -215,13 +209,13 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     {
       // push the args back on the stack
       for (LispValue v = args; v != NIL; v = cdr(v))
-        f_lisp.MACHINE.S.push(car(v));
+    	  machine.S.push(car(v));
 
       // get the function, and push it on the code stack.
       // Note that we don't do error checking on the number
       // of arguments.  This is bad...
-      f_lisp.MACHINE.C.pop();                     // Pop the funcall function off.
-      f_lisp.MACHINE.C.push(((LispFunction)f_function).getCode());   // Push the new one on.
+      machine.C.pop();                     // Pop the funcall function off.
+      machine.C.push(((LispFunction)f_function).getCode());   // Push the new one on.
     }
 
     return NIL;
@@ -338,17 +332,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return f_value;
   }
 
-//  public LispValue     type_of     ()  { return f_lisp.SYMBOL_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.SYMBOL_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
-
     public LispValue documentation(final LispValue type) {
         if(!(type instanceof LispSymbol)) {
             throw new LispValueNotASymbolException("The second argument to DOCUMENTATION");
@@ -367,6 +350,5 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
         f_documentation.put(type,value);
         return value;
     }
-
 };
 

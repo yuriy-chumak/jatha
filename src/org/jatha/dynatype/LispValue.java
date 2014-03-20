@@ -31,6 +31,7 @@ import java.util.List;
 
 import org.jatha.Lisp;
 import org.jatha.exception.LispException;
+import org.jatha.machine.SECDMachine;
 
 /**
  * LispValueInterface defines the root of the Interfaces that define
@@ -404,12 +405,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue expt(LispValue n);
 
   /**
-   * Compute the factorial of a non-negative integer.
-   * Reals are truncated to the nearest integer.
-   */
-  public LispValue factorial();
-
-  /**
    * Returns T if the symbol has an assigned function.
    */
   public boolean fboundp();
@@ -425,11 +420,6 @@ public interface LispValue extends Comparable<LispValue>
    */
   public LispValue first();
   
-  /**
-   * Calls a functio non a list of arguments.
-   */
-  public LispValue funcall(LispValue args);
-
   /**
    * Retrieves values from a hash table.
    */

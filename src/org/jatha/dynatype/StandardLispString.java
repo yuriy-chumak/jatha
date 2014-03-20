@@ -195,7 +195,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
       if (index < 0)
         return NIL;
       else
-        return f_lisp.makeInteger(index);
+        return integer(index);
     }
     else*/
       throw new LispValueNotACharacterException("The argument to POSITION (" + element + ")");
@@ -543,17 +543,4 @@ public class StandardLispString extends StandardLispAtom implements LispString
       throw new LispValueNotAnIntegerException("The operand of substring (" + end + ")");
   }
 
-
-//  public LispValue     type_of     ()  { return f_lisp.STRING_TYPE;   }
-/*  public LispValue typep(LispValue type)
-  {
-    LispValue result = super.typep(type);
-
-    if ((result == f_lisp.T) || (type == f_lisp.STRING_TYPE))
-      return f_lisp.T;
-    else
-      return NIL;
-  }*/
-
 };
-

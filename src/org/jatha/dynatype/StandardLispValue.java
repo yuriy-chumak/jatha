@@ -86,17 +86,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 {
 	public StandardLispValue() { }
 
-//	protected Lisp f_lisp;	// todo: remove this!
-/*	public StandardLispValue(final Lisp lisp)
-	{
-		f_lisp = lisp;
-	}*/
-
-/*	public Lisp getLisp()
-	{
-		return f_lisp;
-	}*/
-
   public String internal_getName()
   {
     throw new LispValueNotASymbolException("The argument to internal_getName()");
@@ -283,7 +272,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCar_internal(long length, long level)
   {
-    if (level > Lisp.PRINT_LEVEL_VALUE)//f_lisp.getPrintLevel().getLongValue())
+    if (level > Lisp.PRINT_LEVEL_VALUE)
     {
       System.err.println("Printing list deeper than *PRINT-LEVEL*.  Truncated.");
       return "...";
@@ -298,7 +287,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
    */
   public String toStringAsCdr_internal(long length, long level)
   {
-    if (length > Lisp.PRINT_LENGTH_VALUE)//f_lisp.getPrintLength().getLongValue())
+    if (length > Lisp.PRINT_LENGTH_VALUE)
     {
       System.err.println("Printing list...longer than *PRINT-LENGTH*.  Truncated.");
       System.err.println("Next few items are: ");
@@ -506,15 +495,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
     throw new LispValueNotANumberException("The argument to EXPT");
   }
 
-  /**
-   * Compute the factorial of a non-negative integer.
-   * Reals are truncated to the nearest integer.
-   */
-  public LispValue factorial()
-  {
-    throw new LispValueNotANumberException("The argument to FACTORIAL");
-  }
-
   public boolean fboundp      ()
   { throw new LispValueNotASymbolException("The argument to FBOUNDP");  }
 
@@ -531,9 +511,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     fourth       ()
   { throw new LispValueNotASequenceException("The first argument to FOURTH"); }
-
-  public LispValue     funcall      (LispValue args)
-  { throw new LispValueNotAFunctionException("The first argument to FUNCALL"); }
 
   public LispValue functionp()
   { return NIL; }
@@ -571,8 +548,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
   public LispValue     length       ()
   { throw new LispValueNotASequenceException("The argument to LENGTH");  }
-
-//  public LispValue     list         ()  { return new StandardLispCons(f_lisp, NIL, NIL);  }
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }
