@@ -1716,7 +1716,7 @@ public class LispCompiler
 	}
 	public final LispCons cons(LispValue car, LispValue cdr)
 	{
-		return new StandardLispCons(f_lisp, car, cdr);
+		return new StandardLispCons(car, cdr);
 	}
 	public final LispList list(LispValue... parts)
 	{

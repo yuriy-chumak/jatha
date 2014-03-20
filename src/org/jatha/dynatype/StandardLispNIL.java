@@ -70,7 +70,7 @@ public class StandardLispNIL extends StandardLispList
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {
-    return f_lisp.T;
+    return T;
   }
 
   public String toString()      { return "NIL"; }

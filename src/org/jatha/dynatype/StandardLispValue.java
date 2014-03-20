@@ -1113,7 +1113,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 
 	public static LispValue cons(LispValue car, LispValue cdr)
 	{
-		return new StandardLispCons(null, car, cdr);
+		return new StandardLispCons(car, cdr);
 	}
 	public static LispValue list(LispValue... parts)
 	{

@@ -43,6 +43,8 @@ import org.jatha.util.SymbolTable;
  */
 public class StandardLispPackage extends StandardLispCons implements LispPackage
 {
+	protected Lisp f_lisp;	// todo: remove this!
+	
 /* ------------------  FIELDS   ------------------------------ */
 
 	// author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -152,7 +154,7 @@ public class StandardLispPackage extends StandardLispCons implements LispPackage
   public StandardLispPackage(Lisp lisp, LispValue pname, LispValue pnicknames,
 		                 LispList puses, SymbolTable symtab, final SymbolTable shadows)
   {
-    super(lisp);
+    f_lisp = lisp;
 
     if (pname == null) {
         f_name = NIL;

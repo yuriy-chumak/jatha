@@ -47,9 +47,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
 	protected LispValue cdrCell;
 
 	// change theCdr to LispConsOrNil
-	public  StandardLispCons(Lisp lisp, LispValue theCar, LispValue theCdr)
+	public  StandardLispCons(LispValue theCar, LispValue theCdr)
 	{
-		super(lisp);
 		if (theCar == null) {
 			System.err.println("** LispCons: attempting to create a CONS when CAR=null.  Substituting NIL");
 			if (DEBUG)
@@ -67,9 +66,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
 		cdrCell = theCdr;
 	}
 
-	public  StandardLispCons(Lisp lisp)
+	public  StandardLispCons()
 	{
-		super(lisp);
 		carCell = NIL;
 		cdrCell = NIL;
 	}
@@ -345,7 +343,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
    */
   public LispValue copy()
   {
-    return new StandardLispCons(f_lisp, carCell.copy(), cdrCell.copy());
+    return cons(carCell.copy(), cdrCell.copy());
   }
 
 
@@ -355,10 +353,10 @@ public class StandardLispCons extends StandardLispList implements LispCons
       return NIL;
     else
     {
-      boolean result = ((carCell.equal(f_lisp.car(value)) != NIL) &&
-              (cdrCell.equal(f_lisp.cdr(value)) != NIL));
+      boolean result = ((carCell.equal(car(value)) != NIL) &&
+              (cdrCell.equal(cdr(value)) != NIL));
       if (result)
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     }
@@ -385,7 +383,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
         if (len > maxLength)
           throw new LispValueNotAListException("Encountered a list whose length is greater than " +
                                                maxLength + ".  This is probably an error.  Adjust *MAX-LIST-LENGTH* if necessary.");
-        ptr = f_lisp.cdr(ptr);
+        ptr = cdr(ptr);
       }
     return ptr;
   }
@@ -408,7 +406,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
       ++len;
       if (len > maxLength)
       {
-        System.err.println("list is: " + this.car() + ", remainder is: " + f_lisp.car(ptr) + ", " + ptr.second() + ", " + ptr.third());
+        System.err.println("list is: " + this.car() + ", remainder is: " + car(ptr) + ", " + ptr.second() + ", " + ptr.third());
         throw new LispValueNotAListException("Encountered a list whose length is greater than " +
                                              maxLength + ".  This is probably an error.  Set *MAX-LIST-LENGTH* to a larger value if necessary.");
       }
@@ -418,14 +416,14 @@ public class StandardLispCons extends StandardLispList implements LispCons
         throw new LispValueNotAListException("An argument to LENGTH");
       }
       else
-        ptr = f_lisp.cdr(ptr);
+        ptr = cdr(ptr);
     }
     return integer(len);
   }
 
   public LispValue member(LispValue elt)
   {
-    if (car().eql(elt) == f_lisp.T)
+    if (car().eql(elt) == T)
     {
       return this;
     }
@@ -438,8 +436,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
     LispValue result = carCell;
     if (cdrCell instanceof LispList)
     {
-      carCell = f_lisp.car(cdrCell);
-      cdrCell = f_lisp.cdr(cdrCell);
+      carCell = car(cdrCell);
+      cdrCell = cdr(cdrCell);
     }
     else
       throw new LispValueNotAConsException("The cdr of the argument to POP ");
@@ -449,7 +447,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   public LispValue push(LispValue value)
   {
-    cdrCell = new StandardLispCons(f_lisp, carCell, cdrCell);
+    cdrCell = cons(carCell, cdrCell);
     carCell = value;
 
     return this;
@@ -464,16 +462,16 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
     while (ptr != NIL)
     {
-      value = f_lisp.car(ptr);
+      value = car(ptr);
 
       if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("The second argument to RASSOC");
       }
 
-      if (index.eql(f_lisp.cdr(value)) == f_lisp.T)
+      if (index.eql(cdr(value)) == T)
         return value;
-      ptr = f_lisp.cdr(ptr);
+      ptr = cdr(ptr);
       ++len;
       if (len > maxLength)
         throw new LispValueNotAListException("Encountered a list whose length is greater than " +
@@ -490,10 +488,10 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   public LispValue remove(LispValue elt)
   {
-    if (car().eql(elt) == f_lisp.T)
+    if (car().eql(elt) == T)
       return cdr().remove(elt);
     else
-      return new StandardLispCons(f_lisp, car(), (cdr().remove(elt)));
+      return cons(car(), (cdr().remove(elt)));
   }
 
   public LispValue     rplaca(LispValue  newCar)
@@ -504,12 +502,12 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   public LispValue subst(LispValue newValue, LispValue oldValue)
   {
-    if (oldValue.eql(car()) == f_lisp.T)
-      return new StandardLispCons(f_lisp, newValue, cdr().subst(newValue, oldValue));
-    else if (oldValue.eql(cdr()) == f_lisp.T)
-      return new StandardLispCons(f_lisp, car(), newValue);
+    if (oldValue.eql(car()) == T)
+      return cons(newValue, cdr().subst(newValue, oldValue));
+    else if (oldValue.eql(cdr()) == T)
+      return cons(car(), newValue);
     else
-      return new StandardLispCons(f_lisp, car(), cdr().subst(newValue, oldValue));
+      return cons(car(), cdr().subst(newValue, oldValue));
   }
 
 //  public LispValue     type_of     ()  { return f_lisp.CONS_TYPE;   }

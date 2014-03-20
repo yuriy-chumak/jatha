@@ -1024,7 +1024,7 @@ public class Lisp
 	public LispCons makeCons(LispValue theCar, LispValue theCdr)
 	{
 //		assert theCdr instanceof LispConsOrNil;
-		return new StandardLispCons(this, theCar, theCdr);
+		return new StandardLispCons(theCar, theCdr);
 	}
 	public LispValue makeBool(boolean predicate)
 	{
@@ -1048,7 +1048,7 @@ public class Lisp
 		LispList result = NIL;
 
 		for (int i = elArray.length - 1; i >= 0; i--)
-			result = new StandardLispCons(this, (LispValue)(elArray[i]), result);
+			result = new StandardLispCons((LispValue)(elArray[i]), result);
 
 		return result;
 	}
@@ -1066,7 +1066,7 @@ public class Lisp
 	{
 		LispList result = NIL;
 		for (int i = parts.length-1 ; i >= 0; i--)
-			result = new StandardLispCons(this, parts[i], result);
+			result = new StandardLispCons(parts[i], result);
 		return result;
 	}
   

@@ -214,8 +214,8 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     else
     {
       // push the args back on the stack
-      for (LispValue v = args; v != NIL; v = f_lisp.cdr(v))
-        f_lisp.MACHINE.S.push(f_lisp.car(v));
+      for (LispValue v = args; v != NIL; v = cdr(v))
+        f_lisp.MACHINE.S.push(car(v));
 
       // get the function, and push it on the code stack.
       // Note that we don't do error checking on the number
@@ -233,8 +233,8 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 
     if (f_value instanceof LispList)
     {
-      returnValue     = f_lisp.car(f_value);
-      setf_symbol_value(f_lisp.cdr(f_value));
+      returnValue     = car(f_value);
+      setf_symbol_value(cdr(f_value));
       return returnValue;
     }
     else
@@ -246,7 +246,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   {
     if (f_value instanceof LispList)
     {
-      setf_symbol_value(new StandardLispCons(f_lisp, newValue, f_value));
+      setf_symbol_value(new StandardLispCons(newValue, f_value));
       return newValue;
     }
     else
