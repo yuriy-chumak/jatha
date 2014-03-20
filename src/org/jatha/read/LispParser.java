@@ -821,13 +821,13 @@ public class LispParser
 				token = token.substring(1);
 
 			try {
-				newCell = f_lisp.makeInteger(new Long(token)); 
+				newCell = StandardLispValue.integer(new Long(token)); 
 			} catch (NumberFormatException e) {
-				newCell = f_lisp.makeBignum(new BigInteger(token)); 
+				newCell = StandardLispValue.bignum(new BigInteger(token)); 
 			}
 		}
 		else if (REAL_token_p(token))
-			newCell = f_lisp.makeReal(new Double(token));
+			newCell = StandardLispValue.real(new Double(token));
 		else if (STRING_token_p(token))
 		{ /* remove the first and last double quotes. */
 			try

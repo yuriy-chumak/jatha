@@ -78,7 +78,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
 
   public boolean basic_constantp() { return true; }
-  public LispValue basic_elt(int n) { return elt(f_lisp.makeInteger(n)); }
+  public LispValue basic_elt(int n) { return elt(integer(n)); }
   public int     basic_length()    { return str.length(); }
   public boolean basic_stringp()   { return true; }
 
@@ -92,7 +92,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
   public LispValue elt(int index)
   {
-    return elt(new StandardLispInteger(f_lisp, index));
+    return elt(integer(index));
   }
 
   public LispValue elt (LispValue index)
@@ -152,7 +152,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   public LispValue     last         ()  { return elt(basic_length() - 1); }
 
   public LispValue length()
-  { return new StandardLispInteger(f_lisp, str.length()); }
+  { return integer(str.length()); }
 
   public LispValue     stringp      ()     { return f_lisp.T; }
 
@@ -523,7 +523,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue substring(LispValue start)
   {
-    return substring(start, new StandardLispInteger(f_lisp, str.length()));
+    return substring(start, integer(str.length()));
   }
 
 

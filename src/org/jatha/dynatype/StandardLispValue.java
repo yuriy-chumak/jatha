@@ -57,6 +57,7 @@ package org.jatha.dynatype;
 
 import java.io.PrintStream;
 import java.io.PrintWriter;
+import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -1084,4 +1085,134 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
       }
     }
 
+	/**
+	 * This functions does not generate LispExceptions and assumes that all
+	 * agruments are correct
+	 */
+	public static LispValue car(LispValue arg)
+	{
+		return ((LispList)arg).car();
+	}
+	public static LispValue cdr(LispValue arg) 
+	{
+		return ((LispList)arg).cdr();
+	}
+	public static LispValue nth(long i, LispCons arg)
+	{
+		while (--i > 0)
+			arg = (LispCons)arg.cdr();
+		return arg.car();
+	}
+/*	public static LispValue nth(LispCons ij, LispCons arg)
+	{
+		long i = ((LispInteger)(car(ij))).getLongValue();
+		long j = ((LispInteger)(cdr(ij))).getLongValue();
+		
+		arg = (LispCons)Lisp.nth(i, arg);
+		while (--j > 0)
+			arg = (LispCons)arg.cdr();
+		
+		return arg;
+	}*/
+	
+	public static LispValue cddr(LispValue arg)
+	{
+		return cdr(cdr(arg));
+	}
+
+	public static LispValue cons(LispValue car, LispValue cdr)
+	{
+		return new StandardLispCons(null, car, cdr);
+	}
+	public static LispValue list(LispValue... parts)
+	{
+		LispValue result = NIL;
+		for (int i = parts.length-1 ; i >= 0; i--)
+			result = cons(parts[i], result);
+		return result;
+	}
+	
+	public static LispInteger integer(Long value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static LispInteger integer(long value)
+	{
+		return new StandardLispInteger(value);
+	}
+
+	public static LispInteger integer(Integer value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static LispInteger integer(int value)
+	{
+		return new StandardLispInteger(value);
+	}
+
+	public static LispInteger integer()
+	{
+		return new StandardLispInteger(0);
+	}
+
+	/**
+	 * Creates a LispBignum type initialized with the value provided.
+	 * @see LispBignum
+	 * @see java.math.BigInteger
+	 */
+	public static LispBignum bignum(BigInteger value)
+	{
+		return new StandardLispBignum(value);
+	}
+
+	public static LispBignum bignum(LispInteger value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value.getLongValue()));
+	}
+
+	public static LispBignum bignum(double value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf((long) value));
+	}
+
+	public static LispBignum bignum(long value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value));
+	}
+
+	/**
+	 * Creates an instance of LispReal initialized with
+	 * the given value.
+	 * @see LispInteger
+	 * @see LispValue
+	 * @return LispReal
+	 */
+	public static LispReal real(Double value)
+	{
+		return new StandardLispReal(value.doubleValue());
+	}
+
+	public static LispReal real(double value)
+	{
+		return new StandardLispReal(value);
+	}
+
+	public static LispReal real(Float value)
+	{
+		return new StandardLispReal(value.doubleValue());
+	}
+
+	public static LispReal real(float value)
+	{
+		return new StandardLispReal(value);
+	}
+
+	public static LispReal real()
+	{
+		return new StandardLispReal(0.0);
+	}
+	
+	
 }

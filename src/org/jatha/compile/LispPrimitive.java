@@ -109,10 +109,10 @@ public abstract class LispPrimitive extends StandardLispValue
     {
       // Cleaned up code handler to handle all cases correctly (mh) 9 Mar 2008
       //System.out.println("Printing code: " + code);
-      if (Lisp.car(code).eql(s_PRIMITIVE_TAG) == T)
+      if (car(code).eql(s_PRIMITIVE_TAG) == T)
         code = ((LispPrimitive)code.second()).grindef(code, indentAmount);  // handles built-in functions
       else
-        code = ((LispPrimitive)Lisp.car(code)).grindef(code, indentAmount);  // handles user-defined functions
+        code = ((LispPrimitive)car(code)).grindef(code, indentAmount);  // handles user-defined functions
     }
   }
 
@@ -123,7 +123,7 @@ public abstract class LispPrimitive extends StandardLispValue
     System.out.print(functionName);
     f_lisp.NEWLINE.internal_princ(System.out);
 
-    return Lisp.cdr(code);
+    return cdr(code);
   }
 
 
@@ -323,10 +323,6 @@ public abstract class LispPrimitive extends StandardLispValue
 
 	public LispValue bool(boolean arg)
 	{
-		return arg ? f_lisp.T : NIL;
-	}
-	protected LispCons cons(LispValue car, LispValue cdr)
-	{
-		return new StandardLispCons(f_lisp, car, cdr);
+		return arg ? T : NIL;
 	}
 }

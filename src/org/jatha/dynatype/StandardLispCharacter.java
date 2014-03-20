@@ -83,20 +83,20 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
   public LispValue     characterp ()
   {
-    return f_lisp.T;
+    return T;
   }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue constantp()
   {
-    return f_lisp.T;
+    return T;
   }
 
   public LispValue eql(LispValue val)
   {
     if (val instanceof LispCharacter)
       if (this.value == ((LispCharacter)val).getCharacterValue())
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     else

@@ -43,6 +43,10 @@ import org.jatha.Lisp;
  */
 public interface LispNumber extends LispAtom
 {
+	public static final LispInteger ZERO = new StandardLispInteger(0);
+	public static final LispInteger ONE  = new StandardLispInteger(1);
+	public static final LispInteger TWO  = new StandardLispInteger(2);
+	
 	/**
 	 * Returns a double value corresponding to this value.
 	 */

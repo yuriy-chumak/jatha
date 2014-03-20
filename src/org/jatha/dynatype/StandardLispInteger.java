@@ -40,17 +40,13 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
   // ---  static initializer  ---
 
   // ---  Constructors  ---
+	public StandardLispInteger(long theValue)
+	{
+		f_value = theValue;
+	}
 
-  public StandardLispInteger(Lisp lisp, long theValue)
+  public StandardLispInteger()
   {
-    super(lisp);
-    f_value = theValue;
-  }
-
-
-  public StandardLispInteger(Lisp lisp)
-  {
-    super(lisp);
     f_value = 0L;
   }
 
@@ -116,7 +112,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
     if (this.getLongValue() > 0)
       return this;
     else
-      return new StandardLispInteger(f_lisp, this.getLongValue() * -1);
+      return integer(this.getLongValue() * -1);
   }
 
 
@@ -127,7 +123,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
       //System.err.println("StandardLispInteger.eql: comparing " + this.f_value + " to " +
       //                   ((LispInteger)val).getLongValue());
       if (this.f_value == ((LispInteger)val).getLongValue())
-        return f_lisp.T;
+        return T;
       else
         return NIL;
     }
@@ -140,7 +136,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
     return eql(val);
   }
 
-  public LispValue integerp  ()  { return f_lisp.T; }
+  public LispValue integerp  ()  { return T; }
 
 //  public LispValue type_of   ()  { return f_lisp.INTEGER_TYPE;   }
 /*  public LispValue typep(LispValue type)
@@ -156,7 +152,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
   public LispValue zerop     ()
   {
     if (f_value == 0)
-      return f_lisp.T;
+      return T;
     else
       return NIL;
   }

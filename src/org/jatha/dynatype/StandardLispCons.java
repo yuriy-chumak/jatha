@@ -235,9 +235,9 @@ public class StandardLispCons extends StandardLispList implements LispCons
       if (ptr == NIL)
         return buf.toString();
       buf.append(" ");
-      buf.append(f_lisp.car(ptr).toString_internal(length, level+1));
+      buf.append(car(ptr).toString_internal(length, level+1));
       length++;
-      ptr = f_lisp.cdr(ptr);
+      ptr = cdr(ptr);
       if (! (ptr instanceof LispCons))
       {
         buf.append(ptr.toStringAsCdr());
@@ -251,8 +251,8 @@ public class StandardLispCons extends StandardLispList implements LispCons
     {
       if (! (ptr instanceof LispCons))
         break;
-      System.err.println("    " + f_lisp.car(ptr));
-      ptr = f_lisp.cdr(ptr);
+      System.err.println("    " + car(ptr));
+      ptr = cdr(ptr);
     }
     return "...";
   }
@@ -303,7 +303,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
     List list = toRandomAccess();
     for (int i = list.size() - 1; i >= 0; i--)
     {
-      rest = f_lisp.makeCons((LispValue)list.get(i), rest);
+      rest = cons((LispValue)list.get(i), rest);
     }
     return rest;
   }
@@ -316,25 +316,25 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
     while (ptr != NIL)
     {
-      value = f_lisp.car(ptr);
+      value = car(ptr);
 
       if (!(ptr instanceof LispCons))
       {
         throw new LispValueNotAListException("An argument to ASSOC");
       }
 
-      if (index.eql(f_lisp.car(value)) == f_lisp.T)
+      if (index.eql(car(value)) == T)
       {
         return value;
       }
-      ptr = f_lisp.cdr(ptr);
+      ptr = cdr(ptr);
     }
     return NIL;
   }
 
   public LispValue     copy_list    ()
   {
-    return f_lisp.makeCons(car(), cdr().copy_list());
+    return cons(car(), cdr().copy_list());
   }
 
   /**
@@ -420,7 +420,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
       else
         ptr = f_lisp.cdr(ptr);
     }
-    return new StandardLispInteger(f_lisp, len);
+    return integer(len);
   }
 
   public LispValue member(LispValue elt)

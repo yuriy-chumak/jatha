@@ -49,9 +49,9 @@ public class StandardLispComplex extends StandardLispNumber implements LispCompl
   /**
    * Creates the complex number (0, 0).
    */
-  public StandardLispComplex(Lisp lisp)
+  public StandardLispComplex()
   {
-    this(lisp, lisp.makeReal(0.0), lisp.makeReal(0.0));
+    this(real(0.0), real(0.0));
   }
 
   /**
@@ -60,10 +60,8 @@ public class StandardLispComplex extends StandardLispNumber implements LispCompl
    * @param realPart
    * @param imaginaryPart
    */
-  public StandardLispComplex(Lisp lisp, LispValue realPart, LispValue imaginaryPart)
+  public StandardLispComplex(LispValue realPart, LispValue imaginaryPart)
   {
-    super(lisp);
-
     f_realPart = realPart;
     f_imaginaryPart = imaginaryPart;
   }

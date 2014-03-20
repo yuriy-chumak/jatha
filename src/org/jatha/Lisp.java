@@ -171,11 +171,6 @@ public class Lisp
   // Used in CONCATENATE
   public LispSymbol STRING;
 
-  // Used in the compiler
-  public LispInteger ZERO;
-  public LispInteger ONE;
-  public LispInteger TWO;
-
   // Math constants
   public LispNumber PI;
   public LispNumber E;
@@ -218,12 +213,8 @@ public class Lisp
     
 //    symbol("T", T);
 
-    ZERO = new StandardLispInteger(this, 0);
-    ONE  = new StandardLispInteger(this, 1);
-    TWO  = new StandardLispInteger(this, 2);
-
-    E    = new StandardLispReal(this, StrictMath.E);
-    PI   = new StandardLispReal(this, StrictMath.PI);
+    E    = StandardLispValue.real(StrictMath.E);
+    PI   = StandardLispValue.real(StrictMath.PI);
 
     COLON   = new StandardLispCharacter(this, ':');
     NEWLINE = new StandardLispCharacter(this, '\n');
@@ -1124,103 +1115,8 @@ public class Lisp
     return (LispList) result;
   }
 
-
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Thu Feb 20 12:16:21 1997
-  /**
-   * Creates a LispInteger type initialized with the value
-   * provided and returns it.
-   * @see LispInteger
-   * @see LispValue
-   * @return LispInteger
-   *
-   */
-  public LispInteger makeInteger(Long value)
-  {
-    return new StandardLispInteger(this, value.longValue());
-  }
-
-  public LispInteger makeInteger(long value)
-  {
-    return new StandardLispInteger(this, value);
-  }
-
-  public LispInteger makeInteger(Integer value)
-  {
-    return new StandardLispInteger(this, value.longValue());
-  }
-
-  public LispInteger makeInteger(int value)
-  {
-    return new StandardLispInteger(this, value);
-  }
-
-  public LispInteger makeInteger()
-  {
-    return new StandardLispInteger(this, 0);
-  }
-
-  //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
-  //* @date    Tue May 20 23:09:54 1997
-  /**
-   * Creates a LispBignum type initialized with the value provided.
-   * @see LispBignum
-   * @see java.math.BigInteger
-   */
-  public LispBignum makeBignum(BigInteger value)
-  {
-    return new StandardLispBignum(this, value);
-  }
-
-  public LispBignum makeBignum(LispInteger value)
-  {
-    return new StandardLispBignum(this, BigInteger.valueOf(value.getLongValue()));
-  }
-
-  public LispBignum makeBignum(double value)
-  {
-    return new StandardLispBignum(this, BigInteger.valueOf((long) value));
-  }
-
-  public LispBignum makeBignum(long value)
-  {
-    return new StandardLispBignum(this, BigInteger.valueOf(value));
-  }
-
-
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
   //* @date    Thu Feb 20 12:19:15 1997
-  /**
-   * Creates an instance of LispReal initialized with
-   * the given value.
-   * @see LispInteger
-   * @see LispValue
-   * @return LispReal
-   */
-  public LispReal makeReal(Double value)
-  {
-    return new StandardLispReal(this, value.doubleValue());
-  }
-
-  public LispReal makeReal(double value)
-  {
-    return new StandardLispReal(this, value);
-  }
-
-  public LispReal makeReal(Float value)
-  {
-    return new StandardLispReal(this, value.doubleValue());
-  }
-
-  public LispReal makeReal(float value)
-  {
-    return new StandardLispReal(this, value);
-  }
-
-  public LispReal makeReal()
-  {
-    return new StandardLispReal(this, 0.0);
-  }
 
 
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -1296,19 +1192,19 @@ public class Lisp
       return (LispValue) obj;
 
     if (obj instanceof Integer)
-      return new StandardLispInteger(this, ((Integer) obj).intValue());
+      return StandardLispValue.integer(((Integer) obj).intValue());
 
-    else if (obj instanceof Long)
-      return new StandardLispInteger(this, ((Long) obj).longValue());
+    if (obj instanceof Long)
+      return StandardLispValue.integer(((Long) obj).longValue());
 
-    else if (obj instanceof Double)
-      return new StandardLispReal(this, ((Double) obj).doubleValue());
+    if (obj instanceof Double)
+      return StandardLispValue.real(((Double) obj).doubleValue());
 
-    else if (obj instanceof Float)
-      return new StandardLispReal(this, ((Float) obj).doubleValue());
+    if (obj instanceof Float)
+      return StandardLispValue.real(((Float) obj).doubleValue());
 
-    else if (obj instanceof String)
-      return new StandardLispString(this, (String) obj);
+    if (obj instanceof String)
+      return makeString((String) obj);
 
     try
     {
@@ -1410,7 +1306,7 @@ public class Lisp
 	  public LispSymbol intern(LispString symbolString)
 	  {
 	    if (COLON.eql(symbolString.basic_elt(0)) != NIL)
-	      return keyword((LispString)(symbolString.substring(new StandardLispInteger(this, 1))));
+	      return keyword((LispString)(symbolString.substring(StandardLispValue.integer(1))));
 	    else
 	      return intern(symbolString, SYSTEM);
 	  }

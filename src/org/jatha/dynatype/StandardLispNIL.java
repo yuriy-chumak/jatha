@@ -111,7 +111,7 @@ public class StandardLispNIL extends StandardLispList
   public LispValue     tenth        ()  { return NIL; }
 
   public LispValue     last()                    { return NIL; }
-  public LispValue     length()                  { return new StandardLispInteger(f_lisp, 0);}
+  public LispValue     length()                  { return integer(0);}
   public LispValue     member(LispValue elt)     { return NIL; }
   public LispValue     nreverse(LispValue index) { return NIL; }
 

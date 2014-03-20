@@ -86,18 +86,18 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   /**
    * Default size is 103.  From Allegro CL 4.3.
    */
-  LispInteger DEFAULT_SIZE = new StandardLispInteger(f_lisp, 103);
+  LispInteger DEFAULT_SIZE = integer(103);
 
   /**
    * Default rehash size is 1.2.  From Allegro CL 4.3.
    */
-  LispReal DEFAULT_REHASH_SIZE = new StandardLispReal(f_lisp, 1.2);
+  LispReal DEFAULT_REHASH_SIZE = real(1.2);
 
 
   /**
    * Default rehash threshold is 640777/999999.  From Allegro CL 4.3.
    */
-  LispReal DEFAULT_REHASH_THRESHOLD = new StandardLispReal(f_lisp, 640777 / 999999.0);
+  LispReal DEFAULT_REHASH_THRESHOLD = real(640777 / 999999.0);
 
 
   public void initializeConstants()
@@ -296,23 +296,23 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
   public LispValue hashtablep   ()  { return f_lisp.T; }
 
   public LispValue hash_table_count ()
-  { return new StandardLispInteger(f_lisp, theHashTable.size()); }
+  { return integer(theHashTable.size()); }
 
   /** This should return the number of possible entries
    *  until the table is full, but Java 1.1 doesn't give us
    *  access to that number.
    */
   public LispValue hash_table_size ()
-  { return new StandardLispInteger(f_lisp, theHashTable.size()); }
+  { return integer(theHashTable.size()); }
 
   /** This should return the rehash-threshold, but
    *  Java 1.1 doesn't let us access that number.
    */
-  public LispValue hash_table_rehash_size () { return new StandardLispReal(f_lisp, 1.0); }
+  public LispValue hash_table_rehash_size () { return real(1.0); }
 
   /** Java 1.1 doesn't let us access this number.
    */
-  public LispValue hash_table_rehash_threshold () { return new StandardLispReal(f_lisp, 1.0); }
+  public LispValue hash_table_rehash_threshold () { return real(1.0); }
 
   public LispValue hash_table_test () { return f_lisp.intern("EQL"); }
 

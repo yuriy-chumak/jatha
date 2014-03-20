@@ -474,7 +474,7 @@ public class LispCompiler
 		Register(new LispPrimitiveC(f_lisp, "+", 0) {
 			protected LispValue Execute(LispValue args) {
 				if (args == NIL)
-					return f_lisp.ZERO;
+					return LispNumber.ZERO;
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).add(f_lisp.cdr(args));
@@ -494,7 +494,7 @@ public class LispCompiler
 		Register(new LispPrimitiveC(f_lisp, "*", 0) {
 			protected LispValue Execute(LispValue args) {
 				if (args == NIL)
-					return f_lisp.ONE;
+					return LispNumber.ONE;
 				LispValue x = f_lisp.car(args);
 				if (x instanceof LispNumber)
 					return ((LispNumber)x).mul(f_lisp.cdr(args));
@@ -705,8 +705,7 @@ public class LispCompiler
 		});
 		Register(new LispPrimitive1(f_lisp, "SIN") {
 			protected LispValue Execute(LispValue a) {
-				return new StandardLispReal(
-						f_lisp,
+				return real(
 						Math.sin(((LispNumber)a).getDoubleValue())
 				);
 			}			
@@ -840,8 +839,8 @@ public class LispCompiler
 			int indexInSubList = indexInList(e, car(subList), attribute);
 			if (indexInSubList != 0) // found
 			{
-				LispValue position = cons(cons(f_lisp.makeInteger(indexSubList),
-				                               f_lisp.makeInteger(indexInSubList)),
+				LispValue position = cons(cons(new StandardLispInteger(indexSubList),
+				                               new StandardLispInteger(indexInSubList)),
 				                          NIL);
 				return cons(attribute[0], position);
 			}
