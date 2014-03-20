@@ -35,9 +35,9 @@ import org.jatha.Lisp;
  */
 public class StandardLispMacro extends StandardLispFunction implements LispMacro
 {
-  public StandardLispMacro(Lisp f_lisp, LispValue symbol, LispValue value)
+  public StandardLispMacro(LispValue symbol, LispValue value)
   {
-    super(f_lisp, symbol, value);
+    super(symbol, value);
   }
 
   public boolean basic_functionp() { return false; }

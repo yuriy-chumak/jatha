@@ -267,12 +267,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     // A macro has the symbol :MACRO as the first element.
     if (LispCompiler.isMacroCode(newCode))
     {
-      f_function = new StandardLispMacro(f_lisp, this, f_lisp.cdr(newCode));
+      f_function = new StandardLispMacro(this, Lisp.cdr(newCode));
       return f_function;
     }
 
     // Else, create a new function.
-    f_function = new StandardLispFunction(f_lisp, this, newCode);
+    f_function = new StandardLispFunction(this, newCode);
     return f_function;
   }
 

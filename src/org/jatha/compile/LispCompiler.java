@@ -212,8 +212,8 @@ public class LispCompiler
     //##JPG added
     // should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
 		// this is NOT builtin function and macro
-    DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, cons(T, NIL));
-    DUMMY_MACRO    = new StandardLispMacro   (f_lisp, null, cons(T, NIL));
+    DUMMY_FUNCTION = new StandardLispFunction(null, cons(T, NIL));
+    DUMMY_MACRO    = new StandardLispMacro   (null, cons(T, NIL));
 	}
 
   public LispCompiler(Lisp lisp)

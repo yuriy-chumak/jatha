@@ -42,8 +42,7 @@ import org.jatha.compile.LispCompiler;
  */
 public class StandardLispFunction extends StandardLispValue implements LispFunction
 {
-	protected Lisp f_lisp;	// todo: remove this!
-	// there no internal f_lisp dependencies now.
+//	protected Lisp f_lisp;	// todo: remove this!
 	
   private boolean   f_isBuiltin = false;
   private LispValue f_symbol    = null;
@@ -54,20 +53,15 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
   /**
    * Creates a function with no content - not recommended.
    */
-  public StandardLispFunction(Lisp lisp)
-  {
-		f_lisp = lisp;
-  }
+//  public StandardLispFunction() { }
 
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
   /**
    * Send in the instance of Jatha and the code for this function.
    */
-  public StandardLispFunction(Lisp lisp, LispValue symbol, LispValue code)
+  public StandardLispFunction(LispValue symbol, LispValue code)
   {
-		f_lisp = lisp;
-
     f_code   = code;
     f_symbol = symbol;
     f_isBuiltin = Lisp.isBuiltinFunction(code);
