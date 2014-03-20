@@ -27,26 +27,27 @@ package org.jatha.machine;
 import org.jatha.Lisp;
 
 /**
- * opNIL pushes the constant NIL onto the S register and pops the C register.
+ * opT pushes a constant T onto the stack.
+ * Uses C register (2 values).
  * Modifes S register.
  * @see SECDMachine
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-class opNIL extends SECDop
+class opLDT extends SECDop
 {
 	/**
 	 * It calls <tt>SECDop()</tt> with the machine argument
 	 * and the label of this instruction.
 	 * @see SECDMachine
 	 */
-	public opNIL(Lisp lisp)
+	public opLDT(final Lisp lisp)
 	{
-		super(lisp, "CONST_NIL");
+		super(lisp, "CONST_T");
 	}
 
 	public void Execute(SECDMachine machine)
 	{
-		machine.S.push(Lisp.NIL);
+		machine.S.push(f_lisp.T);
 		machine.C.pop();
 	}
 }

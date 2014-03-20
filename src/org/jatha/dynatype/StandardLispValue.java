@@ -84,7 +84,8 @@ import org.jatha.exception.*;
 public abstract class StandardLispValue implements LispValue    // Base class for all the LISP data types
 {
 	public StandardLispValue() { }
-	
+
+	public static final LispList NIL = new StandardLispNIL();
 	
 	protected Lisp f_lisp;	// todo: remove this!
 	public StandardLispValue(final Lisp lisp)

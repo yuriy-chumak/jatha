@@ -119,7 +119,7 @@ public class LispCompiler
 			put(COMMENT = f_lisp.symbol("COMMENT"), new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
-						return cons(machine.T, code);
+						return cons(machine.LDT, code);
 					}
 				});
 			
@@ -969,10 +969,10 @@ public class LispCompiler
 		}
 
 		if (expr == f_lisp.NIL)
-			return cons(machine.NIL, code);
+			return cons(machine.LDNIL, code);
 		
 		if (expr == f_lisp.T)
-			return cons(machine.T, code);
+			return cons(machine.LDT, code);
 
 		if (expr instanceof LispKeyword)
 			return cons(machine.LDC, cons(expr, code));
@@ -1086,7 +1086,7 @@ public class LispCompiler
 							f_lisp.makeCons(machine.DUM,
                                 f_lisp.makeCons(machine.LDFC,
                                                 f_lisp.makeCons(function,
-                                                                f_lisp.makeCons(machine.NIL,
+                                                                f_lisp.makeCons(machine.LDNIL,
                                                                                 f_lisp.makeCons(CONS,
                                                                                                 compileLambda(machine, expr,  f_lisp.makeCons(
                                                                                                     f_lisp.makeCons(function, f_lisp.NIL),
@@ -1119,7 +1119,7 @@ public class LispCompiler
 				return f_lisp.makeCons(machine.DUM,
                                    f_lisp.makeCons(machine.LDFC,
                                                    f_lisp.makeCons(function,
-                                                                   f_lisp.makeCons(machine.NIL,
+                                                                   f_lisp.makeCons(machine.LDNIL,
                                                                                  f_lisp.makeCons(CONS,
                                                                                                  compileLambda(machine, expr,
                                                                                                                f_lisp.makeCons(f_lisp.makeCons(function, f_lisp.NIL),
@@ -1308,7 +1308,7 @@ public class LispCompiler
       System.out.print("\nCompile App: " + args + ", valueList = " + valueList);
 
     if (args == f_lisp.NIL)
-      return f_lisp.makeCons(machine.NIL, code);
+      return f_lisp.makeCons(machine.LDNIL, code);
     else
       return
               compile(f_lisp.car(args), valueList,
@@ -1332,7 +1332,7 @@ public class LispCompiler
         code = f_lisp.makeCons(CONS, code);
       }
     }
-    code = f_lisp.makeCons(machine.NIL, code);
+    code = f_lisp.makeCons(machine.LDNIL, code);
     LispValue rest = code;
     if (args != f_lisp.NIL)
     {
@@ -1404,7 +1404,7 @@ public class LispCompiler
   {
     // No args: return default value of T
     if (args == f_lisp.NIL)
-      return f_lisp.makeCons(machine.T, code);
+      return f_lisp.makeCons(machine.LDT, code);
 
     // 1 arg: just compile the argument.
     if (f_lisp.cdr(args) == f_lisp.NIL)
@@ -1444,7 +1444,7 @@ public class LispCompiler
   {
     // No args: return default value of NIL
     if (args == f_lisp.NIL)
-      return f_lisp.makeCons(machine.NIL, code);
+      return f_lisp.makeCons(machine.LDNIL, code);
 
     // 1 arg: just compile the argument.
     if (f_lisp.cdr(args) == f_lisp.NIL)

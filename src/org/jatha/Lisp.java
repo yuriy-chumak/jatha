@@ -152,7 +152,7 @@ public class Lisp
   public LispSymbol DOT;
 
   // The list/symbol NIL.
-  public static LispList NIL = new StandardLispNIL();
+  public static final LispList NIL = StandardLispValue.NIL;
   // The symbol T
   public LispConstant T;
 
@@ -615,7 +615,7 @@ public class Lisp
   private LispValue parseVarNames_new(final LispValue vars)
   {
     LispValue outp = NIL;
-    if (vars instanceof LispNil)
+    if (vars == NIL)
       return outp;
 
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
@@ -635,7 +635,7 @@ public class Lisp
   private LispValue parseVarValues_new(final LispValue vars)
   {
     LispValue outp = NIL;
-    if (vars instanceof LispNil)
+    if (vars == NIL)
       return outp;
 
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
@@ -1441,7 +1441,7 @@ public class Lisp
 	    }
 	  }
 
-	  // We need this for the startup when we create f_lisp.NIL and LispValue.T.
+	  // We need this for the startup when we create NIL and LispValue.T.
 	  // Actually, LispValue is always a LispSymbol, but because of NIL's strange
 	  // properties, we must make the type be LispValue.
 	  public LispSymbol intern(LispString symbolString, LispSymbol symbol)
@@ -1451,7 +1451,7 @@ public class Lisp
 	      return symbol;
 	  }
 
-/*	  // We need this for the startup when we create f_lisp.NIL and LispValue.T.
+/*	  // We need this for the startup when we create NIL and LispValue.T.
 	  // Actually, LispValue is always a LispSymbol, but because of NIL's strange
 	  // properties, we must make the type be LispValue.
 	  public LispSymbol intern(LispString symbolString, LispSymbol symbol,
