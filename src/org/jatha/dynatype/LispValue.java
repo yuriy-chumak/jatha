@@ -62,6 +62,7 @@ import org.jatha.exception.LispException;
 public interface LispValue extends Comparable<LispValue>
 {
 	public static final LispList NIL = new StandardLispNIL();
+	public static final LispConstant T = new StandardLispT();
 	
 	// =-( unsorted )-=========================================	
 	

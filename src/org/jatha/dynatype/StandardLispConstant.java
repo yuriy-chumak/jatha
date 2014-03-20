@@ -35,44 +35,45 @@ import org.jatha.exception.LispConstantRedefinedException;
 // The value of a constant can't be changed.
 // We allow the value to be set only if it is unbound.
 
-public class StandardLispConstant extends StandardLispSymbol implements LispConstant
+public class StandardLispConstant extends StandardLispSymbol
+	implements LispConstant
 {
-  // CONSTRUCTORS
-  public StandardLispConstant(Lisp lisp, String symbolName)
-  {
-    super(lisp, symbolName);
-  }
+	// CONSTRUCTORS
+	public StandardLispConstant(String symbolName)
+	{
+		super(null, symbolName);
+	}
+	
+	public StandardLispConstant(LispString symbolNameString)
+	{
+		super(null, symbolNameString);
+	}
 
-  public StandardLispConstant(Lisp lisp, LispString symbolNameString)
-  {
-    super(lisp, symbolNameString);
-  }
+	public StandardLispConstant(String symbolName, LispValue value)
+	{
+		super(null, symbolName);
+		f_value = value;
+	}
 
-  public StandardLispConstant(Lisp lisp, String symbolName, LispValue itsValue)
-  {
-    super(lisp, symbolName);
-    f_value = itsValue;
-  }
+	public StandardLispConstant(LispString symbolNameString, LispValue value)
+	{
+		super(null, symbolNameString);
+		f_value = value;
+	}
 
-  public StandardLispConstant(Lisp lisp, LispString symbolNameString, LispValue itsValue)
-  {
-    super(lisp, symbolNameString);
-    f_value = itsValue;
-  }
+	// Used for turning a symbol into a constant.
+	public StandardLispConstant(LispSymbol oldSymbol)
+	{
+		super(null, oldSymbol.symbol_name());
 
-  // Used for turning a symbol into a constant.
-  public StandardLispConstant(Lisp lisp, LispSymbol oldSymbol)
-  {
-    super(lisp, oldSymbol.symbol_name());
+		if (oldSymbol.boundp())
+			f_value    = oldSymbol.symbol_value();
 
-    if (oldSymbol.boundp())
-      f_value    = oldSymbol.symbol_value();
+		if (oldSymbol.fboundp())
+			f_function = oldSymbol.symbol_function();
 
-    if (oldSymbol.fboundp())
-      f_function = oldSymbol.symbol_function();
-
-    f_plist    = oldSymbol.symbol_plist();
-  }
+		f_plist    = oldSymbol.symbol_plist();
+	}
 
 
   // ------  BASIC (non-LISP) methods  --------

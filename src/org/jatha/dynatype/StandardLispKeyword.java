@@ -37,17 +37,17 @@ import org.jatha.exception.LispConstantRedefinedException;
  */
 public class StandardLispKeyword extends StandardLispConstant implements LispKeyword
 {
-  public StandardLispKeyword(Lisp lisp, String symbolName)
-  {
-    super(lisp, symbolName);
-    f_value = this;
-  }
+	public StandardLispKeyword(String symbolName)
+	{
+		super(symbolName);
+		f_value = this;
+	}
 
-  public StandardLispKeyword(Lisp lisp, LispString symbolNameString)
-  {
-    super(lisp, symbolNameString);
-    f_value = this;
-  }
+	public StandardLispKeyword(LispString symbolNameString)
+	{
+		super(symbolNameString);
+		f_value = this;
+	}
 
 
   // ------  BASIC (non-LISP) methods  --------

@@ -39,10 +39,10 @@ import org.jatha.exception.LispConstantRedefinedException;
 // a symbol, it causes some programming difficulties.  Using this resolves
 // those problems.
 
-public class StandardLispNIL extends StandardLispList implements LispNil
+public class StandardLispNIL extends StandardLispList
 {
-	public StandardLispNIL() {
-		System.out.println("StandardLispNIL()");
+	protected StandardLispNIL() {
+		// do nothing
 	}
 	
 	public LispValue car() { return NIL; }

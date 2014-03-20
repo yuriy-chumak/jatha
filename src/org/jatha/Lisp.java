@@ -154,7 +154,7 @@ public class Lisp
   // The list/symbol NIL.
   static final LispList NIL = LispValue.NIL;
   // The symbol T
-  public LispConstant T;
+  public static final LispConstant T = LispValue.T;
 
 	// These are used in macros
 	public LispSymbol MACRO;
@@ -213,15 +213,13 @@ public class Lisp
     symbol("APPEND",    APPEND = new StandardLispSymbol(this, "APPEND"));
     symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
     
-    symbol("COMMA",        COMMA_FN        = new StandardLispKeyword(this, "COMMA"));
-    symbol("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword(this, "COMMA-ATSIGN"));
-    symbol("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword(this, "COMMA-DOT"));
+    symbol("COMMA",        COMMA_FN        = new StandardLispKeyword("COMMA"));
+    symbol("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
+    symbol("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
 
     symbol("STRING",    STRING = new StandardLispSymbol(this, "STRING"));
     
-    T = new StandardLispConstant(this, "T");
-    intern(makeString("T"), T);
-    T.setf_symbol_value(T);
+    symbol("T", T);
 
     ZERO = new StandardLispInteger(this, 0);
     ONE  = new StandardLispInteger(this, 1);
@@ -1278,12 +1276,12 @@ public class Lisp
    */
   public LispSymbol makeConstant(String symbolName)
   {
-    return new StandardLispConstant(this, symbolName);
+    return new StandardLispConstant(symbolName);
   }
 
   public LispSymbol makeConstant(LispString symbolName)
   {
-    return new StandardLispConstant(this, symbolName);
+    return new StandardLispConstant(symbolName);
   }
 
 
@@ -1487,7 +1485,7 @@ public class Lisp
 	    {
 	        String newString = symbolString.toStringSimple().toUpperCase();
 	        // Symbols must be uppercase
-	        newSymbol = new StandardLispKeyword(this, new StandardLispString(this, newString));
+	        newSymbol = new StandardLispKeyword(new StandardLispString(this, newString));
 
 	        newSymbol.setPackage(SYSTEM);
 	        SYSTEM.addSymbol(symbolString, newSymbol);

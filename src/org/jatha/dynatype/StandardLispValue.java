@@ -306,8 +306,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
       {
         if (! (ptr instanceof LispCons))
           break;
-        System.err.println("    " + f_lisp.car(ptr));
-        ptr = f_lisp.cdr(ptr);
+        System.err.println("    " + Lisp.car(ptr));
+        ptr = Lisp.cdr(ptr);
       }
       return "...";
     }
