@@ -576,7 +576,7 @@ public class LispParser
 
     newCell = read();
 
-    f_lisp.cdr(newQuotedList).rplaca(newCell);
+    Lisp.cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 

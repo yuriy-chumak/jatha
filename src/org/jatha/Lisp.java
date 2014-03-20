@@ -156,8 +156,8 @@ public class Lisp
   // The symbol T
   public static final LispConstant T = LispValue.T;
 
-  public LispSymbol CONS;
-  public LispSymbol LIST;
+//  public LispSymbol CONS;
+//  public LispSymbol LIST;
   public LispSymbol APPEND;
   public LispSymbol COMMA_FN;
   public LispSymbol COMMA_ATSIGN_FN;
@@ -199,20 +199,24 @@ public class Lisp
 //	NIL.setPackage(f_systemPackage);
     
     // create initial builtin symbols
-    symbol("DOT",       DOT = new StandardLispSymbol(this, "."));
-    symbol("QUOTE",     LispValue.QUOTE);// = new StandardLispSymbol(this, "QUOTE"));
-    symbol("BACKQUOTE", LispValue.BACKQUOTE);// = new StandardLispSymbol(this, "BACKQUOTE"));
-    symbol("LIST",      LIST = new StandardLispSymbol(this, "LIST"));
+//    LIST = new StandardLispSymbol(this, "LIST");
+//	symbol("QUOTE",     LispValue.QUOTE); 
+//    symbol("LIST",      LIST = new StandardLispSymbol(this, "LIST"));
     symbol("APPEND",    APPEND = new StandardLispSymbol(this, "APPEND"));
-    symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
+//    symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
     
+    symbol("DOT",       DOT = new StandardLispSymbol(this, "."));
+    
+	// this functions must be registered as symbols:
+	symbol("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
+	
     symbol("COMMA",        COMMA_FN        = new StandardLispKeyword("COMMA"));
     symbol("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
     symbol("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
 
     symbol("STRING",    STRING = new StandardLispSymbol(this, "STRING"));
     
-    symbol("T", T);
+//    symbol("T", T);
 
     ZERO = new StandardLispInteger(this, 0);
     ONE  = new StandardLispInteger(this, 1);

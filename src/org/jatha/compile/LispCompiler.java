@@ -65,17 +65,18 @@ public class LispCompiler
 	static boolean DEBUG = false;
 
 	static final LispList NIL = LispValue.NIL;
+	static final LispConstant T = LispValue.T;
 	
 	static final LispValue QUOTE     = LispValue.QUOTE;
+	static final LispValue PROGN     = new StandardLispSymbol("PROGN");
+	static final LispValue DEFUN     = new StandardLispSymbol("DEFUN");
+	static final LispValue BLOCK     = new StandardLispSymbol("BLOCK");
 	
 	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
 	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
   
 	// These are special forms that get expanded in the compiler
 	LispValue COMMENT;
-	LispValue PROGN;
-	LispValue DEFUN;
-	LispValue BLOCK;
 	
   LispValue AND;
   LispValue DEFMACRO;
@@ -92,6 +93,7 @@ public class LispCompiler
   LispValue DUMMY_MACRO;    // used for recursive definions
   
 	LispPrimitive CONS;
+	LispPrimitive LIST;
   
 	Map<LispValue, Compiler> SpecialOperators = null;
 	interface Compiler {
@@ -122,25 +124,25 @@ public class LispCompiler
 					}
 				});
 			
-			put(PROGN = f_lisp.symbol("PROGN"), new Compiler() {
+			put(PROGN, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return compileProgn(args, valueList, code);
 					}
 				});
-			put(DEFUN = f_lisp.symbol("DEFUN"), new Compiler() {
+			put(DEFUN, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return compileDefun(machine, car(args), cdr(args), valueList, code);
 					}
 				});
-			put(QUOTE/*f_lisp.symbol("QUOTE")*/, new Compiler() {
+			put(QUOTE, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return cons(machine.LDC, cons(args.first(), code));
 					}
 				});
-			put(BLOCK = f_lisp.symbol("BLOCK"), new Compiler() {
+			put(BLOCK, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return compileBlock(machine, car(args), cdr(args), valueList, code);
@@ -172,8 +174,7 @@ public class LispCompiler
 							return compileOr(machine, args, valueList, code);
 						}
 				});
-			put(IF =
-				f_lisp.symbol("IF"), new Compiler() {
+			put(IF = f_lisp.symbol("IF"), new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 							return compileIf(machine, args.first(), args.second(), args.third(),
@@ -211,8 +212,8 @@ public class LispCompiler
     //##JPG added
     // should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
 		// this is NOT builtin function and macro
-    DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, cons(f_lisp.T, NIL));
-    DUMMY_MACRO    = new StandardLispMacro   (f_lisp, null, cons(f_lisp.T, NIL));
+    DUMMY_FUNCTION = new StandardLispFunction(f_lisp, null, cons(T, NIL));
+    DUMMY_MACRO    = new StandardLispMacro   (f_lisp, null, cons(T, NIL));
 	}
 
   public LispCompiler(Lisp lisp)
@@ -250,7 +251,7 @@ public class LispCompiler
 			{
 				if (values instanceof LispSymbol) {
 					require(values);
-					return f_lisp.T;
+					return T;
 				}
 				
 				if (values instanceof LispCons) {
@@ -260,7 +261,7 @@ public class LispCompiler
 						LispValue value = valuesIt.next();
 						require(value);
 					}
-				    return f_lisp.T;
+				    return T;
 				}
 				
 				throw new LispValueNotASymbolOrConsException(values);
@@ -297,7 +298,7 @@ public class LispCompiler
 				return cons(a, b);
 			}
 		});
-		Register(new LispPrimitiveC(f_lisp, "LIST", 0) {
+		Register(LIST = new LispPrimitiveC(f_lisp, "LIST", 0) {
 			@Override
 			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
 							LispValue args, LispValue valueList, LispValue code)
@@ -328,7 +329,7 @@ public class LispCompiler
 		Register(new LispPrimitive0(f_lisp, "EXIT") {
 			protected LispValue Execute() {
 				System.exit(0);
-				return f_lisp.T; // no exit, actually
+				return T; // no exit, actually
 			}
 		});
 		
@@ -517,7 +518,7 @@ public class LispCompiler
 		Register(new LispPrimitiveC(f_lisp, "=", 2) {
 			protected LispValue Execute(LispValue args) {
 			    if (args == NIL)
-			        return f_lisp.T;
+			        return T;
 			      else
 			      {
 			        // There should be at least 2 arguments.
@@ -531,7 +532,7 @@ public class LispCompiler
 			            return NIL;
 			          }
 			        }
-			        return f_lisp.T;
+			        return T;
 			      }
 			}			
 		});
@@ -574,14 +575,14 @@ public class LispCompiler
 		Register(new LispPrimitive1(f_lisp, "CONSP") {
 			protected LispValue Execute(LispValue a) {
 				if (a instanceof LispCons)
-					return f_lisp.T;
+					return T;
 				return NIL;
 			}
 		});
 		Register(new LispPrimitive1(f_lisp, "CONSTANTP") {
 			protected LispValue Execute(LispValue a) {
 				if (a instanceof LispConstant)
-					return f_lisp.T;
+					return T;
 				return NIL;
 			}
 		});
@@ -970,7 +971,7 @@ public class LispCompiler
 		if (expr == NIL)
 			return cons(machine.LDNIL, code);
 		
-		if (expr == f_lisp.T)
+		if (expr == T)
 			return cons(machine.LDT, code);
 
 		if (expr instanceof LispKeyword)
@@ -1069,7 +1070,7 @@ public class LispCompiler
 				if (function.symbol_function().basic_macrop())
 					//------------------------ compile macro --------------------------------
 				{
-					if (f_lisp.car(defn).numberp() == f_lisp.T) /* macro present in closure */
+					if (f_lisp.car(defn).numberp() == T) /* macro present in closure */
 					{
 						//##JPG idem compileApp but don't evaluate arguments
 						return compileAppConstant(machine, args, valueList,
@@ -1101,7 +1102,7 @@ public class LispCompiler
 				}
 
 				// compile a function  --------------------------------
-				if (f_lisp.car(defn).numberp() == f_lisp.T)
+				if (f_lisp.car(defn).numberp() == T)
 					return compileApp(machine, args, valueList,
                               f_lisp.makeCons(loadOpCode,
                                               f_lisp.makeCons(defn,
@@ -1260,7 +1261,7 @@ public class LispCompiler
   /* obsolete 1 Sep 2004 (mh)
   boolean builtinFunctionP(LispValue fn)
   {
-    if ((! fn.basic_symbolp()) || (fn.fboundp() != f_lisp.T))
+    if ((! fn.basic_symbolp()) || (fn.fboundp() != T))
       return false;
 
     LispValue defn = fn.symbol_function();
@@ -1268,7 +1269,7 @@ public class LispCompiler
     if (defn == null)
       return false;
 
-    if ((defn.listp() == f_lisp.T) && (defn.first() == PRIMITIVE))
+    if ((defn.listp() == T) && (defn.first() == PRIMITIVE))
       return true;
     else
       return false;
