@@ -23,11 +23,6 @@
  */
 package org.jatha.dynatype;
 
-import java.io.PrintStream;
-
-import org.jatha.Lisp;
-import org.jatha.exception.LispConstantRedefinedException;
-
 /**
  * 
  * @author ychumak

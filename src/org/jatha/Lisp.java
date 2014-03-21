@@ -1141,7 +1141,7 @@ public class Lisp
    *
    * @param obj
    */
-  public LispValue toLisp(Object obj) // TODO: Is this where we use dynatype.LispForeignObject?
+  public static LispValue toLisp(Object obj) // TODO: Is this where we use dynatype.LispForeignObject?
   {
     if (obj == null)
       return NIL;
@@ -1162,15 +1162,15 @@ public class Lisp
       return StandardLispValue.real(((Float) obj).doubleValue());
 
     if (obj instanceof String)
-      return makeString((String) obj);
+      return new StandardLispString((String) obj);
 
-    try
+/*    try
     {
       return (new LispParser(this, obj.toString(), LispParser.PRESERVE)).parse();
     } catch (Exception e)
     {
       System.err.println("Error in Jatha.toLisp(" + obj + ")");
-    }
+    }*/
     return NIL;
   }
 

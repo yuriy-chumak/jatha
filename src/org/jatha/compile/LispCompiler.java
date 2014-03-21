@@ -1699,22 +1699,22 @@ public class LispCompiler
 	{
 		return (value == NIL);
 	}
-	public final LispCons cons(LispValue car, LispValue cdr)
+	public static final LispCons cons(LispValue car, LispValue cdr)
 	{
 		return new StandardLispCons(car, cdr);
 	}
-	public final LispList list(LispValue... parts)
+	public static final LispList list(LispValue... parts)
 	{
 		LispList result = NIL;
 		for (int i = parts.length-1 ; i >= 0; i--)
 			result = cons(parts[i], result);
 		return result;
 	}
-	public LispValue car(LispValue value)
+	public static LispValue car(LispValue value)
 	{
 		return ((LispList)value).car();
 	}
-	public LispValue cdr(LispValue value)
+	public static LispValue cdr(LispValue value)
 	{
 		return ((LispList)value).cdr();
 	}

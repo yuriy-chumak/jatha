@@ -75,56 +75,6 @@ public abstract class LispPrimitive extends StandardLispValue
   }
 
 
-/* ------------------  PRINT FUNCTION   ------------------------------ */
-
-  /**
-   * printCode prints a list of compiled code in a nice manner.
-   * Calls the 'grindef' function on each primitive.
-   * Grindef is an historical LISP function not found in Common LISP.
-   *
-   * Example:
-   * <pre>
-   *   printCode(compiled-function, 2);
-   * </pre>
-   * @see LispPrimitive
-   * @param code the code to be printed, with indent 2.
-   */
-  public void printCode(LispValue code)
-  {
-    printCode(code, 2);
-  }
-
-  public void printCode(LispValue code, int indentAmount)
-  {
-    while (code != NIL)
-    {
-      // Cleaned up code handler to handle all cases correctly (mh) 9 Mar 2008
-      //System.out.println("Printing code: " + code);
-      if (car(code).eql(s_PRIMITIVE_TAG) == T)
-        code = ((LispPrimitive)code.second()).grindef(code, indentAmount);  // handles built-in functions
-      else
-        code = ((LispPrimitive)car(code)).grindef(code, indentAmount);  // handles user-defined functions
-    }
-  }
-
-
-  public LispValue grindef(LispValue code, int indentAmount)
-  {
-    indent(indentAmount);
-    System.out.print(functionName);
-    NEWLINE.internal_princ(System.out);
-
-    return cdr(code);
-  }
-
-
-  public void indent(int amount)
-  {
-    for (int i=0; i<amount; ++i)
-      SPACE.internal_princ(System.out);
-  }
-
-
 /* ------------------ CONSTRUCTORS    ------------------------------ */
 	/**
 	 * The constructor for the LispPrimitive class.

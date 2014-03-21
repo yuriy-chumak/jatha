@@ -40,36 +40,22 @@ import org.jatha.Lisp;
  *
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class SECDRegister //extends StandardLispSymbol
+public class SECDRegister extends StandardLispSymbol
 {
-	static final LispValue NIL = LispValue.NIL;
-	protected final LispSymbol f_registerSymbol;
-
-	public SECDRegister(final Lisp lisp, String name)
+	public SECDRegister(String name)
 	{
-		long rand = (long)(Math.rint(Math.random() * 1000.0));
-		f_registerSymbol = new StandardLispSymbol("*REGISTER-" + rand + "*");
+		super("*REGISTER-" + Math.rint(Math.random() * 1000.0) + "*");
 
 		assign(NIL);
 	}
 
-	public LispValue pop()
-	{
-		return f_registerSymbol.pop();
-	}
-
-	public LispValue push(LispValue val)
-	{
-		return f_registerSymbol.push(val);
-	}
-
 	public void assign(LispValue newValue)
 	{
-		f_registerSymbol.setf_symbol_value(newValue);
+		this.setf_symbol_value(newValue);
 	}
 
 	public LispValue value()
 	{
-		return f_registerSymbol.symbol_value();
+		return this.symbol_value();
 	}
 }

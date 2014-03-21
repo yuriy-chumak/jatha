@@ -53,104 +53,431 @@ import org.jatha.compile.*;
  */
 public class SECDMachine    // extends Abstract Machine !
 {
-	final Lisp f_lisp;
 	static final LispValue NIL = LispValue.NIL;
 
 	public static boolean DEBUG = false;
 
 	// ------  Registers  --------------
-	public SECDRegister S = null;  // Stack register
-	public SECDRegister E = null;  // Environment register
-	public SECDRegister C = null;  // Control register
-	public SECDRegister D = null;  // Dump register
+	public final SECDRegister S = new SECDRegister("S-05171955");  // Stack register
+	public final SECDRegister E = new SECDRegister("E-06141957");  // Environment register
+	public final SECDRegister C = new SECDRegister("C-06151962");  // Control register
+	public final SECDRegister D = new SECDRegister("D-06071966");  // Dump register
+	// An X register for dumping tag information, as a stack. This is the same register as D, but not totally. =)
+	public final SECDRegister X = new SECDRegister("X-02324255");
 
+	// ------------------  BASIC MACHINE OPS   ------------------------------
+	
+	public final static SECDop BLK = new SECDop("BLK") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();  // pop the BLK
+			machine.C.pop();  // pop the tag
+		}
+	};
+	
+	/**
+	 * Pushes a nil pointer onto the stack
+	 */
+	public final static SECDop LDNIL = new SECDop("LDNIL") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+			machine.S.push(NIL);
+		}
+	};
+	/**
+	 * Pushes a T pointer onto the stack
+	 */
+	public final static SECDop LDT   = new SECDop("LDT") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+			machine.S.push(T);
+		}
+	};
+	
+	/**
+	 * Pushes a constant argument onto the stack
+	 */
+	public final static SECDop LDC   = new SECDop("LDC") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+					
+			machine.S.push(car(machine.C.value()));
+			machine.C.pop();
+		}
+	};
+	public final static SECDop LDR   = new SECDop("LDR") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+			LispCons indexes = (LispCons)car(machine.C.value());
+			machine.S.push(rest(indexes, (LispCons)machine.E.value()));
+
+			machine.C.pop();
+		}
+	};
+
+	/**
+	 * Pushes the value of a variable onto the stack.
+	 * The variable is indicated by the argument, a pair.
+	 * The pair's car specifies the level, the cdr the position.
+	 * So "(1 . 3)" gives the current function's (level 1) third parameter.
+	 */
+	public static final SECDop LD    = new SECDop("LD") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+			LispCons ij = (LispCons)car(machine.C.value());
+			LispCons valueList = (LispCons)machine.E.value();
+			LispCons r = (LispCons)Lisp.nth(ij, valueList);
+			
+			machine.S.push(r.car());
+			
+			machine.C.pop();
+		}
+	};
+	
+	public static final SECDop LD_GLOBAL = new SECDop("LD_GLOBAL") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+		    LispValue symb = car(machine.C.value());
+		    machine.S.push(get_special_value(machine, symb));
+
+		    machine.C.pop(); // symbol
+		}
+		// Assume the caller has verified that this is a special variable.
+		private LispValue get_special_value(SECDMachine machine, LispValue symbol)
+		{
+			// System.err.println("specialCount of " + symbol + " is " + symbol.get_specialCount());
+
+			if (symbol.get_specialCount() > 0)
+				return Lisp.car(machine.B.gethash(symbol));
+			else
+				return ((LispSymbol)symbol).symbol_value();
+		}
+	};
+	
+	/**
+	 * Takes one list argument representing a function. It constructs
+	 * a closure (a pair containing the function and the current environment)
+	 * and pushes that onto the stack.
+	 */
+	public final static SECDop LDF   = new SECDop("LDF") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+			
+			LispValue code = machine.C.pop();  // Get the new code.
+			machine.S.assign(cons(cons(code, machine.E.value()),
+		                          machine.S.value())); 
+		}
+	};
+	public final static SECDop LDFC  = new SECDop("LDFC") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			/* Make a closure and push it on the S Register. */
+			machine.C.pop();   // pop the LDFC symbol.
+
+			LispValue code = machine.C.pop().symbol_function();
+			if (code instanceof LispFunction)
+				code = ((LispFunction)code).getCode();
+
+			machine.S.assign(cons(cons(code, machine.E.value()),
+			                      machine.S.value()));
+		}
+	};
+	
+	
+	/**
+	 * Expects two list arguments, and pops a value from the stack.
+	 * The first list is executed if the popped value was non-nil,
+	 * the second list otherwise. Before one of these list pointers
+	 * is made the new C, a pointer to the instruction following sel
+	 * is saved on the dump.
+	 */
+	public static final SECDop SEL   = new SECDop("SEL") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();                    // Pop the SEL command.
+			
+			LispValue selector    = machine.S.pop();
+			LispValue trueCodeBranch   = machine.C.pop();
+			LispValue falseCodeBranch  = machine.C.pop();
+
+			machine.D.push(machine.C.value());  // push remaining code.
+
+			if (selector == NIL)
+				machine.C.assign(falseCodeBranch);
+			else
+				machine.C.assign(trueCodeBranch);
+		}
+	};
+	
+	public static final SECDop TEST  = new SECDop("TEST") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();               /* Pop the TEST command. */
+		    
+			LispValue selector    = machine.S.pop();
+			LispValue trueValue   = machine.C.pop();
+			if (selector != NIL)
+				machine.C.assign(trueValue);
+		}
+	};
+	
+	
+	
+	/**
+	 * Pops a list reference from the dump and makes this the new value of C.
+	 * This instruction occurs at the end of both alternatives of a sel.
+	 */
+	public final static SECDop JOIN  = new SECDop("JOIN") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.assign(machine.D.pop());
+		}
+	};
+	
+	/**
+	 * Pops a closure and a list of parameter values from the stack.
+	 * The closure is applied to the parameters by installing its environment as
+	 * the current one, pushing the parameter list in front of that, clearing
+	 * the stack, and setting C to the closure's function pointer.
+	 * The previous values of S, E, and the next value of C are saved on the dump.
+	 */
+	public final static SECDop AP    = new SECDop("AP") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();   // Get rid of 'AP' opcode.
+			
+			LispCons fe = (LispCons)machine.S.pop();   /* (f . e) */
+			LispValue v  = machine.S.pop();
+
+			LispValue code = fe.car();
+			if (code instanceof LispFunction)
+				code = ((LispFunction)code).getCode();
+
+
+			machine.D.assign(cons(machine.S.value(),
+			                      cons(machine.E.value(),
+			                           cons(machine.C.value(),
+			                                machine.D.value()))));
+			machine.C.assign(code);
+			machine.E.assign(cons(v, fe.cdr()));
+			machine.S.assign(NIL);
+		}
+	};
+	
+	/**
+	 * Works like ap, only that it replaces an occurrence of a dummy environment with the current one, thus making recursive functions possible
+	 */
+	public final static SECDop RAP   = new SECDop("RAP") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			LispValue recursiveClosure = machine.S.pop();  /* (f . (nil.e1)) */
+			LispValue v                = machine.S.pop();  /* v = list of closures */
+
+			// machine.E.pop();
+			machine.C.pop();
+
+
+			/*
+		      System.out.println("\nRAP:   closure = " + recursiveClosure);
+		      System.out.println("\nRAP:   v       = " + v);
+			 */
+
+
+
+			/*
+		    machine.D.push(machine.C.pop());
+		    machine.D.push(machine.E.pop());
+		    machine.D.push(machine.S.pop());
+			 */
+			/*
+		    LispValue Evalue = machine.E.value();
+
+		    machine.D.assign(f_lisp.makeCons(machine.S.value(),
+		                                     f_lisp.makeCons(Evalue.cdr(),
+		                                                     f_lisp.makeCons(machine.C.value(),
+		                                                                     machine.D.value()))));
+
+			 */
+			LispValue e2 = machine.E.value();
+			machine.D.assign(cons(machine.S.value(),
+			                      cons(cdr(e2),
+			                           cons(machine.C.value(),
+			                                machine.D.value()))));
+
+			machine.C.assign(car(recursiveClosure));  /* f */
+
+			// The car of E should be rplaca'd with the list of closures
+			//machine.E.assign(f_lisp.makeCons(v, recursiveClosure.cdr().cdr())); //  (v . e1)
+			machine.E.value().rplaca(v);
+
+			machine.S.assign(NIL);
+		}
+	};
+	
+	
+	/**
+	 * Pops one return value from the stack, restores S, E, and C from the dump,
+	 * and pushes the return value onto the now-current stack.
+	 */
+	public final static SECDop RTN   = new SECDop("RTN") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			LispValue save = machine.S.pop();
+//			machine.C.pop(); // Pop the RTN command. Can be skipped.
+
+			machine.S.assign(cons(save, machine.D.pop()));
+			machine.E.assign(machine.D.pop());
+			machine.C.assign(machine.D.pop());
+		}
+	};
+	public final static SECDop RTN_IF = new SECDop("RTN_IF") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			LispValue save = machine.S.pop();
+			machine.C.pop();               /* Pop the RTN_IF command. */
+
+			if (save == NIL) {
+				machine.S.assign(cons(save, machine.D.pop()));
+				machine.E.assign(machine.D.pop());
+				machine.C.assign(machine.D.pop());
+			}
+		    // else do nothing and continue processing.
+		}
+	};
+	public final static SECDop RTN_IT = new SECDop("RTN_IT") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			LispValue save = machine.S.pop();
+			machine.C.pop();               /* Pop the RTN_IF command. */
+
+			if (save != NIL) {
+				machine.S.assign(cons(save, machine.D.pop()));
+				machine.E.assign(machine.D.pop());
+				machine.C.assign(machine.D.pop());
+			}
+		    // else do nothing and continue processing.
+		}
+	};
+	
+	/**
+	 * DAP optimizes the   (... AP RTN) sequence in (... DAP).
+	 */
+	public final static SECDop DAP    = new SECDop("DAP") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();  // Pop DAD instruction
+		    
+			LispValue fe = machine.S.pop();   /* (f . e) */
+			LispValue v  = machine.S.pop();
+
+			machine.C.assign(car(fe));
+			machine.E.assign(cons(v, cdr(fe)));
+			machine.S.assign(NIL);
+		}
+	};
+	
+	
+	/**
+	 * Pushes a "dummy", an empty list, in front of the environment list.
+	 */
+	public final static SECDop DUM   = new SECDop("DUM") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.E.push(NIL);
+			machine.C.pop();
+		}
+	};
+	
+	public final static SECDop LIS   = new SECDop("LIS") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();               /* Pop the LIS command. */
+			
+			long numArgs = ((LispInteger)machine.C.pop()).getLongValue();    /* Pop the number of args. */
+			LispValue argList = NIL;
+			for (int i=0; i < numArgs; ++i)
+				argList = cons(machine.S.pop(), argList);
+
+			machine.S.push(argList);
+		}
+	};
+	
+	public final static SECDop SP_BIND   = new SECDop("SP_BIND") {
+		@Override
+		public void Execute(SECDMachine machine) {
+		    machine.C.pop();
+		    
+		    LispValue val = machine.S.pop();
+		    LispValue sym = machine.C.pop();
+		    machine.special_bind(sym, val);
+		}
+	};
+	public final static SECDop SP_UNBIND = new SECDop("SP_UNBIND") {
+		@Override
+		public void Execute(SECDMachine machine) {
+		    machine.C.pop();
+		    
+		    LispValue sym = machine.C.pop();   // Pop the symbol name
+		    machine.special_unbind(sym);
+		}
+	};
+	
+	public final static SECDop STOP  = new SECDop("STOP") {
+		@Override
+		public void Execute(SECDMachine machine) {
+			machine.C.pop();
+		    /* How do we stop? */
+		}
+	};
+	
+	// SPECIAL dynamic registers for machine:
 	// The B register is for dynamic bindings.  It contains a hash table
 	// that indexes on symbol name.  The value is a list of values,
 	// the most recent value at the front of the list.
 	//
 	// There is a B register for each machine so that it will
 	// function correctly in a multi-threaded environment.
-	public LispValue B = null;
-
-	// A X register for dumping tag information, as a stack. This is the same register as D, but not totally. =)
-	public SECDRegister X = null;
-
-	// ------------------  BASIC MACHINE OPS   ------------------------------
-
-	public SECDop AP    = null;
-	public SECDop BLK   = null; //OB: new opcode June 2005
-	public SECDop DAP   = null;
-	public SECDop DUM   = null;
-	public SECDop JOIN  = null;
-	public SECDop LD    = null;         // 
-	public SECDop LD_GLOBAL = null;
-	public SECDop LDC   = null;
-	public SECDop LDF   = null;
-	public SECDop LDFC  = null;
-	public SECDop LDR   = null;    //##JPG new opcode  April 2005
-	public SECDop LIS   = null;
-	public SECDop LDNIL = null;
-	public SECDop RAP   = null;
-	public SECDop RTN   = null;
-	public SECDop RTN_IF = null;
-	public SECDop RTN_IT = null;
-	public SECDop SEL   = null;
-	public SECDop SP_BIND   = null;
-	public SECDop SP_UNBIND = null;
-	public SECDop STOP  = null;
-	public SECDop LDT   = null;
-	public SECDop TAG_B = null;
-	public SECDop TAG_E = null;
-	public SECDop TEST  = null;
-
+	public LispValue B  = null;
+//	public SECDop TAG_B = null;
+	
 	public SECDMachine(final Lisp lisp)
 	{
-		f_lisp = lisp;
-
-		S = new SECDRegister(f_lisp, "S-05171955");  // Random names nobody will accidentally use
-		E = new SECDRegister(f_lisp, "E-06141957");  // These should be protected from user change.
-		C = new SECDRegister(f_lisp, "C-06151962");
-		D = new SECDRegister(f_lisp, "D-06071966");
-		X = new SECDRegister(f_lisp, "X-02324255");
-		
-		B = new StandardLispHashTable(f_lisp,
+		B = new StandardLispHashTable(lisp,
 				NIL, NIL,
 				NIL, NIL);
 		
-    AP     = new opAP();
-    BLK    = new opBLK();
-    DAP    = new opDAP();
-    DUM    = new opDUM();
-    JOIN   = new opJOIN();
-    LD     = new opLD();
-    LD_GLOBAL = new opLD_GLOBAL();
-    LDC    = new opLDC();
-    LDF    = new opLDF();
-    LDFC   = new opLDFC();
-    LDR    = new opLDR();  //##JPG init new opcode LDR  April 2005
-    LIS    = new opLIS();
-    LDNIL   = new opLDNIL();
-    RAP    = new opRAP();
-    RTN    = new opRTN();
-    RTN_IF = new opRTN_IF();
-    RTN_IT = new opRTN_IT();
-    SEL    = new opSEL();
-    SP_BIND   = new opSP_BIND();
-    SP_UNBIND = new opSP_UNBIND();
-    STOP   = new opSTOP();
-    LDT      = new opLDT();
-    TAG_B  = new opTAG_B();
-    TAG_E  = new opTAG_E();
-    TEST   = new opTEST();
- }
+/*    
+		TAG_B = new SECDop("TAG_B") {
+			@Override
+			public void Execute(SECDMachine machine) {
+				machine.X.assign(
+						cons(list(
+						          machine.E.value(), machine.D.value(),
+						          new StandardLispHashTable(lisp, (StandardLispHashTable)machine.B)),
+						     machine.X.value()));
+				
+				machine.C.pop();
+			}
+		};*/
+	}
 
 /* ------------------  SPECIAL BINDING   ------------------------------ */
 
   // Assume the caller has verified that this is a special variable.
   public void special_bind(LispValue symbol, LispValue value)
   {
-    // System.err.println("Special bind called on: " + symbol);
-
     if (symbol.basic_constantp())
     {
       // Cause a LispConstant Redefined error
@@ -160,7 +487,7 @@ public class SECDMachine    // extends Abstract Machine !
     {
       LispValue bindings = B.gethash(symbol, NIL);
 
-      B.setf_gethash(symbol, f_lisp.makeCons(value, bindings));
+      B.setf_gethash(symbol, LispCompiler.cons(value, bindings));
       symbol.adjustSpecialCount(+1);
     }
   }
@@ -170,35 +497,23 @@ public class SECDMachine    // extends Abstract Machine !
   {
     LispValue bindings = B.gethash(symbol, NIL);
 
-    // System.err.println("Special unbind called on: " + symbol);
-
     B.setf_gethash(symbol, Lisp.cdr(bindings));
     symbol.adjustSpecialCount(-1);
   }
 
 
   // Sets the binding of a special variable.
+	// used by AND and OR primitives
   public void special_set(LispValue symbol, LispValue value)
   {
+	  
     if (symbol.get_specialCount() > 0)
     {
       LispValue bindings = B.gethash(symbol, NIL);
-      B.setf_gethash(symbol, f_lisp.makeCons(value, Lisp.cdr(bindings)));
+      B.setf_gethash(symbol, LispCompiler.cons(value, Lisp.cdr(bindings)));
     }
     else
       symbol.setf_symbol_value(value);
-  }
-
-
-  // Assume the caller has verified that this is a special variable.
-  public LispValue get_special_value(LispValue symbol)
-  {
-    // System.err.println("specialCount of " + symbol + " is " + symbol.get_specialCount());
-
-    if (symbol.get_specialCount() > 0)
-      return Lisp.car(B.gethash(symbol));
-    else
-      return ((LispSymbol)symbol).symbol_value();
   }
 
 
@@ -240,9 +555,9 @@ public class SECDMachine    // extends Abstract Machine !
           System.err.println("remaining code is " + C.value().toString());
       }
       else
-      try {
+//      try {
     	  ((LispPrimitive)opcode).Execute(this);
-      }
+/*      }
       catch (LispException ce) {
     	  String error = ce.getMessage();
     	  int p = error.indexOf("org.jatha.dynatype.Lisp");
@@ -254,7 +569,7 @@ public class SECDMachine    // extends Abstract Machine !
     		  throw new LispValueNotANumberException(opcode + " argument");
     	  
     	  throw ce;
-      }
+      }*/
 
       try {
         opcode = Lisp.car(C.value());  // Each opcode pops the C register as necessary
@@ -280,6 +595,38 @@ public class SECDMachine    // extends Abstract Machine !
   public void setStackValue(SECDRegister e, LispValue val)
   {
   }
-} // End of class SECDMachine.
+  
+}
 
+/**
+ * SECDop is the abstract class that encompasses all SECD
+ * machine ops.
+ *
+ * @see org.jatha.compile.LispPrimitive
+ * @author  Micheal S. Hewett    hewett@cs.stanford.edu
+ */
+abstract class SECDop extends LispPrimitive0
+{
+	/**
+	 * @see SECDMachine
+	 */
+	public SECDop(String opName)
+	{
+		super(opName);
+	}
 
+	/**
+	 * The output of this function is printed when the
+	 * instruction needs to be printed.
+	 */
+	public String toString()
+	{
+		return "SECD." + functionName;
+	}
+
+	protected LispValue Execute()
+			throws CompilerException
+	{
+		throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been."); 
+	}
+}

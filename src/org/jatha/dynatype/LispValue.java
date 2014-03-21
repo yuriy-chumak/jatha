@@ -473,7 +473,7 @@ public interface LispValue extends Comparable<LispValue>
    * Returns the function used when comparing keys in the hash table.
    * Default is EQL.
    */
-  public LispValue hash_table_test();
+//  public LispValue hash_table_test();
 
   /**
    * Returns T if the object is an Integer.

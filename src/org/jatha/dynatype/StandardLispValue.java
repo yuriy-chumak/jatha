@@ -538,8 +538,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public LispValue hash_table_rehash_threshold ()
   { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-REHASH-THRESHOLD"); }
 
-  public LispValue hash_table_test ()
-  { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-TEST"); }
+//  public LispValue hash_table_test ()
+//  { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-TEST"); }
 
   public LispValue     integerp     ()  { return NIL; }
 
@@ -1069,7 +1069,7 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 			arg = (LispCons)arg.cdr();
 		return arg.car();
 	}
-/*	public static LispValue nth(LispCons ij, LispCons arg)
+	public static LispValue rest(LispCons ij, LispCons arg)
 	{
 		long i = ((LispInteger)(car(ij))).getLongValue();
 		long j = ((LispInteger)(cdr(ij))).getLongValue();
@@ -1077,9 +1077,8 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 		arg = (LispCons)Lisp.nth(i, arg);
 		while (--j > 0)
 			arg = (LispCons)arg.cdr();
-		
 		return arg;
-	}*/
+	}
 	
 	public static LispValue cddr(LispValue arg)
 	{
