@@ -66,7 +66,7 @@ public class Tests extends Object
 							continue;
 						}
 						LispValue r = lisp.eval(s);
-						if (r == lisp.T)
+						if (r == LispValue.T)
 							continue;
 						
 //						if (r.functionp() == lisp.T)
@@ -74,7 +74,7 @@ public class Tests extends Object
 //						if (r.macrop() == Lisp.T)
 //							continue;
 						
-						if ((r instanceof LispConstant && !r.toString().equals("T"))
+						if ((r instanceof LispConstant && r != LispValue.T)
 						 || (r == LispValue.NIL)
 						) {
 							errors.add(s.toString() + " -> " + r.toString());
