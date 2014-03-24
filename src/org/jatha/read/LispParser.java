@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 import org.jatha.dynatype.*;
 import org.jatha.Lisp;
 import org.jatha.exception.*;
+import org.jatha.util.SymbolTools;
 
 
 /**
@@ -61,8 +62,18 @@ import org.jatha.exception.*;
  */
 public class LispParser
 {
+	static final LispList NIL = LispValue.NIL;
+	static final LispValue T  = LispValue.T;
+	static final LispValue QUOTE     = LispValue.QUOTE;
+	static final LispValue BACKQUOTE = LispValue.BACKQUOTE;
+
+//	static final LispSymbol COMMA_FN        = LispValue.COMMA_FN;
+//	static final LispSymbol COMMA_ATSIGN_FN = LispValue.COMMA_ATSIGN_FN;
+//	static final LispSymbol COMMA_DOT_FN    = LispValue.COMMA_DOT_FN;
 	
-	static final LispValue NIL = LispValue.NIL;
+	public static final LispSymbol COMMA_FN        = new StandardLispKeyword("COMMA");
+	public static final LispSymbol COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA_ATSIGN");
+	public static final LispSymbol COMMA_DOT_FN    = new StandardLispKeyword("COMMA_DOT");
 	
   public static final int UPCASE         = 1;
   public static final int DOWNCASE       = 2;
@@ -104,6 +115,7 @@ public class LispParser
   private static LispParser f_myParser = null;
 
 
+  // required by tokenToLispValue() to use "intern" and "keyword" functions
   private Lisp f_lisp = null;
 
   public LispParser(Lisp lisp, Reader inStream)
@@ -459,7 +471,7 @@ public class LispParser
 
         if (firstTime)
         {
-          newList   = f_lisp.makeCons(NIL, NIL);
+          newList   = cons(NIL, NIL);
           newList.rplaca(newToken);
           newListLast = newList;
           firstTime = false;
@@ -473,7 +485,7 @@ public class LispParser
           }
           else
           {
-            newCell  = f_lisp.makeCons(newToken, NIL);  /* (NIL . NIL) */
+            newCell  = cons(newToken, NIL);  /* (NIL . NIL) */
             
             newListLast.rplacd(newCell);
             newListLast = newCell;
@@ -498,10 +510,10 @@ public class LispParser
      * read a token and replace the first NIL by the token read.
      */
 
-    newQuotedList = f_lisp.makeCons(LispValue.QUOTE,
-                                    f_lisp.makeCons(NIL, NIL));
+    newQuotedList = cons(QUOTE,
+                         cons(NIL, NIL));
     newCell = read();
-    f_lisp.cdr(newQuotedList).rplaca(newCell);
+    cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -519,14 +531,14 @@ public class LispParser
     * read a token and replace the first NIL by the token read.
     */
 
-    newQuotedList = f_lisp.makeCons(LispValue.BACKQUOTE,
-                                    f_lisp.makeCons(NIL, NIL));
+    newQuotedList = cons(BACKQUOTE,
+                         cons(NIL, NIL));
 
     ++BackQuoteLevel;
     newCell = read();
     --BackQuoteLevel;
 
-    f_lisp.cdr(newQuotedList).rplaca(newCell);
+    cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -560,23 +572,23 @@ public class LispParser
     if (ch == '\r')  ch = '\n';
 
     if (isAtSign(ch))
-      identifier = f_lisp.COMMA_ATSIGN_FN;
+      identifier = COMMA_ATSIGN_FN;
     else if (isPeriod(ch))
-      identifier = f_lisp.COMMA_DOT_FN;
+      identifier = COMMA_DOT_FN;
     else
     {
-      identifier = f_lisp.COMMA_FN;
+      identifier = COMMA_FN;
       try { inputReader.unread(ch); }
       catch (IOException e)
       { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
     }
 
-    newQuotedList = f_lisp.makeCons(identifier,
-                                    f_lisp.makeCons(NIL, NIL));
+    newQuotedList = cons(identifier,
+                         cons(NIL, NIL));
 
     newCell = read();
 
-    Lisp.cdr(newQuotedList).rplaca(newCell);
+    cdr(newQuotedList).rplaca(newCell);
     return(newQuotedList);
   }
 
@@ -629,7 +641,7 @@ public class LispParser
     // #'foo means (function foo)
     else if (isQuote(ch))
     {
-      LispValue result = f_lisp.makeList(tokenToLispValue("FUNCTION"), read());
+      LispValue result = list(tokenToLispValue("FUNCTION"), read());
       return result;
 
       //LispValue result = f_lisp.makeList(tokenToLispValue("FUNCTION"));
@@ -807,7 +819,7 @@ public class LispParser
 		LispValue newCell = null;
 
 		if (T_token_p(token))
-			newCell = f_lisp.T;
+			newCell = T;
 		else if (NIL_token_p(token))
 			newCell = NIL;
 		else if (INTEGER_token_p(token))
@@ -832,7 +844,7 @@ public class LispParser
 		{ /* remove the first and last double quotes. */
 			try
 			{
-				newCell = f_lisp.makeString(token.substring(1, token.length() - 1));
+				newCell = new StandardLispString(token.substring(1, token.length() - 1));
 			}
 			catch (StringIndexOutOfBoundsException e)
 			{
@@ -855,7 +867,7 @@ public class LispParser
 				}
 				
 				if (packageStr.equals("#"))   // Uninterned symbol
-					newCell = f_lisp.makeSymbol(token);	// no package
+					newCell = new StandardLispSymbol(token);	// no package
 				else {
 					if (!"".equals(packageStr))
 						throw(new LispUndefinedPackageException(packageStr));
@@ -932,39 +944,6 @@ public class LispParser
    }
 
 
-  /** The equivalent of the C function 'strspn'.
-   * Given a string and another string representing a set of characters,
-   * this function scans the string and accepts characters that are
-   * elements of the given set of characters.  It returns the index
-   * of the first element of the string that is not a member of the
-   * set of characters.
-   * For example:
-   *    pos = firstCharNotInSet(0, "hello there, how are you?", "ehlort ");
-   * returns 11.
-   *
-   * If the string does not contain any of the characters in the set,
-   * str.length() is returned.
-   */
-  public static int firstCharNotInSet(int startIndex, String str, String charSet)
-  {
-    int searchIndex = startIndex - 1;  // we add one at the end.
-    int length      = str.length();
-
-    //    System.out.print("\nSearching \"" + str + "\" for \"" + charSet + "\" from index " + startIndex);
-    try {
-      for (int i = startIndex;
-           ((i < length) && (charSet.indexOf(str.charAt(i)) >= 0));
-           ++i)
-        searchIndex = i;
-    }
-    catch (StringIndexOutOfBoundsException e) {
-      System.err.println("Hey, got a bad string index in 'firstCharNotInSet'!"); 
-    }
-
-    //    System.out.println("...returning " + searchIndex);
-    return searchIndex + 1;
-  }
-
 
   private static final Pattern REAL_PATTERN = Pattern.compile("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?");
   boolean REAL_token_p(String str)
@@ -995,7 +974,7 @@ public class LispParser
     if (decimalPos < 0)
       return(false);
 
-    if (firstCharNotInSet(index, str, INTchars) != decimalPos)
+    if (SymbolTools.firstCharNotInSet(index, str, INTchars) != decimalPos)
       return(false);
 
     if (decimalPos == str.length() - 1)
@@ -1004,7 +983,7 @@ public class LispParser
     /* Check decimal digits. */
     index = decimalPos + 1;
     
-    return(firstCharNotInSet(index, str, INTchars) == length);
+    return(SymbolTools.firstCharNotInSet(index, str, INTchars) == length);
   }
 
 
@@ -1029,7 +1008,7 @@ public class LispParser
     if (index == length)   // Don't accept a single '-' or '+'
       return false;
 
-    return(firstCharNotInSet(index, str, INTchars) == length);
+    return(SymbolTools.firstCharNotInSet(index, str, INTchars) == length);
   }
 
   boolean NIL_token_p(String str) { return(str.equalsIgnoreCase("NIL")); }
@@ -1081,41 +1060,6 @@ public class LispParser
     else
       System.out.println("is not recognized.");
   }
-
-
-  public void    test_parser_loop() throws EOFException
-  {
-    LispValue temp, exit;
-
-    exit = f_lisp.intern("EXIT");
-    temp = f_lisp.intern("*TEMP*");
-
-    System.out.println("Run (EXIT) to stop.");
-    try {
-      do
-      {
-        System.out.print("\nJATHA>");  System.out.flush();  // Should print top-level prompt
-        //    input = parse(stdin);
-        //    setq(temp, symbol_value(STAR));
-
-        //    print(setq(STAR, eval(input)));
-        //    setq(STARSTARSTAR, symbol_value(STARSTAR));
-        //    setq(STARSTAR, symbol_value(temp));
-        temp = read();
-        // System.out.println(); temp.prin1();
-        temp = f_lisp.COMPILER.compile(f_lisp.MACHINE, temp, NIL);  // No globals for now
-        // System.out.println(); temp.prin1();
-        temp = f_lisp.MACHINE.Execute(temp, NIL);
-        System.out.println(); temp.prin1();
-      }
-      while (temp != exit);
-    } catch (CompilerException ce) {
-      System.err.println("Compiler error: " + ce.toString());
-    }
-    System.out.println();
-    System.out.flush();
-  }
-
   /**
    * Returns true if the input expression has balanced parentheses
    * @param input a String
@@ -1154,29 +1098,33 @@ public class LispParser
         return true;
     }
   }
-
-  public void simple_parser_test()
-  {
-    test_parser("1234.56789");
-    test_parser("1234.");
-    test_parser(".56789");
-    test_parser("-1234.56789");
-    test_parser("+1234.56789");
-    test_parser("-.56789");
-    test_parser("1234");
-    test_parser("-1234");
-    test_parser("+1234");
-    test_parser("T");
-    test_parser("NIL");
-    test_parser("\"This is a string\"");
-    test_parser("\"astring\"");
-    test_parser("\"\"");
-    test_parser("ABCD");
-    test_parser("def1234");
-    test_parser("123def");
-    test_parser("abc_def_ghi");
-  }
-
-
+  
+  
+	public static LispValue car(LispValue arg)
+	{
+		return ((LispList)arg).car();
+	}
+	public static LispValue cdr(LispValue arg) 
+	{
+		return ((LispList)arg).cdr();
+	}
+	public static LispValue nth(long i, LispCons arg)
+	{
+		while (--i > 0)
+			arg = (LispCons)arg.cdr();
+		return arg.car();
+	}
+	public static final LispCons cons(LispValue car, LispValue cdr)
+	{
+		return new StandardLispCons(car, cdr);
+	}
+	public static final LispList list(LispValue... parts)
+	{
+		LispList result = NIL;
+		for (int i = parts.length-1 ; i >= 0; i--)
+			result = cons(parts[i], result);
+		return result;
+	}
+	
+	
 }
-

@@ -160,16 +160,16 @@ public class Lisp
 //  public LispSymbol CONS;
 //  public LispSymbol LIST;
 //  public LispSymbol APPEND;
-  public LispSymbol COMMA_FN;
-  public LispSymbol COMMA_ATSIGN_FN;
-  public LispSymbol COMMA_DOT_FN;
+	static final LispSymbol COMMA_FN        = LispParser.COMMA_FN;
+	static final LispSymbol COMMA_ATSIGN_FN = LispParser.COMMA_ATSIGN_FN;
+	static final LispSymbol COMMA_DOT_FN    = LispParser.COMMA_DOT_FN;
   
   // Used in CONCATENATE
   public LispSymbol STRING;
 
   // Math constants
-  public LispNumber PI;
-  public LispNumber E;
+//  public LispNumber PI;
+//  public LispNumber E;
 
   private void initializeConstants()
   {
@@ -200,14 +200,14 @@ public class Lisp
 	// this functions must be registered as symbols:
     intern("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
 	
-    intern("COMMA",        COMMA_FN        = new StandardLispKeyword("COMMA"));
-    intern("COMMA-ATSIGN", COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA-ATSIGN"));
-    intern("COMMA-DOT",    COMMA_DOT_FN    = new StandardLispKeyword("COMMA-DOT"));
+    intern("COMMA",        COMMA_FN);
+    intern("COMMA-ATSIGN", COMMA_ATSIGN_FN);
+    intern("COMMA-DOT",    COMMA_DOT_FN);
 
 //    symbol("T", T);
 
-    E    = StandardLispValue.real(StrictMath.E);
-    PI   = StandardLispValue.real(StrictMath.PI);
+//    E    = StandardLispValue.real(StrictMath.E);
+//    PI   = StandardLispValue.real(StrictMath.PI);
 
     intern("MACRO", LispValue.MACRO);
     intern("PRIMITIVE", LispValue.PRIMITIVE);
@@ -575,7 +575,7 @@ public class Lisp
     for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
     {
       final LispValue current = iter.next();
-      outp = makeCons(this.car(current), outp);
+      outp = makeCons(car(current), outp);
     }
     return outp.nreverse();
   }

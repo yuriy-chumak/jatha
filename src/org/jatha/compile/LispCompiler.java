@@ -24,6 +24,10 @@
 
 package org.jatha.compile;
 
+import java.io.EOFException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -34,10 +38,12 @@ import java.util.List;
 import java.util.TreeMap;
 
 import org.jatha.Lisp;
-import org.jatha.Registrar;
+import org.jatha.compile.LispExtension;
+import org.jatha.Tests;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
 import org.jatha.machine.*;
+import org.jatha.read.LispParser;
 
 /**
  * LispCompiler has a <tt>compile()</tt> method that will
@@ -66,31 +72,31 @@ public class LispCompiler
 
 	static final LispList NIL = LispValue.NIL;
 	static final LispConstant T = LispValue.T;
-	
+
 	static final LispValue QUOTE     = LispValue.QUOTE;
 	static final LispValue PROGN     = new StandardLispSymbol("PROGN");
 	static final LispValue DEFUN     = new StandardLispSymbol("DEFUN");
 	static final LispValue BLOCK     = new StandardLispSymbol("BLOCK");
-	
+
 	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
 	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
-  
+
 	// These are special forms that get expanded in the compiler
 	LispValue COMMENT;
 	
-  LispValue AND;
-  LispValue DEFMACRO;
-  LispValue IF;
-  LispValue LAMBDA;
-  LispValue LET;
-  LispValue LETREC;
-  LispValue OR;
-  LispValue SETQ;
+	LispValue AND;
+	LispValue DEFMACRO;
+	LispValue IF;
+	LispValue LAMBDA;
+	LispValue LET;
+	LispValue LETREC;
+	LispValue OR;
+	LispValue SETQ;
     //  LispValue WHEN;
 
-  LispValue AMP_REST;   // keyword &rest used in parameters list
-  LispValue DUMMY_FUNCTION; // used for recursive definions
-  LispValue DUMMY_MACRO;    // used for recursive definions
+	LispValue AMP_REST;   // keyword &rest used in parameters list
+	LispValue DUMMY_FUNCTION; // used for recursive definions
+	LispValue DUMMY_MACRO;    // used for recursive definions
   
 	LispPrimitive CONS;
 	LispPrimitive LIST;
@@ -105,16 +111,16 @@ public class LispCompiler
   boolean WarnAboutSpecialsP = false;    // todo: Need some way to turn this on.
   private Lisp f_lisp = null;
   public Lisp getLisp() { return f_lisp; }
-  private final Stack<LispValue> legalBlocks = new Stack<LispValue>();
-  private final Stack<Set<LispValue>> legalTags   = new Stack<Set<LispValue>>();
-  private final Map<Long, LispValue> registeredGos = new HashMap<Long, LispValue>();
+  
+//  private final Stack<Set<LispValue>> legalTags   = new Stack<Set<LispValue>>();
+//  private final Map<Long, LispValue> registeredGos = new HashMap<Long, LispValue>();
 
-  // static initializer.
+	// static initializer.
 	private void initializeConstants()
 	{
 		AMP_REST   = f_lisp.symbol("&REST");
 		SETQ       = f_lisp.symbol("SETQ");
-    //    WHEN       = f_lisp.EVAL.intern("WHEN");
+		//WHEN     = f_lisp.EVAL.intern("WHEN");
     
 		SpecialOperators = new TreeMap<LispValue, Compiler>() {{
 			put(COMMENT = f_lisp.symbol("COMMENT"), new Compiler() {
@@ -140,6 +146,7 @@ public class LispCompiler
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 						return cons(machine.LDC, cons(args.first(), code));
+//						return compileQuote(args, code);
 					}
 				});
 			put(BLOCK, new Compiler() {
@@ -209,21 +216,19 @@ public class LispCompiler
 				});
 		}};
 
-    //##JPG added
-    // should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
+		// should be used only to test type. basic_macrop() retutns true for DUMMY_MACRO and false for DUMMY_FUNCTION
 		// this is NOT builtin function and macro
-    DUMMY_FUNCTION = new StandardLispFunction(null, cons(T, NIL));
-    DUMMY_MACRO    = new StandardLispMacro   (null, cons(T, NIL));
+		DUMMY_FUNCTION = new StandardLispFunction(null, cons(T, NIL));
+		DUMMY_MACRO    = new StandardLispMacro   (null, cons(T, NIL));
 	}
 
-  public LispCompiler(Lisp lisp)
-  {
-    super();
+	public LispCompiler(Lisp lisp)
+	{
+		super();
+		f_lisp = lisp;
 
-    f_lisp = lisp;
-
-    initializeConstants();
-  }
+		initializeConstants();
+	}
 
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -250,17 +255,12 @@ public class LispCompiler
 					throws CompilerException
 			{
 				if (values instanceof LispSymbol) {
-					require(values);
-					return T;
+					return require(values);
 				}
 				
 				if (values instanceof LispCons) {
 					for (Iterator<LispValue> valuesIt = values.iterator(); valuesIt.hasNext(); ) 
-//					while (valuesIt.hasNext())
-					{
-						LispValue value = valuesIt.next();
-						require(value);
-					}
+						require(valuesIt.next());
 				    return T;
 				}
 				
@@ -268,27 +268,109 @@ public class LispCompiler
 			}
 			
 			Set<String> requires = new HashSet<String>();
-			void require(LispValue value)
+			LispValue require(LispValue value)
 			{
 //				assertSymbol(value);
-				if (value instanceof LispSymbol) {
-					String name = value.toStringSimple().replace('-','.');
-					if (requires.contains(name))
-						return;
-					try {
-						Registrar registrar = (Registrar)LispCompiler.this.getClass().getClassLoader().loadClass(
-								"org.jatha.extras." + name
-								).newInstance();
-						registrar.Register(LispCompiler.this);
-						requires.add(name);
-					}
-					catch (Exception ex) {
-						throw new LispException("Can't load required " + value.toString() + " module.");
-					}
-					return;
+				if (value instanceof LispString ||
+					value instanceof LispSymbol) {
+					return require(value.toStringSimple());
 				}
+/*				if (value instanceof LispSymbol) {
+					String name = "org.jatha.extras." + value.toStringSimple().replace('-','.');
+					return require(name);
+				}*/
 				throw new LispValueNotASymbolException(value);
 			}
+			/**
+			 * 1. try to load class as default
+			 * 2. try to load file as default
+			 * 3. try to load class as org.jatha.extension."name"
+			 * @param value
+			 * @return
+			 */
+			LispValue require(String value)
+			{
+				if (requires.contains(value))
+					return T;
+				ClassLoader classLoader = LispCompiler.class.getClassLoader();
+				try {
+					// 1. search for the .class for executa as native code
+					LispExtension extension = (LispExtension)classLoader.loadClass(
+							value
+							).newInstance();
+					extension.Register(LispCompiler.this);
+					requires.add(value);
+					
+					return T;
+				}
+				catch (ClassNotFoundException ex) {
+					// class not found, ok.
+				}
+				catch (ClassCastException ex) {
+					// class cast exception, this module not a lisp extension
+				}
+				catch (Exception ex) {
+					throw new LispException("Can't load required " +
+							value.toString() + " module.");
+				}
+				
+				// 2. if the are no dots - try to load from 
+				try {
+					if (value.indexOf('.') < 0) {
+						LispExtension extension = (LispExtension)classLoader.loadClass(
+								"org.jatha.extras." + value
+						).newInstance();
+						extension.Register(LispCompiler.this);
+						requires.add(value);
+						return T;
+					}
+/*					
+					for (String pkg : defaultPackages) {
+						LispExtension extension = (LispExtension)classLoader.loadClass(
+								pkg + "." + value
+						).newInstance();
+						extension.Register(LispCompiler.this);
+						requires.add(value);
+						return T;
+					}*/
+				}
+				catch (ClassNotFoundException ex) {
+					// class not found, ok.
+				}
+				catch (ClassCastException ex) {
+					// class cast exception, this module not a lisp extension
+				}
+				catch (Exception ex) {
+					throw new LispException("Can't load required " +
+							value.toString() + " module.");
+				}
+				
+				try {
+					Reader resourceReader = new InputStreamReader(
+							classLoader.getResourceAsStream(value)
+					);
+					LispParser cli = new LispParser(f_lisp, resourceReader);
+					while (true) {
+						try {
+							LispValue s = cli.read();
+							LispValue r = f_lisp.eval(s);
+						} catch (EOFException e) {
+							break;
+						}
+					}
+				}
+				catch (Exception ex) {
+					throw new LispException("Can't load required " +
+							value.toString() + " module.");
+				}
+				
+				
+				return T;
+			}
+			
+			private List<String> defaultPackages = new ArrayList<String>() {{
+				add("org.jatha.extension");
+			}};
 		});
 
 
@@ -723,26 +805,28 @@ public class LispCompiler
 		symbol.setf_symbol_function(list(PRIMITIVE, primitive));
 	}
 
-    public Stack<LispValue> getLegalBlocks() {
-        return legalBlocks;
-    }
+	// required by "return-from" primitive
+	private final Stack<LispValue> legalBlocks = new Stack<LispValue>();
+	public Stack<LispValue> getLegalBlocks() {
+		return legalBlocks;
+	}
 
-    public Stack<Set<LispValue>> getLegalTags() {
-        return legalTags;
-    }
+//   public Stack<Set<LispValue>> getLegalTags() {
+//        return legalTags;
+//    }
 
-    public Map<Long, LispValue> getRegisteredGos() {
-      return registeredGos;
-    }
+//    public Map<Long, LispValue> getRegisteredGos() {
+//      return registeredGos;
+//    }
 
-    public boolean isLegalTag(final LispValue tag) {
-        for(final java.util.Iterator<Set<LispValue>> iter = legalTags.iterator();iter.hasNext();) {
-            if(iter.next().contains(tag)) {
-                return true;
-            }
-        }
-        return false;
-    }
+//    public boolean isLegalTag(final LispValue tag) {
+//        for(final java.util.Iterator<Set<LispValue>> iter = legalTags.iterator();iter.hasNext();) {
+//            if(iter.next().contains(tag)) {
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
   /* --- Compiler flags   --- */
 
@@ -906,12 +990,12 @@ public class LispCompiler
 		if (DEBUG) {
 			System.out.println("expr = " + expr);
 			System.out.println("varValues = " + varValues);
-			System.out.println("STOP = " + machine.STOP);
+			System.out.println("STOP = " + SECDMachine.STOP);
 			System.out.println("NIL = " + NIL);
-			System.out.println("initial code = " + f_lisp.makeCons(machine.STOP, NIL));
+			System.out.println("initial code = " + cons(SECDMachine.STOP, NIL));
 		}
 
-		return compile(expr, varValues, cons(machine.STOP, NIL));
+		return compile(expr, varValues, cons(SECDMachine.STOP, NIL));
 	}
 
 	// @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -1465,7 +1549,13 @@ public class LispCompiler
   }
 
 
-
+	LispValue compileQuote(LispValue argsAndBody, LispValue code)
+					throws CompilerException
+	{
+//		return cons(machine.LDC, cons(args.first(), code));
+		return cons(SECDMachine.LDC, cons(car(argsAndBody), code));
+	}
+	
   LispValue compileDefun(SECDMachine machine, LispValue name, LispValue argsAndBody,
                          LispValue valueList, LispValue code)
     throws CompilerException

@@ -32,6 +32,7 @@ import org.jatha.compile.LispCompiler;
 import org.jatha.exception.*;
 import org.jatha.machine.SECDMachine;
 import org.jatha.read.*;
+import org.jatha.util.SymbolTools;
 import org.jatha.Lisp;
 
 
@@ -88,7 +89,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     // If the symbol contains lower-case letters, or anything other than
     // the following set of letters, we need to print OR-bars around it.
 
-    f_mixedCase  = (LispParser.firstCharNotInSet(0, symbolNameString.getValue(),
+    f_mixedCase  = (SymbolTools.firstCharNotInSet(0, symbolNameString.getValue(),
                                                "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:*/+-?!.%$<>=_")
             < ((LispInteger)symbolNameString.length()).getLongValue());
 
