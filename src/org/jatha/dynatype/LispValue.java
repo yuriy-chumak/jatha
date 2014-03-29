@@ -979,5 +979,4 @@ public interface LispValue extends Comparable<LispValue>
    * Returns true if this package uses the given package
    */
   boolean uses(LispValue pkg);
-
 }

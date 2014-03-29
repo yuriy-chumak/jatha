@@ -523,79 +523,64 @@ public class SECDMachine    // extends Abstract Machine !
 	{
 		LispValue opcode;
 
-    // System.out.print("\nExecuting code: ");
-    // code.prin1();
+		// System.out.print("\nExecuting code: ");
+		// code.prin1();
 
-    S.assign(NIL);
-    E.assign(globals);
-    C.assign(code);
-    D.assign(NIL);
+		S.assign(NIL);
+		E.assign(globals);
+		C.assign(code);
+		D.assign(NIL);
 
-    opcode = Lisp.car(C.value());
+		opcode = Lisp.car(C.value());
 
-    while ((opcode != STOP) && (opcode != NIL))
-    {
-      if (DEBUG)
-      {
-        // Test output.
-        //
-        System.out.print("\n  S: " + S.value());
-        System.out.print("\n  E: " + E.value());
-        System.out.print("\n  C: " + C.value());
-        System.out.print("\n  D: " + D.value());
-        System.out.print("\n  B: " + B.toString());
-        System.out.print("\n  X: " + X.value());
-        // System.out.print(" of class " + opcode.getClass().getName());
-        System.out.print("\n" + opcode);   // Testing
-        System.out.flush();
-      }
+		while ((opcode != STOP) && (opcode != NIL))
+		{
+			if (DEBUG)
+			{
+				// Test output.
+				//
+				System.out.print("\n  S: " + S.value());
+				System.out.print("\n  E: " + E.value());
+				System.out.print("\n  C: " + C.value());
+				System.out.print("\n  D: " + D.value());
+				System.out.print("\n  B: " + B.toString());
+				System.out.print("\n  X: " + X.value());
+				// System.out.print(" of class " + opcode.getClass().getName());
+				System.out.print("\n" + opcode);   // Testing
+				System.out.flush();
+			}
 
-      if (opcode == null) {
-          System.err.println("internal error in Jatha.SECDMachine.Execute: opcode is null");
-          System.err.println("remaining code is " + C.value().toString());
-      }
-      else
-//      try {
-    	  ((LispPrimitive)opcode).Execute(this);
-/*      }
-      catch (LispException ce) {
-    	  String error = ce.getMessage();
-    	  int p = error.indexOf("org.jatha.dynatype.Lisp");
-    	  if (p < 0)
-    		  throw ce;
-    	  // org.jatha.dynatype
-    	  String type = error.substring(p + "org.jatha.dynatype.".length());
-    	  if (type.equals("LispNumber"))
-    		  throw new LispValueNotANumberException(opcode + " argument");
-    	  
-    	  throw ce;
-      }*/
+			if (opcode == null) {
+				System.err.println("internal error in Jatha.SECDMachine.Execute: opcode is null");
+				System.err.println("remaining code is " + C.value().toString());
+			}
+			else
+				((LispPrimitive)opcode).Execute(this);
 
-      try {
-        opcode = Lisp.car(C.value());  // Each opcode pops the C register as necessary
-      } catch (Exception e) {
-        e.printStackTrace();
-        System.err.print("\n  S: " + S.value());
-        System.err.print("\n  E: " + E.value());
-        System.err.print("\n  C: " + C.value());
-        System.err.print("\n  D: " + D.value());
-        System.out.print("\n  B: " + B.toString());
-        System.out.print("\n  X: " + X.value());
-        // System.out.print(" of class " + opcode.getClass().getName());
-        System.err.print("\n" + opcode);   // Testing
-        System.err.flush();
+			try {
+				opcode = Lisp.car(C.value());  // Each opcode pops the C register as necessary
+			} catch (Exception e) {
+				e.printStackTrace();
+				System.err.print("\n  S: " + S.value());
+				System.err.print("\n  E: " + E.value());
+				System.err.print("\n  C: " + C.value());
+				System.err.print("\n  D: " + D.value());
+				System.out.print("\n  B: " + B.toString());
+				System.out.print("\n  X: " + X.value());
+				// System.out.print(" of class " + opcode.getClass().getName());
+				System.err.print("\n" + opcode);   // Testing
+				System.err.flush();
 
-        opcode = NIL;
-      }
-    }
+				opcode = NIL;
+			}
+		}
 
-    return  Lisp.car(S.value()); //  Top value on Stack is the return value.
-  }
+		return  Lisp.car(S.value()); //  Top value on Stack is the return value.
+	}
 
-  public void setStackValue(SECDRegister e, LispValue val)
-  {
-  }
-  
+	public void setStackValue(SECDRegister e, LispValue val)
+	{
+	}
 }
 
 /**
@@ -607,9 +592,6 @@ public class SECDMachine    // extends Abstract Machine !
  */
 abstract class SECDop extends LispPrimitive0
 {
-	/**
-	 * @see SECDMachine
-	 */
 	public SECDop(String opName)
 	{
 		super(opName);

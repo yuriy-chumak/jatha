@@ -24,7 +24,6 @@
 
 package org.jatha.compile;
 
-import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
@@ -41,8 +40,13 @@ public abstract class LispPrimitiveC extends LispPrimitive
 		minNumberOfArgs = minArgs;
 		maxNumberOfArgs = Long.MAX_VALUE;
 	}
+	public LispPrimitiveC(String fnName, long minArgs, long maxArgs) {
+		super(fnName);
+		minNumberOfArgs = minArgs;
+		maxNumberOfArgs = maxArgs;
+	}
 	
-	  boolean validArgumentLength(LispValue numberOfArguments)
+      boolean validArgumentLength(LispValue numberOfArguments)
 	  {
 	    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
 
@@ -68,9 +72,8 @@ public abstract class LispPrimitiveC extends LispPrimitive
 			LispValue valueList, LispValue code)
 			throws CompilerException
 	{
-		return
-				compiler.compileArgsLeftToRight(args, valueList,
-						cons(machine.LIS,
+		return compiler.compileArgsLeftToRight(args, valueList,
+						cons(SECDMachine.LIS,
 						     cons(args.length(), code)));
 	}
 	

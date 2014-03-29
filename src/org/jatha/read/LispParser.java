@@ -30,8 +30,11 @@ import java.util.regex.Pattern;
 
 import org.jatha.dynatype.*;
 import org.jatha.Lisp;
+import org.jatha.LispProcessor;
 import org.jatha.exception.*;
 import org.jatha.util.SymbolTools;
+
+import static org.jatha.dynatype.LispValue.*;
 
 
 /**
@@ -56,17 +59,14 @@ import org.jatha.util.SymbolTools;
  * Normal usage is to parse a string.  If you want to use a Reader,
  * do: <code>new PushbackReader(myReader)</code>.
  *
+ * http://www.lispworks.com/documentation/lw50/CLHS/Body/02_cd.htm
+ * 
  * @see org.jatha.dynatype.LispValue
  * @author Micheal S. Hewett
  * @version 1.0
  */
-public class LispParser
+public class LispParser extends LispProcessor
 {
-	static final LispList NIL = LispValue.NIL;
-	static final LispValue T  = LispValue.T;
-	static final LispValue QUOTE     = LispValue.QUOTE;
-	static final LispValue BACKQUOTE = LispValue.BACKQUOTE;
-
 //	static final LispSymbol COMMA_FN        = LispValue.COMMA_FN;
 //	static final LispSymbol COMMA_ATSIGN_FN = LispValue.COMMA_ATSIGN_FN;
 //	static final LispSymbol COMMA_DOT_FN    = LispValue.COMMA_DOT_FN;
@@ -75,44 +75,44 @@ public class LispParser
 	public static final LispSymbol COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA_ATSIGN");
 	public static final LispSymbol COMMA_DOT_FN    = new StandardLispKeyword("COMMA_DOT");
 	
-  public static final int UPCASE         = 1;
-  public static final int DOWNCASE       = 2;
-  public static final int PRESERVE       = 3;
+	public static final int UPCASE         = 1;
+	public static final int DOWNCASE       = 2;
+	public static final int PRESERVE       = 3;
 
-  static final char AT_SIGN              = '@';
-  static final char BACK_QUOTE           = '`';
-  static final char BACKSLASH            = '\\';
-  static final char COLON                = ':';
-  static final char COMMA                = ',';
-  static final char DECIMAL              = '.';
-  static final char DOUBLE_QUOTE         = '"';
-  static final char EQUAL_SIGN           = '=';
-  static final char LEFT_ANGLE_BRACKET   = '<';
-  static final char LEFT_PAREN           = '(';
-  static final char HYPHEN               = '-';
-  static final char OR_BAR               = '|';
-  static final char POUND                = '#';
-  static final char PERIOD               = '.';
-  static final char RIGHT_PAREN          = ')';
-  static final char SEMICOLON            = ';';
-  static final char RIGHT_ANGLE_BRACKET  = '>';
-  static final char SINGLE_QUOTE         = '\'';
-  static final char UNDERSCORE           = '_';
+	static final char AT_SIGN              = '@';
+	static final char BACK_QUOTE           = '`';
+	static final char BACKSLASH            = '\\';
+	static final char COLON                = ':';
+	static final char COMMA                = ',';
+	static final char DECIMAL              = '.';
+	static final char DOUBLE_QUOTE         = '"';
+	static final char EQUAL_SIGN           = '=';
+	static final char LEFT_ANGLE_BRACKET   = '<';
+	static final char LEFT_PAREN           = '(';
+	static final char HYPHEN               = '-';
+	static final char OR_BAR               = '|';
+	static final char POUND                = '#';
+	static final char PERIOD               = '.';
+	static final char RIGHT_PAREN          = ')';
+	static final char SEMICOLON            = ';';
+	static final char RIGHT_ANGLE_BRACKET  = '>';
+	static final char SINGLE_QUOTE         = '\'';
+	static final char UNDERSCORE           = '_';
 
-  // Parser states
-  static final int READING_NOTHING           = 0;
-  static final int READING_SYMBOL            = 1;
-  static final int READING_MIXED_CASE_SYMBOL = 2;
-  static final int READING_CHARACTER         = 3;
-  static final int READING_STRING            = 4;
-  static final int READING_BACKQUOTED_LIST   = 5;
+	// Parser states
+	static final int READING_NOTHING           = 0;
+	static final int READING_SYMBOL            = 1;
+	static final int READING_MIXED_CASE_SYMBOL = 2;
+	static final int READING_CHARACTER         = 3;
+	static final int READING_STRING            = 4;
+	static final int READING_BACKQUOTED_LIST   = 5;
 
-  private      int BackQuoteLevel            = 0;
-  private      PushbackReader  inputReader;
+	private      int BackQuoteLevel            = 0;
+	private      PushbackReader  inputReader;
 
-  private int f_caseSensitivity = UPCASE;  // default LISP behavior.
+	private int f_caseSensitivity = UPCASE;  // default LISP behavior.
 
-  private static LispParser f_myParser = null;
+	private static LispParser f_myParser = null;
 
 
   // required by tokenToLispValue() to use "intern" and "keyword" functions
@@ -378,6 +378,10 @@ public class LispParser
             token.append(ch);
             parseState = READING_MIXED_CASE_SYMBOL;
           }
+/*          else if (isColon(ch))
+          {
+              return(read_comma_token(inputReader));
+          }*/
           else
           {
             parseState = READING_SYMBOL;
@@ -1098,33 +1102,4 @@ public class LispParser
         return true;
     }
   }
-  
-  
-	public static LispValue car(LispValue arg)
-	{
-		return ((LispList)arg).car();
-	}
-	public static LispValue cdr(LispValue arg) 
-	{
-		return ((LispList)arg).cdr();
-	}
-	public static LispValue nth(long i, LispCons arg)
-	{
-		while (--i > 0)
-			arg = (LispCons)arg.cdr();
-		return arg.car();
-	}
-	public static final LispCons cons(LispValue car, LispValue cdr)
-	{
-		return new StandardLispCons(car, cdr);
-	}
-	public static final LispList list(LispValue... parts)
-	{
-		LispList result = NIL;
-		for (int i = parts.length-1 ; i >= 0; i--)
-			result = cons(parts[i], result);
-		return result;
-	}
-	
-	
 }

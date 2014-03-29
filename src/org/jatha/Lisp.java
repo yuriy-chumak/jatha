@@ -50,6 +50,8 @@ import org.jatha.dynatype.*;
 import org.jatha.machine.SECDMachine;
 import org.jatha.read.LispParser;
 import org.jatha.util.SymbolTable;
+import
+static org.jatha.dynatype.LispValue.*;
 
 
 // * @date    Thu Feb  6 09:24:18 1997
@@ -63,7 +65,7 @@ import org.jatha.util.SymbolTable;
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  *
  */
-public class Lisp
+public class Lisp extends LispProcessor
 {
 	private static boolean DEBUG = false;
 
@@ -152,17 +154,9 @@ public class Lisp
   // The '.' to represent a cons cell.
   public LispSymbol DOT;
 
-  // The list/symbol NIL.
-  static final LispList NIL = LispValue.NIL;
-  // The symbol T
-  public static final LispConstant T = LispValue.T;
-
 //  public LispSymbol CONS;
 //  public LispSymbol LIST;
 //  public LispSymbol APPEND;
-	static final LispSymbol COMMA_FN        = LispParser.COMMA_FN;
-	static final LispSymbol COMMA_ATSIGN_FN = LispParser.COMMA_ATSIGN_FN;
-	static final LispSymbol COMMA_DOT_FN    = LispParser.COMMA_DOT_FN;
   
   // Used in CONCATENATE
   public LispSymbol STRING;
@@ -200,9 +194,9 @@ public class Lisp
 	// this functions must be registered as symbols:
     intern("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
 	
-    intern("COMMA",        COMMA_FN);
-    intern("COMMA-ATSIGN", COMMA_ATSIGN_FN);
-    intern("COMMA-DOT",    COMMA_DOT_FN);
+    intern("COMMA",        LispParser.COMMA_FN);
+    intern("COMMA-ATSIGN", LispParser.COMMA_ATSIGN_FN);
+    intern("COMMA-DOT",    LispParser.COMMA_DOT_FN);
 
 //    symbol("T", T);
 
@@ -1178,24 +1172,6 @@ public class Lisp
   // --- SYSTEM PACKAGE functions  ---
 
 
-	/**
-	 * This functions does not generate LispExceptions and assumes that all
-	 * agruments are correct
-	 */
-	public static LispValue car(LispValue arg)
-	{
-		return ((LispList)arg).car();
-	}
-	public static LispValue cdr(LispValue arg) 
-	{
-		return ((LispList)arg).cdr();
-	}
-	public static LispValue nth(long i, LispCons arg)
-	{
-		while (--i > 0)
-			arg = (LispCons)arg.cdr();
-		return arg.car();
-	}
 	public static LispValue nth(LispCons ij, LispCons arg)
 	{
 		long i = ((LispInteger)(car(ij))).getLongValue();

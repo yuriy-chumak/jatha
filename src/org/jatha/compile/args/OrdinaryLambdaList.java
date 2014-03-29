@@ -37,6 +37,8 @@ import java.util.Iterator;
 import org.jatha.Lisp;
 
 import org.jatha.dynatype.LispValue;
+import
+static org.jatha.dynatype.LispValue.*;
 
 /**
  * <p>Info about this class</p>
@@ -80,7 +82,7 @@ public class OrdinaryLambdaList implements LambdaList {
 
         if(!tempAllow) {
             for(final Iterator<LispValue> iter = arguments.iterator();iter.hasNext();) {
-                if ((iter.next().eql(allowOtherKeysKey) == lisp.T) && iter.next() != NIL) {
+                if ((iter.next().eql(allowOtherKeysKey) == T) && iter.next() != NIL) {
                     tempAllow = true;
                     break;
                 }
@@ -89,7 +91,7 @@ public class OrdinaryLambdaList implements LambdaList {
         
         for(final Iterator<LispValue> iter = arguments.iterator();iter.hasNext();) {
             final LispValue val = iter.next();
-            if(tempAllow && (val.eql(allowOtherKeysKey) == lisp.T)) {
+            if(tempAllow && (val.eql(allowOtherKeysKey) == T)) {
                 iter.next();
                 continue;
             }
@@ -123,8 +125,8 @@ public class OrdinaryLambdaList implements LambdaList {
                 vals = lisp.makeCons(lisp.makeCons(oarg.getVar(),val),vals);
                 optArgsLeft.remove(oarg);
                 if(oarg.getSupplied() != null) {
-                    ret.put(oarg.getSupplied(),lisp.T);
-                    vals = lisp.makeCons(lisp.makeCons(oarg.getSupplied(),lisp.T),vals);
+                    ret.put(oarg.getSupplied(), T);
+                    vals = lisp.makeCons(lisp.makeCons(oarg.getSupplied(), T),vals);
                 }
                 break;
             default:
@@ -140,8 +142,8 @@ public class OrdinaryLambdaList implements LambdaList {
                             ret.put(key.getVar(),theVal);
                             vals = lisp.makeCons(lisp.makeCons(key.getVar(),theVal),vals);
                             if(key.getSupplied() != null) {
-                                ret.put(key.getSupplied(),lisp.T);
-                                vals = lisp.makeCons(lisp.makeCons(key.getSupplied(),lisp.T),vals);
+                                ret.put(key.getSupplied(), T);
+                                vals = lisp.makeCons(lisp.makeCons(key.getSupplied(), T),vals);
                             }
                         }
                     } else {

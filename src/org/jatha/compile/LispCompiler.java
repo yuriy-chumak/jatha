@@ -33,17 +33,19 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Stack;
 import java.util.Map;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 
 import org.jatha.Lisp;
+import org.jatha.LispProcessor;
 import org.jatha.compile.LispExtension;
-import org.jatha.Tests;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
 import org.jatha.machine.*;
 import org.jatha.read.LispParser;
+
+import static org.jatha.dynatype.LispValue.*;
+import static org.jatha.machine.SECDMachine.*;
 
 /**
  * LispCompiler has a <tt>compile()</tt> method that will
@@ -65,21 +67,18 @@ import org.jatha.read.LispParser;
  * @see org.jatha.machine.SECDop
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class LispCompiler
+public class LispCompiler extends LispProcessor
 {
 	// Set this to true to produce debugging output during compilation.
 	static boolean DEBUG = false;
 
-	static final LispList NIL = LispValue.NIL;
-	static final LispConstant T = LispValue.T;
-
-	static final LispValue QUOTE     = LispValue.QUOTE;
+//	static final LispValue QUOTE     = LispValue.QUOTE;
 	static final LispValue PROGN     = new StandardLispSymbol("PROGN");
 	static final LispValue DEFUN     = new StandardLispSymbol("DEFUN");
 	static final LispValue BLOCK     = new StandardLispSymbol("BLOCK");
 
-	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
-	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
+//	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
+//	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
 
 	// These are special forms that get expanded in the compiler
 	LispValue COMMENT;
@@ -126,7 +125,7 @@ public class LispCompiler
 			put(COMMENT = f_lisp.symbol("COMMENT"), new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
-						return cons(machine.LDT, code);
+						return cons(LDT, code);
 					}
 				});
 			
@@ -145,7 +144,7 @@ public class LispCompiler
 			put(QUOTE, new Compiler() {
 					@Override
 					public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
-						return cons(machine.LDC, cons(args.first(), code));
+						return cons(LDC, cons(args.first(), code));
 //						return compileQuote(args, code);
 					}
 				});
@@ -166,7 +165,7 @@ public class LispCompiler
 			put(DEFMACRO = f_lisp.symbol("DEFMACRO"), new Compiler() {
 						@Override
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
-							return compileDefmacro(machine, f_lisp.car(args), f_lisp.cdr(args), valueList, code);
+							return compileDefmacro(machine, car(args), cdr(args), valueList, code);
 						}
 				});
 			put(AND = f_lisp.symbol("AND"), new Compiler() {
@@ -193,7 +192,7 @@ public class LispCompiler
 						public LispValue compile(SECDMachine machine, LispValue args, LispValue valueList, LispValue code) throws CompilerException {
 							LispValue vars      = varsFromLetBindings(car(args));
 							LispValue values    = valuesFromLetBindings(car(args));
-							LispValue newValues = cons(vars, valueList);
+//							LispValue newValues = cons(vars, valueList);
 
 							LispValue body      = cons(PROGN, cdr(args));
 							return compileLet(machine, vars, values, valueList, body, code);
@@ -208,10 +207,10 @@ public class LispCompiler
 
 							LispValue body      = cons(PROGN, cdr(args));
 							
-							return cons(machine.DUM,
-						            compileApp(machine, values, newValues,
-						            		compileLambda(machine, body, newValues,
-						            				cons(machine.RAP, code))));
+							return cons(DUM,
+							            compileApp(machine, values, newValues,
+							            		compileLambda(machine, body, newValues,
+							            				cons(RAP, code))));
 						}
 				});
 		}};
@@ -450,49 +449,46 @@ public class LispCompiler
 			// todo: refactor this
 			public void Execute(SECDMachine machine)
 			{
-			    LispValue val = machine.S.pop();
-			    LispValue sym = machine.S.pop();
+				LispValue val = machine.S.pop();
+				LispValue sym = machine.S.pop();
 
-			    if (sym instanceof LispCons) {   // local variable
-			    	LispCons ij = (LispCons)sym;
-			    	LispCons valueList = (LispCons)machine.E.value();
-			    	LispValue newValue = val;
+				if (sym instanceof LispCons) {   // local variable
+					LispCons ij = (LispCons)sym;
+					LispCons valueList = (LispCons)machine.E.value();
+					LispValue newValue = val;
 			    	
-			    	Lisp.nth(ij, valueList).rplaca(newValue);
-			    }
+					Lisp.nth(ij, valueList).rplaca(newValue);
+				}
 
-			    else if (sym.specialP())  // special variable
-			      machine.special_set(sym, val);
+				else if (sym.specialP())  // special variable
+					machine.special_set(sym, val);
 
-			    else  // global variable
-			      sym.setf_symbol_value(val);
+				else  // global variable
+					sym.setf_symbol_value(val);
 
-			    machine.S.push(val);
-			    machine.C.pop();
+				machine.S.push(val);
+				machine.C.pop();
 			}
 			public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
 			                             LispValue valueList, LispValue code)
 					throws CompilerException
 			{
-				
 				// 13 Dec 2005 (mh)
 				// SETQ is not compiling correctly (noticed by Ola Bini).
 				// Also, SET is not compiling correctly.  They are always modifying the
 				// global value of the symbol, not the local value.  Fixed it by passing in
 				// the index instead of the symbol name if it is known to have a binding.
-				
 				LispValue lookupVal = compiler.indexAndAttribute(args.first(), valueList);
 				
 				if (lookupVal.second() == NIL)  // SETQ of a global var
-				return
-						f_lisp.makeCons(machine.LDC,
-				                f_lisp.makeCons(args.first(),
-				                		compiler.compile(args.second(), valueList, code)));
+					return cons(LDC,
+					            cons(args.first(),
+				                     compiler.compile(args.second(), valueList, code)));
 				
 				else  // SETQ of a local var, inside a LET or something like that.
-				return	f_lisp.makeCons(machine.LDC,
-								f_lisp.makeCons(lookupVal.second(),
-										compiler.compile(args.second(), valueList, code)));
+					return cons(LDC,
+					            cons(lookupVal.second(),
+					                 compiler.compile(args.second(), valueList, code)));
 			}
 			@Override
 			protected LispValue Execute(LispValue arg1, LispValue arg2)
@@ -590,29 +586,48 @@ public class LispCompiler
 			protected LispValue Execute(LispValue args) {
 			    if (args == NIL)
 			        return T;
-			      else
-			      {
-			        // There should be at least 2 arguments.
-			        LispValue first = args.first();
-			        args = Lisp.cdr(args);
-			        for (Iterator<LispValue> iterator = args.iterator(); iterator.hasNext();)
-			        {
-			          LispValue arg = iterator.next();
-			          if (first.equalNumeric(arg) == NIL)
-			          {
-			            return NIL;
-			          }
-			        }
-			        return T;
-			      }
+			    else {
+			    	// There should be at least 2 arguments.
+			    	LispValue first = args.first();
+			    	args = Lisp.cdr(args);
+			    	for (Iterator<LispValue> iterator = args.iterator(); iterator.hasNext();)
+			    	{
+			    		LispValue arg = iterator.next();
+			    		if (first.equalNumeric(arg) == NIL)
+			    			return NIL;
+			    	}
+			    	return T;
+			    }
 			}			
+		});
+
+		Register(new LispPrimitiveC("<", 2) {
+			@Override
+			protected final LispValue Execute(final LispValue args) {
+				LispValue a = car(args);
+				for (final Iterator<LispValue> i = cdr(args).iterator(); i.hasNext(); ) {
+					LispValue b = i.next();
+					if (a.lessThan(b) == NIL)
+						return NIL;
+					a = b;
+				}
+				return T;
+			}
+		});
+		Register(new LispPrimitiveC(">", 2) {
+			@Override
+			protected final LispValue Execute(final LispValue args) {
+				LispValue a = car(args);
+				for (final Iterator<LispValue> i = cdr(args).iterator(); i.hasNext(); ) {
+					LispValue b = i.next();
+					if (a.greaterThan(b) == NIL)
+						return NIL;
+					a = b;
+				}
+				return T;
+			}
 		});
 		
-		Register(new LispPrimitive2("<") {
-			protected LispValue Execute(LispValue a, LispValue b) {
-				return a.lessThan(b);
-			}			
-		});
 		Register(new LispPrimitive1("LAST") {
 			protected LispValue Execute(LispValue a) {
 				return a.last();
@@ -630,15 +645,16 @@ public class LispCompiler
 			protected LispValue Execute(LispValue args) {
 				return appendArgs(args);
 			}
-			  // This is right-recursive so it only copies each arg once.
-			  // The last arg is not copied, of course.
-			  LispValue appendArgs(LispValue args)
-			  {
-			    if (f_lisp.cdr(args) == NIL)
-			      return f_lisp.car(args);
-			    else
-			      return f_lisp.car(args).append(appendArgs(f_lisp.cdr(args)));
-			  }
+			
+			// This is right-recursive so it only copies each arg once.
+			// The last arg is not copied, of course.
+			LispValue appendArgs(LispValue args)
+			{
+				if (cdr(args) == NIL)
+					return car(args);
+				else
+					return car(args).append(appendArgs(cdr(args)));
+			}
 		});
 		
 		
@@ -648,6 +664,11 @@ public class LispCompiler
 				return (a instanceof LispCons) ? T : NIL;
 			}
 		});
+/*		Register(new LispPrimitive1("LISTP") {
+			protected LispValue Execute(LispValue a) {
+				return (a instanceof LispList) ? T : NIL; ?
+			}
+		});*/
 		Register(new LispPrimitive1("CONSTANTP") {
 			protected LispValue Execute(LispValue a) {
 				return (a instanceof LispConstant) ? T : NIL;
@@ -770,13 +791,66 @@ public class LispCompiler
 		        return ret.nreverse();
 		    }
 		});
-		Register(new LispPrimitive1("SIN") {
-			protected LispValue Execute(LispValue a) {
-				return real(
-						Math.sin(((LispNumber)a).getDoubleValue())
-				);
-			}			
-		});
+
+		Register(new LispPrimitiveC("RETURN-FROM", 1, 2) {
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code) throws CompilerException {
+				final LispValue tag = car(args);
+				if (!compiler.getLegalBlocks().contains(tag))
+					throw new LispAssertionException("No enclosing lexical block with tag " + tag);
+
+				final LispValue fullCode = cdr(args);
+				final LispValue compiledCode = compiler.compileArgsLeftToRight(fullCode, valueList,
+						cons(LIS,
+						     cons(fullCode.length(),
+						          cons(LDC,
+						               cons(tag, code)))));
+				return compiledCode;
+			}
+
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+				final LispValue tag = machine.S.pop();
+				final LispValue args = machine.S.pop();
+				final LispValue retVal = (args.basic_length() == 0) ? NIL : car(args);
+				machine.S.push(retVal);
+				findBlock(tag,machine);
+			}
+			private void findBlock(final LispValue tag, final SECDMachine machine) throws CompilerException 
+			{
+				LispValue currVal = null;
+				while (true) {
+					currVal = machine.C.pop();
+					while (
+						currVal != NIL &&
+						currVal != RTN && currVal != RTN_IF && currVal != RTN_IT && currVal != JOIN &&
+						currVal != BLK/* && !(currVal instanceof TagbodyPrimitive)*/
+					)
+						currVal = machine.C.pop();
+					if (currVal == BLK) 
+					{
+						currVal = machine.C.pop();
+						if (tag == currVal) 
+							return; // We found the place!
+						continue;
+					}
+
+					if (currVal == RTN || currVal == RTN_IF || currVal == RTN_IT || currVal == JOIN)
+						((LispPrimitive)currVal).Execute(machine);
+					else
+						throw new IllegalArgumentException("RETURN-FROM called with in bad form, no matching block outside");
+					/* else if (currVal instanceof TagbodyPrimitive) {
+			        machine.C.push(currVal);
+			        ((LispPrimitive)currVal).Execute(machine);
+			      } */
+				}
+			}
+			
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				throw new LispAssertionException();
+			}});
+		
 		
 	}
 	
@@ -1788,24 +1862,5 @@ public class LispCompiler
 	public static boolean is_null(LispValue value)
 	{
 		return (value == NIL);
-	}
-	public static final LispCons cons(LispValue car, LispValue cdr)
-	{
-		return new StandardLispCons(car, cdr);
-	}
-	public static final LispList list(LispValue... parts)
-	{
-		LispList result = NIL;
-		for (int i = parts.length-1 ; i >= 0; i--)
-			result = cons(parts[i], result);
-		return result;
-	}
-	public static LispValue car(LispValue value)
-	{
-		return ((LispList)value).car();
-	}
-	public static LispValue cdr(LispValue value)
-	{
-		return ((LispList)value).cdr();
 	}
 }
