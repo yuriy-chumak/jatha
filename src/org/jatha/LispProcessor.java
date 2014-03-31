@@ -1,6 +1,9 @@
 package org.jatha;
 
+import java.math.BigInteger;
+
 import org.jatha.dynatype.*;
+
 import
 static org.jatha.dynatype.LispValue.*;
 
@@ -10,6 +13,11 @@ static org.jatha.dynatype.LispValue.*;
  */
 public class LispProcessor
 {
+	/**
+	 * This functions does not generate LispExceptions and assumes that all
+	 * agruments are correct
+	 */
+	
 	public static final LispValue car(LispValue arg)
 	{
 		return ((LispList)arg).car();
@@ -24,6 +32,24 @@ public class LispProcessor
 			arg = (LispCons)arg.cdr();
 		return arg.car();
 	}
+	public static LispValue nth(LispCons ij, LispCons arg)
+	{
+		long i = ((LispInteger)(car(ij))).getLongValue();
+		long j = ((LispInteger)(cdr(ij))).getLongValue();
+		
+		arg = (LispCons)Lisp.nth(i, arg);
+		while (--j > 0)
+			arg = (LispCons)arg.cdr();
+		
+		return arg;
+	}
+	
+	public static final LispValue cddr(LispValue arg) 
+	{
+		return cdr(cdr(arg));
+	}
+	
+	
 	public static final LispCons cons(LispValue car, LispValue cdr)
 	{
 		return new StandardLispCons(car, cdr);
@@ -35,4 +61,61 @@ public class LispProcessor
 			result = cons(parts[i], result);
 		return result;
 	}
+	
+	// constructors
+	public static final LispString string(String str)
+	{
+		return new StandardLispString(str);
+	}
+
+	public static final LispInteger integer(Long value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static final LispInteger integer(long value)
+	{
+		return new StandardLispInteger(value);
+	}
+
+	public static final LispInteger integer(Integer value)
+	{
+		return new StandardLispInteger(value.longValue());
+	}
+
+	public static final LispInteger integer(int value)
+	{
+		return new StandardLispInteger(value);
+	}
+	
+	/**
+	 * Creates a LispBignum type initialized with the value provided.
+	 * @see LispBignum
+	 * @see java.math.BigInteger
+	 */
+	public static final LispBignum bignum(BigInteger value)
+	{
+		return new StandardLispBignum(value);
+	}
+
+	public static final LispBignum bignum(LispInteger value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value.getLongValue()));
+	}
+
+	public static final LispBignum bignum(double value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf((long) value));
+	}
+
+	public static final LispBignum bignum(long value)
+	{
+		return new StandardLispBignum(BigInteger.valueOf(value));
+	}
+
+	public static final LispInteger integer()
+	{
+		return new StandardLispInteger(0);
+	}
+	
 }

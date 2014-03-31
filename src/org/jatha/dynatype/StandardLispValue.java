@@ -65,6 +65,7 @@ import java.util.List;
 import java.util.RandomAccess;
 
 import org.jatha.Lisp;
+import org.jatha.LispProcessor;
 import org.jatha.exception.*;
 
 
@@ -82,9 +83,10 @@ import org.jatha.exception.*;
  * @version 1.0
  *
  */
-public abstract class StandardLispValue implements LispValue    // Base class for all the LISP data types
+public abstract class StandardLispValue extends LispProcessor
+		implements LispValue    // Base class for all the LISP data types
 {
-	public StandardLispValue() { }
+//	public StandardLispValue() { }
 
   public String internal_getName()
   {
@@ -106,7 +108,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
   public void internal_print_as_cdr(PrintStream os)
   { os.print(" . "); internal_print(os);  }
 
-  public boolean basic_bignump()   { return false; }
   public boolean basic_constantp() { return false; }
   public boolean basic_floatp()    { return false; }
   public boolean basic_foreignp()  { return false; }
@@ -1051,24 +1052,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
       }
     }
 
-	/**
-	 * This functions does not generate LispExceptions and assumes that all
-	 * agruments are correct
-	 */
-	public static LispValue car(LispValue arg)
-	{
-		return ((LispList)arg).car();
-	}
-	public static LispValue cdr(LispValue arg) 
-	{
-		return ((LispList)arg).cdr();
-	}
-	public static LispValue nth(long i, LispCons arg)
-	{
-		while (--i > 0)
-			arg = (LispCons)arg.cdr();
-		return arg.car();
-	}
 	public static LispValue rest(LispCons ij, LispCons arg)
 	{
 		long i = ((LispInteger)(car(ij))).getLongValue();
@@ -1080,73 +1063,6 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 		return arg;
 	}
 	
-	public static LispValue cddr(LispValue arg)
-	{
-		return cdr(cdr(arg));
-	}
-
-	public static LispValue cons(LispValue car, LispValue cdr)
-	{
-		return new StandardLispCons(car, cdr);
-	}
-	public static LispValue list(LispValue... parts)
-	{
-		LispValue result = NIL;
-		for (int i = parts.length-1 ; i >= 0; i--)
-			result = cons(parts[i], result);
-		return result;
-	}
-	
-	public static LispInteger integer(Long value)
-	{
-		return new StandardLispInteger(value.longValue());
-	}
-
-	public static LispInteger integer(long value)
-	{
-		return new StandardLispInteger(value);
-	}
-
-	public static LispInteger integer(Integer value)
-	{
-		return new StandardLispInteger(value.longValue());
-	}
-
-	public static LispInteger integer(int value)
-	{
-		return new StandardLispInteger(value);
-	}
-
-	public static LispInteger integer()
-	{
-		return new StandardLispInteger(0);
-	}
-
-	/**
-	 * Creates a LispBignum type initialized with the value provided.
-	 * @see LispBignum
-	 * @see java.math.BigInteger
-	 */
-	public static LispBignum bignum(BigInteger value)
-	{
-		return new StandardLispBignum(value);
-	}
-
-	public static LispBignum bignum(LispInteger value)
-	{
-		return new StandardLispBignum(BigInteger.valueOf(value.getLongValue()));
-	}
-
-	public static LispBignum bignum(double value)
-	{
-		return new StandardLispBignum(BigInteger.valueOf((long) value));
-	}
-
-	public static LispBignum bignum(long value)
-	{
-		return new StandardLispBignum(BigInteger.valueOf(value));
-	}
-
 	/**
 	 * Creates an instance of LispReal initialized with
 	 * the given value.
@@ -1177,10 +1093,5 @@ public abstract class StandardLispValue implements LispValue    // Base class fo
 	public static LispReal real()
 	{
 		return new StandardLispReal(0.0);
-	}
-	
-	public static LispString string(String value)
-	{
-		return new StandardLispString(value);
 	}
 }

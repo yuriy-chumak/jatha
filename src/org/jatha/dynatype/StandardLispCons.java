@@ -498,7 +498,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   { carCell = newCar; return this; };
   //todo: change argument to LispConsOrNil
   public LispValue     rplacd(LispValue  newCdr)
-  { cdrCell = (LispList)newCdr; return this; };
+  { cdrCell = newCdr; return this; };
 
   public LispValue subst(LispValue newValue, LispValue oldValue)
   {

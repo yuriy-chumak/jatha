@@ -27,6 +27,8 @@ package org.jatha.compile;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
+import
+static org.jatha.machine.SECDMachine.*;
 
 // primitive with variable count of arguments
 public abstract class LispPrimitiveC extends LispPrimitive
@@ -73,7 +75,7 @@ public abstract class LispPrimitiveC extends LispPrimitive
 			throws CompilerException
 	{
 		return compiler.compileArgsLeftToRight(args, valueList,
-						cons(SECDMachine.LIS,
+						cons(LIS,
 						     cons(args.length(), code)));
 	}
 	

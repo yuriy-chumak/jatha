@@ -75,6 +75,26 @@ public interface LispValue extends Comparable<LispValue>
 	public static final LispValue NEWLINE = new StandardLispCharacter('\n');
 	public static final LispValue SPACE   = new StandardLispCharacter(' ');
 	
+	// basic type checks
+//	basic_atom()  => instanceof LispAtom
+//	basic_null()  => == NIL
+//	basic_consp() => instanceof LispCons
+//	basic_listp() => instanceof LispList
+	
+//	basic_numberp
+//	basic_bignump
+//	basic_floatp
+//	basic_integerp
+//	complex
+
+//	basic_stringp
+//	characterp
+	
+//	basic_symbolp
+//	basic_constantp
+//	basic_functionp
+//	basic_keywordp
+//	basic_macrop
 	// =-( unsorted )-=========================================	
 	
 	
@@ -96,11 +116,6 @@ public interface LispValue extends Comparable<LispValue>
 
   public void internal_print_as_cdr(PrintStream os);
 
-
-  /**
-   * Returns Java true if the object is a Bignum.
-   */
-  public boolean basic_bignump();
 
   /**
    * Returns Java true if the object is a constant.
@@ -264,10 +279,6 @@ public interface LispValue extends Comparable<LispValue>
   public void adjustSpecialCount(int amount);
 
   public int get_specialCount();
-
-
-  // Packages
-  public void setPackage(boolean has);
 
 
 /* ------------------  LISP functions    ------------------------------ */

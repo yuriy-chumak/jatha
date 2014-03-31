@@ -32,11 +32,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
-import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.StringReader;
-import java.io.StringWriter;
-import java.math.BigInteger;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.Collection;
@@ -52,6 +49,8 @@ import org.jatha.read.LispParser;
 import org.jatha.util.SymbolTable;
 import
 static org.jatha.dynatype.LispValue.*;
+import
+static org.jatha.read.LispParser.*;
 
 
 // * @date    Thu Feb  6 09:24:18 1997
@@ -121,7 +120,7 @@ public class Lisp extends LispProcessor
    *
    * @see org.jatha.dynatype.LispPackage
    */
-    public SymbolTable   SYMTAB; //TODO: fix so that this is ALWAYS correct, in some way.
+    public SymbolTable   SYMTAB;
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Thu Feb  6 09:26:00 1997
@@ -152,14 +151,14 @@ public class Lisp extends LispProcessor
   public static int APROPOS_TAB = 30;
 
   // The '.' to represent a cons cell.
-  public LispSymbol DOT;
+//  public LispSymbol DOT;
 
 //  public LispSymbol CONS;
 //  public LispSymbol LIST;
 //  public LispSymbol APPEND;
   
   // Used in CONCATENATE
-  public LispSymbol STRING;
+//  public LispSymbol STRING;
 
   // Math constants
 //  public LispNumber PI;
@@ -178,33 +177,20 @@ public class Lisp extends LispProcessor
       e.printStackTrace();
     }
 
-    // NIL is special case - not a symbol but require be in system symbol table(?)
-//	NIL.setPackage(f_systemPackage);
-    
-    // create initial builtin symbols
-//    LIST = new StandardLispSymbol(this, "LIST");
-//	symbol("QUOTE",     LispValue.QUOTE); 
-//    symbol("LIST",      LIST = new StandardLispSymbol(this, "LIST"));
-//    symbol("APPEND",    APPEND = new StandardLispSymbol("APPEND"));
-//    symbol("CONS",      CONS = new StandardLispSymbol(this, "CONS"));
-    
-    intern("DOT",       DOT = new StandardLispSymbol("."));
-    intern("STRING",    STRING = new StandardLispSymbol("STRING"));
-    
 	// this functions must be registered as symbols:
-    intern("BACKQUOTE", LispValue.BACKQUOTE); // this is a function, must be registered as symbol
+    intern("BACKQUOTE",    BACKQUOTE); // this is a function, must be registered as symbol
 	
-    intern("COMMA",        LispParser.COMMA_FN);
-    intern("COMMA-ATSIGN", LispParser.COMMA_ATSIGN_FN);
-    intern("COMMA-DOT",    LispParser.COMMA_DOT_FN);
+    intern("COMMA",        COMMA_FN);
+    intern("COMMA-ATSIGN", COMMA_ATSIGN_FN);
+    intern("COMMA-DOT",    COMMA_DOT_FN);
 
 //    symbol("T", T);
 
 //    E    = StandardLispValue.real(StrictMath.E);
 //    PI   = StandardLispValue.real(StrictMath.PI);
 
-    intern("MACRO", LispValue.MACRO);
-    intern("PRIMITIVE", LispValue.PRIMITIVE);
+    intern("MACRO",     MACRO);
+    intern("PRIMITIVE", PRIMITIVE);
   }
 
 /* ------------------  PRIVATE VARIABLES   ------------------------------ */
@@ -993,7 +979,7 @@ public class Lisp extends LispProcessor
 	 * @see LispValue
 	 *
 	 */
-	public LispList makeList(Collection<LispValue> elements)
+/*	public LispList makeList(Collection<LispValue> elements)
 	{
 		// Use array so as to iterate from the end to the beginning.
 		Object[] elArray = elements.toArray();
@@ -1003,7 +989,7 @@ public class Lisp extends LispProcessor
 			result = new StandardLispCons((LispValue)(elArray[i]), result);
 
 		return result;
-	}
+	}*/
 
 
 	// Removed previous versions of this method that had 1, 2, 3 or 4 parameters.
@@ -1014,13 +1000,13 @@ public class Lisp extends LispProcessor
 	 * Returns NIL if no arguments are passed.
 	 * makeList(NIL) returns (NIL) - a list containing NIL.
 	 */
-	public LispList makeList(LispValue... parts)
+/*	public LispList makeList(LispValue... parts)
 	{
 		LispList result = NIL;
 		for (int i = parts.length-1 ; i >= 0; i--)
 			result = new StandardLispCons(parts[i], result);
 		return result;
-	}
+	}*/
   
 
   /**
@@ -1156,7 +1142,7 @@ public class Lisp extends LispProcessor
       return StandardLispValue.real(((Float) obj).doubleValue());
 
     if (obj instanceof String)
-      return new StandardLispString((String) obj);
+      return string((String) obj);
 
 /*    try
     {
@@ -1170,25 +1156,6 @@ public class Lisp extends LispProcessor
 
 
   // --- SYSTEM PACKAGE functions  ---
-
-
-	public static LispValue nth(LispCons ij, LispCons arg)
-	{
-		long i = ((LispInteger)(car(ij))).getLongValue();
-		long j = ((LispInteger)(cdr(ij))).getLongValue();
-		
-		arg = (LispCons)Lisp.nth(i, arg);
-		while (--j > 0)
-			arg = (LispCons)arg.cdr();
-		
-		return arg;
-	}
-	
-	public static LispValue cddr(LispValue arg)
-	{
-		return cdr(cdr(arg));
-	}
-	
 
 	public static void main(String[] args)
 	{
@@ -1219,7 +1186,7 @@ public class Lisp extends LispProcessor
 	////////////// EVAL
 	public LispSymbol intern(String symbolString, LispSymbol symbol)
 	{
-		symbol.setPackage(true);
+//		symbol.setPackage(true);
 		SYMTAB.put(symbolString, symbol);
 		return symbol;
 	}

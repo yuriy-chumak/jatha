@@ -82,7 +82,6 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
   public void    internal_princ(PrintStream os) { os.print(value); }
   public void    internal_prin1(PrintStream os) { os.print(value); }
   public void    internal_print(PrintStream os) { os.print(value); }
-  public boolean basic_bignump()   { return true; }
   public boolean basic_integerp()  { return true; }
 
 

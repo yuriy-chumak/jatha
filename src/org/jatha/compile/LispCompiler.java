@@ -90,7 +90,6 @@ public class LispCompiler extends LispProcessor
 	LispValue LET;
 	LispValue LETREC;
 	LispValue OR;
-	LispValue SETQ;
     //  LispValue WHEN;
 
 	LispValue AMP_REST;   // keyword &rest used in parameters list
@@ -99,6 +98,7 @@ public class LispCompiler extends LispProcessor
   
 	LispPrimitive CONS;
 	LispPrimitive LIST;
+	LispPrimitive SETQ;
   
 	Map<LispValue, Compiler> SpecialOperators = null;
 	interface Compiler {
@@ -118,7 +118,7 @@ public class LispCompiler extends LispProcessor
 	private void initializeConstants()
 	{
 		AMP_REST   = f_lisp.symbol("&REST");
-		SETQ       = f_lisp.symbol("SETQ");
+//		SETQ       = f_lisp.symbol("SETQ"); // improvement under "SET '" ?
 		//WHEN     = f_lisp.EVAL.intern("WHEN");
     
 		SpecialOperators = new TreeMap<LispValue, Compiler>() {{
@@ -373,8 +373,7 @@ public class LispCompiler extends LispProcessor
 		});
 
 
-    	// "inline" primitives (for perfomance purposes)
-
+    	// inline primitives
 		Register(CONS = new LispPrimitive2("CONS") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				return cons(a, b);
@@ -394,58 +393,7 @@ public class LispCompiler extends LispProcessor
 			}
 			
 		});
-		/*compiler.Register(new InlineLispPrimitive(f_lisp, "LIST*", 1, Long.MAX_VALUE) {
-			LispValue CONS = new ConsPrimitive(f_lisp);
-			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
-					throws CompilerException
-			{
-				if (args.cdr() == NIL)
-					return compiler.compileArgsLeftToRight(args, valueList, code);
-				return compiler.compile(args.car(), valueList,
-						CompileArgs(compiler, machine, args.cdr(),
-								valueList,
-								f_lisp.makeCons(CONS, code)));
-			}
-		}, SYSTEM_PKG);*/
-
-		Register(new LispPrimitive0("EXIT") {
-			protected LispValue Execute() {
-				System.exit(0);
-				return T; // no exit, actually
-			}
-		});
-		
-		// 
-		Register(new LispPrimitive1("ATOM") {
-			protected LispValue Execute(LispValue arg) {
-				return bool(is_atom(arg));
-			}
-		});
-		Register(new LispPrimitive1("NULL") {
-			protected LispValue Execute(LispValue arg) {
-				return bool(is_null(arg));
-			}
-		});
-		
-		Register(new LispPrimitive2("EQ") {
-			public LispValue Execute(LispValue a, LispValue b) {
-				if (is_atom(a) && is_atom(b))
-					return bool(a == b);
-				return NIL;
-			}
-		});
-		Register(new LispPrimitive2("EQL") {
-			public LispValue Execute(LispValue a, LispValue b) {
-				return a.eql(b);
-			}
-		});
-		Register(new LispPrimitive1("NOT") {
-			protected LispValue Execute(LispValue a) {
-				return bool(is_null(a));
-			}
-		});
-
-		Register(new LispPrimitive2("SETQ") {
+		Register(SETQ = new LispPrimitive2("SETQ") {
 			// todo: refactor this
 			public void Execute(SECDMachine machine)
 			{
@@ -496,29 +444,144 @@ public class LispCompiler extends LispProcessor
 				throw new LispAssertionException(LispFunctionNameString() + " was compiled - shouldn't have been.");
 			}
 		});
+		
+		
+		/*compiler.Register(new InlineLispPrimitive(f_lisp, "LIST*", 1, Long.MAX_VALUE) {
+			LispValue CONS = new ConsPrimitive(f_lisp);
+			public LispValue CompileArgs(final LispCompiler compiler, final SECDMachine machine, final LispValue args, final LispValue valueList, final LispValue code)
+					throws CompilerException
+			{
+				if (args.cdr() == NIL)
+					return compiler.compileArgsLeftToRight(args, valueList, code);
+				return compiler.compile(args.car(), valueList,
+						CompileArgs(compiler, machine, args.cdr(),
+								valueList,
+								f_lisp.makeCons(CONS, code)));
+			}
+		}, SYSTEM_PKG);*/
 
-/*		
+		Register(new LispPrimitive0("EXIT") {
+			protected LispValue Execute() {
+				System.exit(0);
+				return T; // no exit, actually
+			}
+		});
+		
+		
+		
+		// 
+		Register(new LispPrimitive1("ATOM") {
+			protected LispValue Execute(LispValue arg) {
+				return bool(is_atom(arg));
+			}
+		});
+		Register(new LispPrimitive1("NULL") {
+			protected LispValue Execute(LispValue arg) {
+				return bool(is_null(arg));
+			}
+		});
+		
+		Register(new LispPrimitive2("EQ") {
+			public LispValue Execute(LispValue a, LispValue b) {
+				if (is_atom(a) && is_atom(b))
+					return bool(a == b);
+				return NIL;
+			}
+		});
+		Register(new LispPrimitive2("EQL") {
+			public LispValue Execute(LispValue a, LispValue b) {
+				return a.eql(b);
+			}
+		});
+		Register(new LispPrimitive1("NOT") {
+			protected LispValue Execute(LispValue a) {
+				return bool(is_null(a));
+			}
+		});
+
+		
 		final LispPrimitive EVAL;
-		Register(EVAL = new LispPrimitiveC(f_lisp, "EVAL", 1) {
-			  public void Execute(SECDMachine machine)
-					    throws CompilerException
-					  {
-					    LispValue expr = machine.S.pop();
-					    LispValue code = f_lisp.COMPILER.compile(expr, NIL, NIL);
+		Register(EVAL = new LispPrimitive1("EVAL") {
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+				machine.C.pop();  // Pop the EVAL command
+				
+				LispValue expr = machine.S.pop();
+				LispValue code = compile(expr, NIL, NIL);
 
-					    machine.C.pop();  // Pop the EVAL command
-
-					    // Push the new code on the stack.
-					    machine.C.assign(code.append(machine.C.value()));
-					  }
+				// Push the new code on the stack.
+				machine.C.assign(code.append(machine.C.value()));
+			}
 
 			@Override
 			protected LispValue Execute(LispValue arg) throws CompilerException {
-				return null;
+				return null; //todo: throw new exception
+			}});
+		Register(new LispPrimitiveC("APPLY", 2) {
+			public void Execute(SECDMachine machine)
+					throws CompilerException
+			{
+				machine.C.pop();
+			    
+				LispValue args   = machine.S.pop();
+				LispValue fn     = car(args);
+				LispValue fnArgs = cdr(args);
+
+				// The last arg must be a list.
+				if (!validArgumentList(args))
+					throw new WrongArgumentTypeException("APPLY", "", "");// todo: change this , "a CONS in the last argument",
+//							"a " + car(fnArgs.last()).type_of().toString());*/
+				
+				machine.S.push(cons(fn,
+				                    quoteList(constructArgList(fnArgs))));
+
+			    // (mh) 4 Sep 2004
+			    // This seems like a kludge, but I don't know how to get around it.
+			    // if the fn is a user-defined function, we have to move the arguments to the E register.
+				if ((fn instanceof LispFunction) && (! ((LispFunction)fn).isBuiltin()))
+				{
+					machine.S.pop();
+					machine.S.push(list(fn));
+					machine.E.push(fnArgs);
+				}
+
+				machine.C.push(EVAL);
+			}
+			
+			// The last arg is a list.  We need to cons the
+			// rest onto the front of the list.
+			LispValue constructArgList(LispValue args)
+			{
+				// The last argument is a list, and we need to quote
+				// the values in that list.
+				if (cdr(args) == NIL)
+					return car(args);
+				else
+					return cons(car(args), constructArgList(cdr(args)));
+			}
+
+			public boolean validArgumentList(LispValue args)
+			{
+				// The last argument must be a CONS
+//				if (car(args.last()) instanceof LispCons || car(args.last()) == NIL)
+				if (car(args.last()) instanceof LispList) // (cons or nil)
+					return super.validArgumentList(args);
+				else
+				{
+					System.err.println(";; *ERROR*: Last argument to APPLY must be a CONS.");
+					return false;
+				}
+			}
+			
+
+			@Override
+			protected LispValue Execute(LispValue arg) throws CompilerException {
+				return null; //todo: throw new exception
 			}});
 
 		
-		// todo: must be integrated, but needs to test
+/*		// todo: must be integrated, but needs to test
 		Register(new LispPrimitiveC(f_lisp, "FUNCALL", 1) {
 			  public void Execute(SECDMachine machine)
 			  {
@@ -549,57 +612,10 @@ public class LispCompiler extends LispProcessor
 			}
 		}, SYSTEM_PKG);
 */
-		// move to "math" ?
-		Register(new LispPrimitiveC("+", 0) {
-			protected LispValue Execute(LispValue args) {
-				if (args == NIL)
-					return LispNumber.ZERO;
-				LispNumber x = assertNumber(car(args));
-				return x.add(cdr(args));
-			}
-		});
-		Register(new LispPrimitiveC("-", 1) {
-			protected LispValue Execute(LispValue args) {
-				LispNumber x = assertNumber(car(args));
-				return x.sub(cdr(args));
-			}
-		});
-		Register(new LispPrimitiveC("*", 0) {
-			protected LispValue Execute(LispValue args) {
-				if (args == NIL)
-					return LispNumber.ONE;
-				LispNumber x = assertNumber(car(args));
-				return x.mul(cdr(args));
-			}
-		});
-		Register(new LispPrimitiveC("/", 1) {
-			protected LispValue Execute(LispValue args) {
-				LispNumber x = assertNumber(car(args));
-				return x.div(cdr(args));
-			}
-		});
-		
+
 		registerAccessorFunctions();
+		registerMathFunctions();
 //		registerStringFunctions(SYSTEM_PKG);
-		
-		Register(new LispPrimitiveC("=", 2) {
-			protected LispValue Execute(LispValue args) {
-			    if (args == NIL)
-			        return T;
-			    else {
-			    	// There should be at least 2 arguments.
-			    	LispValue first = args.first();
-			    	args = Lisp.cdr(args);
-			    	for (Iterator<LispValue> iterator = args.iterator(); iterator.hasNext();)
-			    	{
-			    		LispValue arg = iterator.next();
-			    		if (first.equalNumeric(arg) == NIL)
-			    			return NIL;
-			    	}
-			    	return T;
-			    }
-			}			
-		});
 
 		Register(new LispPrimitiveC("<", 2) {
 			@Override
@@ -766,7 +782,7 @@ public class LispCompiler extends LispProcessor
 		        LispValue ret = NIL;
 		        for(final Iterator<LispValue> iter = intern.iterator(); iter.hasNext();) {
 		            final LispValue curr = (LispValue)iter.next();
-		            ret = f_lisp.makeCons(f_lisp.makeList(QUOTE, curr), ret);
+		            ret = cons(list(QUOTE, curr), ret);
 		        }
 		        return ret.nreverse();
 		    }
@@ -786,7 +802,7 @@ public class LispCompiler extends LispProcessor
 		        LispValue ret = NIL;
 		        for(final Iterator<LispValue> iter = intern.iterator();iter.hasNext();) {
 		            final LispValue curr = (LispValue)iter.next();
-		            ret = f_lisp.makeCons(f_lisp.makeList(QUOTE,curr),ret);
+		            ret = cons(list(QUOTE,curr),ret);
 		        }
 		        return ret.nreverse();
 		    }
@@ -850,7 +866,6 @@ public class LispCompiler extends LispProcessor
 			protected LispValue Execute(LispValue arg) throws CompilerException {
 				throw new LispAssertionException();
 			}});
-		
 		
 	}
 	
@@ -975,15 +990,15 @@ public class LispCompiler extends LispProcessor
 		LispValue subList = l;
 		LispValue[] attribute = new LispValue[] { NIL };
 
-		for (;; indexSubList++, subList = f_lisp.cdr(subList))
+		for (;; indexSubList++, subList = cdr(subList))
 		{
 			if (subList == NIL)
 				return cons(NIL, NIL); // not found
 			int indexInSubList = indexInList(e, car(subList), attribute);
 			if (indexInSubList != 0) // found
 			{
-				LispValue position = cons(cons(new StandardLispInteger(indexSubList),
-				                               new StandardLispInteger(indexInSubList)),
+				LispValue position = cons(cons(integer(indexSubList),
+				                               integer(indexInSubList)),
 				                          NIL);
 				return cons(attribute[0], position);
 			}
@@ -993,20 +1008,17 @@ public class LispCompiler extends LispProcessor
 
 	// This places the args on the stack so that they will be evaluated L->R,
 	// as is required in Common LISP.
-	//
+	// todo: speedup!
 	public LispValue compileArgsLeftToRight(LispValue args,
                                             LispValue valueList,
                                             LispValue code)
 		throws CompilerException
 	{
 		LispValue rest = code;
-		if (args != NIL)
-		{
+		if (args != NIL) {
 			List<LispValue> list = args.toRandomAccess();
 			for (int i = list.size() - 1; i >= 0; i--)
-			{
 				rest = compile(list.get(i), valueList, rest);
-			}
 		}
 		return rest;
 	}
@@ -1021,7 +1033,7 @@ public class LispCompiler extends LispProcessor
 		if (args == NIL)
 			return code;
 		else
-			return cons(machine.LDC,
+			return cons(LDC,
                         cons(car(args),
                              compileConstantArgsLeftToRight(machine, cdr(args), valueList, code)));
 	}
@@ -1038,7 +1050,8 @@ public class LispCompiler extends LispProcessor
 			List<LispValue> list = l.toRandomAccess();
 			for (int i = list.size() - 1; i >= 0; i--)
 			{
-				rest = cons(f_lisp.makeList(QUOTE, list.get(i)), rest);
+				rest = cons(list(QUOTE, list.get(i)),
+				            rest);
 			}
 		}
 		return rest;
@@ -1558,9 +1571,9 @@ public class LispCompiler extends LispProcessor
     LispValue dummyVar = f_lisp.symbol("*AND-DUMMY-VAR*");
     dummyVar.set_special(true);
 
-    return compile(f_lisp.makeList(LET,
-      f_lisp.makeCons(f_lisp.makeList(dummyVar, args.first()), NIL),
-      f_lisp.makeList(IF, dummyVar, compileAndAux(dummyVar, f_lisp.cdr(args)), NIL)),
+    return compile(list(LET,
+      cons(list(dummyVar, args.first()), NIL),
+      list(IF, dummyVar, compileAndAux(dummyVar, cdr(args)), NIL)),
       valueList,
       code);
   }
@@ -1568,14 +1581,14 @@ public class LispCompiler extends LispProcessor
 
   LispValue compileAndAux(LispValue dummyVar, LispValue args)
   {
-    if (f_lisp.cdr(args) == NIL)
-      return (f_lisp.car(args));
+    if (cdr(args) == NIL)
+      return (car(args));
 
     return
-            f_lisp.makeList(PROGN,
-              f_lisp.makeList(SETQ, dummyVar, f_lisp.car(args)),
-                f_lisp.makeList(IF, dummyVar,
-                  compileAndAux(dummyVar, f_lisp.cdr(args)),
+            list(PROGN,
+              list(SETQ, dummyVar, car(args)),
+                list(IF, dummyVar,
+                  compileAndAux(dummyVar, cdr(args)),
                     NIL));
   }
 
@@ -1586,10 +1599,10 @@ public class LispCompiler extends LispProcessor
   {
     // No args: return default value of NIL
     if (args == NIL)
-      return f_lisp.makeCons(machine.LDNIL, code);
+      return cons(LDNIL, code);
 
     // 1 arg: just compile the argument.
-    if (f_lisp.cdr(args) == NIL)
+    if (cdr(args) == NIL)
       return compile(args.first(), valueList, code);
 
     // Multiple arguments: construct an IF statement
@@ -1598,12 +1611,12 @@ public class LispCompiler extends LispProcessor
     LispValue dummyVar = f_lisp.symbol("*OR-DUMMY-VAR*");
     dummyVar.set_special(true);
 
-    return compile(f_lisp.makeList(LET,
-      f_lisp.makeCons(f_lisp.makeList(dummyVar, args.first()),
+    return compile(list(LET,
+      cons(list(dummyVar, args.first()),
         NIL),
-      f_lisp.makeList(IF, dummyVar,
+      list(IF, dummyVar,
         dummyVar,
-        compileOrAux(dummyVar, f_lisp.cdr(args)))),
+        compileOrAux(dummyVar, cdr(args)))),
       valueList,
       code);
   }
@@ -1611,15 +1624,15 @@ public class LispCompiler extends LispProcessor
 
   LispValue compileOrAux(LispValue dummyVar, LispValue args)
   {
-    if (f_lisp.cdr(args) == NIL)
-      return (f_lisp.car(args));
+    if (cdr(args) == NIL)
+      return (car(args));
 
     return
-      f_lisp.makeList(PROGN,
-        f_lisp.makeList(SETQ, dummyVar, f_lisp.car(args)),
-        f_lisp.makeList(IF, dummyVar,
+      list(PROGN,
+        list(SETQ, dummyVar, car(args)),
+        list(IF, dummyVar,
           dummyVar,
-          compileOrAux(dummyVar, f_lisp.cdr(args))));
+          compileOrAux(dummyVar, cdr(args))));
   }
 
 
@@ -1627,44 +1640,43 @@ public class LispCompiler extends LispProcessor
 					throws CompilerException
 	{
 //		return cons(machine.LDC, cons(args.first(), code));
-		return cons(SECDMachine.LDC, cons(car(argsAndBody), code));
+		return cons(LDC, cons(car(argsAndBody), code));
 	}
 	
-  LispValue compileDefun(SECDMachine machine, LispValue name, LispValue argsAndBody,
-                         LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    // Change the DEFUN into a LAMBDA and compile it.
-    //##JPG
-    // for compilation of recursive functions, we need to know if the symbol under compilation is a
-    // function or a macro. It's the aim of DUMMY_FUNCTION
-    name.setf_symbol_function(DUMMY_FUNCTION);
+	LispValue compileDefun(SECDMachine machine, LispValue name, LispValue argsAndBody,
+	                       LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		// Change the DEFUN into a LAMBDA and compile it.
+		//##JPG
+		// for compilation of recursive functions, we need to know if the symbol under compilation is a
+		// function or a macro. It's the aim of DUMMY_FUNCTION
+		name.setf_symbol_function(DUMMY_FUNCTION);
 
-    // OB:
-    // Added support for documentation strings on defuns.
-    // Todo, fix support, so that DECLARE statements are ignored.
-    // If the body of the function only consists of a string, this is not taken as a
-    // documentation string, as there would be no content of the function otherwise.
-    final LispValue possibleDocumentation = argsAndBody.second();
-    LispValue endArgsAndBody = argsAndBody;
-    if(possibleDocumentation instanceof LispString && argsAndBody.basic_length() > 2) {
-        name.setf_documentation(f_lisp.symbol("FUNCTION"), possibleDocumentation);
-        endArgsAndBody = f_lisp.makeCons(f_lisp.car(argsAndBody), f_lisp.cdr(f_lisp.cdr(argsAndBody)));
-    }
-    // Adds an implicit BLOCK with the same name as the defun around the definition.
-    endArgsAndBody = f_lisp.makeList(f_lisp.car(endArgsAndBody),f_lisp.makeCons(BLOCK, f_lisp.makeCons(name, f_lisp.cdr(endArgsAndBody))));
-    name.setf_symbol_function(
-            compileList(f_lisp.MACHINE, f_lisp.makeCons(LAMBDA, endArgsAndBody),
-                        f_lisp.makeCons(f_lisp.makeCons(name, NIL),
-                                                  valueList),
-                        f_lisp.makeCons(machine.STOP, NIL)).second());
-
-    return
-            compileList(f_lisp.MACHINE, f_lisp.makeCons(QUOTE, f_lisp.makeCons(name, NIL)),
-                        f_lisp.makeCons(f_lisp.makeCons(name, NIL),
-                                                  valueList),
-                        code);
-  }
+		// OB:
+		// Added support for documentation strings on defuns.
+		// Todo, fix support, so that DECLARE statements are ignored.
+		// If the body of the function only consists of a string, this is not taken as a
+		// documentation string, as there would be no content of the function otherwise.
+		final LispValue possibleDocumentation = argsAndBody.second();
+		LispValue endArgsAndBody = argsAndBody;
+		
+		if (possibleDocumentation instanceof LispString && argsAndBody.basic_length() > 2)
+		{
+			name.setf_documentation(f_lisp.symbol("FUNCTION"), possibleDocumentation);
+			endArgsAndBody = cons(car(argsAndBody), cddr(argsAndBody));
+		}
+		// Adds an implicit BLOCK with the same name as the defun around the definition.
+		endArgsAndBody = list(car(endArgsAndBody), cons(BLOCK, cons(name, cdr(endArgsAndBody))));
+		name.setf_symbol_function(
+				compileList(machine, cons(LAMBDA, endArgsAndBody),
+						cons(cons(name, NIL), valueList),
+                        cons(STOP, NIL)).second());
+		
+		return compileList(machine, cons(QUOTE, cons(name, NIL)),
+									cons(cons(name, NIL), valueList),
+							code);
+	}
 	LispValue compileBlock(SECDMachine machine, LispValue name, LispValue argsAndBody,
 	                       LispValue valueList, LispValue code)
 	                    		   throws CompilerException
@@ -1827,6 +1839,58 @@ public class LispCompiler extends LispProcessor
     return (code instanceof LispList) && (Lisp.car(code) == MACRO);
   }
 
+	// math
+	private void registerMathFunctions()
+	{
+		Register(new LispPrimitiveC("+", 0) {
+			protected LispValue Execute(LispValue args) {
+				if (args == NIL)
+					return LispNumber.ZERO;
+				LispNumber x = assertNumber(car(args));
+				return x.add(cdr(args));
+			}
+		});
+		Register(new LispPrimitiveC("-", 1) {
+			protected LispValue Execute(LispValue args) {
+				LispNumber x = assertNumber(car(args));
+				return x.sub(cdr(args));
+			}
+		});
+		Register(new LispPrimitiveC("*", 0) {
+			protected LispValue Execute(LispValue args) {
+				if (args == NIL)
+					return LispNumber.ONE;
+				LispNumber x = assertNumber(car(args));
+				return x.mul(cdr(args));
+			}
+		});
+		Register(new LispPrimitiveC("/", 1) {
+			protected LispValue Execute(LispValue args) {
+				LispNumber x = assertNumber(car(args));
+				return x.div(cdr(args));
+			}
+		});
+		
+		Register(new LispPrimitiveC("=", 2) {
+			protected LispValue Execute(LispValue args) {
+			    if (args == NIL)
+			        return T;
+			    else {
+			    	// There should be at least 2 arguments.
+			    	LispValue first = args.first();
+			    	args = Lisp.cdr(args);
+			    	for (Iterator<LispValue> iterator = args.iterator(); iterator.hasNext();)
+			    	{
+			    		LispValue arg = iterator.next();
+			    		if (first.equalNumeric(arg) == NIL)
+			    			return NIL;
+			    	}
+			    	return T;
+			    }
+			}			
+		});
+	}
+  
 	// init
 	private void registerAccessorFunctions()
 	{

@@ -25,9 +25,12 @@
 package org.jatha.machine;
 
 import org.jatha.Lisp;
+import org.jatha.LispProcessor;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
 import org.jatha.compile.*;
+import
+static org.jatha.dynatype.LispValue.*;
 
 
 // @date    Sat Feb  1 21:04:49 1997
@@ -51,10 +54,8 @@ import org.jatha.compile.*;
  * @see SECDop
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class SECDMachine    // extends Abstract Machine !
+public class SECDMachine extends LispProcessor
 {
-	static final LispValue NIL = LispValue.NIL;
-
 	public static boolean DEBUG = false;
 
 	// ------  Registers  --------------
@@ -135,7 +136,7 @@ public class SECDMachine    // extends Abstract Machine !
 			
 			LispCons ij = (LispCons)car(machine.C.value());
 			LispCons valueList = (LispCons)machine.E.value();
-			LispCons r = (LispCons)Lisp.nth(ij, valueList);
+			LispCons r = (LispCons)nth(ij, valueList);
 			
 			machine.S.push(r.car());
 			
@@ -159,7 +160,7 @@ public class SECDMachine    // extends Abstract Machine !
 			// System.err.println("specialCount of " + symbol + " is " + symbol.get_specialCount());
 
 			if (symbol.get_specialCount() > 0)
-				return Lisp.car(machine.B.gethash(symbol));
+				return car(machine.B.gethash(symbol));
 			else
 				return ((LispSymbol)symbol).symbol_value();
 		}
@@ -487,7 +488,7 @@ public class SECDMachine    // extends Abstract Machine !
     {
       LispValue bindings = B.gethash(symbol, NIL);
 
-      B.setf_gethash(symbol, LispCompiler.cons(value, bindings));
+      B.setf_gethash(symbol, cons(value, bindings));
       symbol.adjustSpecialCount(+1);
     }
   }
@@ -497,7 +498,7 @@ public class SECDMachine    // extends Abstract Machine !
   {
     LispValue bindings = B.gethash(symbol, NIL);
 
-    B.setf_gethash(symbol, Lisp.cdr(bindings));
+    B.setf_gethash(symbol, cdr(bindings));
     symbol.adjustSpecialCount(-1);
   }
 
@@ -510,14 +511,20 @@ public class SECDMachine    // extends Abstract Machine !
     if (symbol.get_specialCount() > 0)
     {
       LispValue bindings = B.gethash(symbol, NIL);
-      B.setf_gethash(symbol, LispCompiler.cons(value, Lisp.cdr(bindings)));
+      B.setf_gethash(symbol, cons(value, cdr(bindings)));
     }
     else
       symbol.setf_symbol_value(value);
   }
 
 
-  // Executor
+	/**
+	 * Executor
+	 * @param code
+	 * @param globals
+	 * @return
+	 * @throws CompilerException
+	 */
 	public LispValue Execute(LispValue code, LispValue globals)
 			throws CompilerException
 	{
@@ -531,7 +538,7 @@ public class SECDMachine    // extends Abstract Machine !
 		C.assign(code);
 		D.assign(NIL);
 
-		opcode = Lisp.car(C.value());
+		opcode = car(C.value());
 
 		while ((opcode != STOP) && (opcode != NIL))
 		{
@@ -558,7 +565,7 @@ public class SECDMachine    // extends Abstract Machine !
 				((LispPrimitive)opcode).Execute(this);
 
 			try {
-				opcode = Lisp.car(C.value());  // Each opcode pops the C register as necessary
+				opcode = car(C.value());  // Each opcode pops the C register as necessary
 			} catch (Exception e) {
 				e.printStackTrace();
 				System.err.print("\n  S: " + S.value());
@@ -575,7 +582,7 @@ public class SECDMachine    // extends Abstract Machine !
 			}
 		}
 
-		return  Lisp.car(S.value()); //  Top value on Stack is the return value.
+		return  car(S.value()); //  Top value on Stack is the return value.
 	}
 
 	public void setStackValue(SECDRegister e, LispValue val)

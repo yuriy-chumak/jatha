@@ -72,7 +72,7 @@ public class WrongArgumentTypeException extends CompilerException
   
   
   WrongArgumentTypeException()        { super();  }
-   WrongArgumentTypeException(String function,
+   public WrongArgumentTypeException(String function,
 			      String typeExpected,
 			      String typeReceived)
    { super("The " + function + " function expected " + typeExpected
