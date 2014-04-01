@@ -19,5 +19,6 @@
          (combine-exprs (f-backquote (car expr)) 
             (f-backquote (cdr expr)) expr) )))))
 
+; todo: hardcode "backquote" as builtin macro
 (defmacro backquote (expr)
    (f-backquote expr))

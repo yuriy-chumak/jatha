@@ -78,8 +78,8 @@ public class LispCompiler extends LispProcessor
 	static final LispValue DEFUN     = new StandardLispSymbol("DEFUN");
 	static final LispValue BLOCK     = new StandardLispSymbol("BLOCK");
 	
-	static final LispValue ANDDUMMY  = new StandardLispSpecialSymbol("*AND-DUMMY-VAR*");
-	static final LispValue ORDUMMY   = new StandardLispSpecialSymbol("*OR-DUMMY-VAR*");
+//	static final LispValue ANDDUMMY  = new StandardLispSpecialSymbol("*AND-DUMMY-VAR*");
+//	static final LispValue ORDUMMY   = new StandardLispSpecialSymbol("*OR-DUMMY-VAR*");
 
 //	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
 //	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
@@ -308,6 +308,7 @@ public class LispCompiler extends LispProcessor
 				return string(le.getMessage());
 			}
 			catch (Exception e) {
+				e.printStackTrace();
 				throw new LispException("Can't load required " +
 						module + " module.");
 			}
@@ -489,9 +490,10 @@ public class LispCompiler extends LispProcessor
 				return a.eql(b);
 			}
 		});
+		// todo: maybe need to be builin ?
 		Register(new LispPrimitive1("NOT") {
-			protected LispValue Execute(LispValue a) {
-				return bool(is_null(a));
+			protected LispValue Execute(LispValue arg) {
+				return arg == NIL ? T : NIL;
 			}
 		});
 
@@ -838,8 +840,9 @@ public class LispCompiler extends LispProcessor
 	 */
 	public void Register(LispPrimitive primitive)
 	{
+//		f_lisp.intern(primitive.LispFunctionNameString(), primitive);
 		final LispSymbol symbol = f_lisp.symbol(primitive.LispFunctionNameString());
-		symbol.setf_symbol_function(list(PRIMITIVE, primitive));
+		symbol.setf_symbol_function(primitive);//list(PRIMITIVE, primitive));
 	}
 
 	// required by "return-from" primitive
@@ -1025,12 +1028,12 @@ public class LispCompiler extends LispProcessor
 		if (DEBUG) {
 			System.out.println("expr = " + expr);
 			System.out.println("varValues = " + varValues);
-			System.out.println("STOP = " + SECDMachine.STOP);
+			System.out.println("STOP = " + STOP);
 			System.out.println("NIL = " + NIL);
-			System.out.println("initial code = " + cons(SECDMachine.STOP, NIL));
+			System.out.println("initial code = " + cons(STOP, NIL));
 		}
 
-		return compile(expr, varValues, cons(SECDMachine.STOP, NIL));
+		return compile(expr, varValues, cons(STOP, NIL));
 	}
 
 	// @author  Micheal S. Hewett    hewett@cs.stanford.edu
@@ -1077,6 +1080,7 @@ public class LispCompiler extends LispProcessor
 		if (expr == T)
 			return cons(LDT, code);
 
+		// todo: does it needed keywords?
 		if (expr instanceof LispKeyword)
 			return cons(LDC, cons(expr, code));
 		
@@ -1089,24 +1093,21 @@ public class LispCompiler extends LispProcessor
 
 			if (varIndex == NIL)
 			{
-				/* Not a local variable, maybe it's global */
-				if (!expr.specialP() && WarnAboutSpecialsP)
+				if (!expr.specialP() && WarnAboutSpecialsP) /* Not a local variable, maybe it's global */
 					System.err.print("\n;; ** Warning - " + expr.toString() + " assumed special.\n");
 
-				return cons(machine.LD_GLOBAL, cons(expr, code));
-//			 else
-//			   throw new UndefinedVariableException(((LispString)(expr.symbol_name())).getValue());
-		      }
-		      else  /* Found the symbol.  Is it bound? */
-		      {
+				return cons(LD_GLOBAL, cons(expr, code));
+			}
+			else  /* Found the symbol.  Is it bound? */
+			{
 		        //##JPG opcode LDR instead of LD for variable arguments
 		        // note : paramAttribute can only be nil or &rest
-		        LispValue loadOpCode = (paramAttribute == AMP_REST) ? machine.LDR : machine.LD;
-		        return(f_lisp.makeCons(loadOpCode, f_lisp.makeCons(varIndex, code)));
-		      }
+				LispValue loadOpCode = (paramAttribute == AMP_REST) ? LDR : LD;
+				return cons(loadOpCode, cons(varIndex, code));
+			}
 		}
 		
-		return cons(machine.LDC, cons(expr, code));
+		return cons(LDC, cons(expr, code));
 	}
 
 	LispValue compileList(SECDMachine machine, LispValue expr, LispValue valueList, LispValue code)
@@ -1119,20 +1120,26 @@ public class LispCompiler extends LispProcessor
 		if (DEBUG)
 			System.out.print("\nCompile List: " + expr);
 
-		// compile primitive
+		// comment, progn, defun, quote, block, lambda, defmacro, and, or, if, let, letrec
+		Compiler specialCompiler;
+		if ((specialCompiler = SpecialOperators.get(function)) != null)
+			return specialCompiler.compile(machine, args, valueList, code);
+
+		// primitive (builtin function)
 		if (function instanceof LispPrimitive) {
 			if (!((LispPrimitive)function).validArgumentList(args))
 				throw new ArgumentCountMismatchException((LispPrimitive)function, ((LispInteger)(args.length())).getLongValue());
 
-			return ((LispPrimitive)function).CompileArgs(this, machine, args, valueList, cons(function, code));
+			return ((LispPrimitive)function).CompileArgs(this, machine, function, args, valueList, code);
+//			return ((LispPrimitive)function).CompileArgs(this, machine, args, valueList, cons(function, code));
 		}
 		
-		// User-defined function
+		// user-defined function
 		if (function instanceof LispFunction) // was: basic_functionp()
 		{	// todo: doesn't called for now - maybe bug?
 			LispFunction lFunc = (LispFunction) function;
-			if (lFunc.isBuiltin())
-				return compileBuiltin(machine, function, args, valueList, code);
+//			if (lFunc.isBuiltin())
+//				return compileBuiltin(machine, function, args, valueList, code);
 			return compileUserDefinedFunction(machine, function, args, valueList, code);
 		}
 
@@ -1142,10 +1149,6 @@ public class LispCompiler extends LispProcessor
 			if (Lisp.isBuiltinFunction(function))
 				return compileBuiltin(machine, function, args, valueList, code);
 
-			Compiler specialCompiler;
-			if ((specialCompiler = SpecialOperators.get(function)) != null)
-				return specialCompiler.compile(machine, args, valueList, code);
-			
 			// ordinary function
 			{
 				// ##JPG compileSpecialForm() has been modified to support DEFMACRO
@@ -1459,23 +1462,31 @@ public class LispCompiler extends LispProcessor
     if (DEBUG)
       System.out.print("\nCompile Builtin: " + fn + "  " + args);
 
+	if (fn instanceof LispSymbol)
+		if (fn.fboundp())
+			fn = fn.symbol_function();
+	
+	if (fn instanceof LispFunction)
+		fn = ((LispFunction)fn).getCode();
+
+	assert fn instanceof LispPrimitive;
 
     // Builtin LISP primitives have a symbol-function of the
     // form (:PRIMITIVE <ic>).  We call the CompileArgs functions
     // of the primitive instruction.
-    LispValue executableCode = NIL;
-
+	LispPrimitive executableCode = (LispPrimitive)fn;
+/*
     if (is_atom(fn))
       executableCode = ((LispFunction)fn.symbol_function()).getCode().second();
     else if (fn.basic_functionp())
       executableCode = (((LispFunction)fn).getCode()).second();
-
-    if (!((LispPrimitive)executableCode).validArgumentList(args))
+*/
+    if (!executableCode.validArgumentList(args))
       throw new ArgumentCountMismatchException(((LispString)((LispSymbol)fn).symbol_name()).getValue(),
-                                               ((LispPrimitive)executableCode).parameterCountString(),
+                                               executableCode.parameterCountString(),
                                                ((LispInteger)(args.length())).getLongValue());
 
-    return ((LispPrimitive)executableCode).CompileArgs(this, machine, fn, args, valueList, code);
+    return executableCode.CompileArgs(this, machine, executableCode, args, valueList, code);
   }
 
   /**
@@ -1522,16 +1533,12 @@ public class LispCompiler extends LispProcessor
 		// Multiple arguments: construct an IF statement
 		// (let ((*dummy* args.first())) (if ...))
 
-		LispValue dummyVar = ANDDUMMY;//f_lisp.symbol("*AND-DUMMY-VAR*");
-		dummyVar.set_special(true);
-
 		LispValue var = new StandardLispSymbol(); // here add new temporary variable
-		LispValue program =
+		return
 		compile(list(LET,
 		             cons(list(var, car(args)), NIL),
 		             list(IF, var, compileAndAux(var, cdr(args)), NIL)),
 		        valueList, code);
-		return program;
 	}
 	LispValue compileAndAux(LispValue var, LispValue args)
 	{
@@ -1544,47 +1551,36 @@ public class LispCompiler extends LispProcessor
 	}
 
 
+	LispValue compileOr(SECDMachine machine, LispValue args, LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		// No args: return default value of NIL
+		if (args == NIL)
+			return cons(LDNIL, code);
 
-  LispValue compileOr(SECDMachine machine, LispValue args, LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    // No args: return default value of NIL
-    if (args == NIL)
-      return cons(LDNIL, code);
+		// 1 arg: just compile the argument.
+		if (cdr(args) == NIL)
+			return compile(car(args), valueList, code);
 
-    // 1 arg: just compile the argument.
-    if (cdr(args) == NIL)
-      return compile(args.first(), valueList, code);
+		// Multiple arguments: construct an IF statement
+		// (let ((*dummy* args.first())) (if ...))
 
-    // Multiple arguments: construct an IF statement
-    // (let ((*dummy* args.first())) (if ...))
+		LispValue var = new StandardLispSymbol(); // here add new temporary variable
+		return
+		compile(list(LET,
+	                 cons(list(var, car(args)), NIL),
+	                 list(IF, var, var, compileOrAux(var, cdr(args)))),
+	            valueList, code);
+	}
+	LispValue compileOrAux(LispValue var, LispValue args)
+	{
+		if (cdr(args) == NIL)
+			return (car(args));
 
-    LispValue dummyVar = ORDUMMY;//f_lisp.symbol("*OR-DUMMY-VAR*");
-    dummyVar.set_special(true);
-
-    return compile(list(LET,
-      cons(list(dummyVar, args.first()),
-        NIL),
-      list(IF, dummyVar,
-        dummyVar,
-        compileOrAux(dummyVar, cdr(args)))),
-      valueList,
-      code);
-  }
-
-
-  LispValue compileOrAux(LispValue dummyVar, LispValue args)
-  {
-    if (cdr(args) == NIL)
-      return (car(args));
-
-    return
-      list(PROGN,
-        list(SETQ, dummyVar, car(args)),
-        list(IF, dummyVar,
-          dummyVar,
-          compileOrAux(dummyVar, cdr(args))));
-  }
+		return list(PROGN,
+		            list(SETQ, var, car(args)),
+		            list(IF, var, var, compileOrAux(var, cdr(args))));
+	}
 
 
 	LispValue compileQuote(LispValue argsAndBody, LispValue code)
@@ -1696,23 +1692,18 @@ public class LispCompiler extends LispProcessor
   // SEL followed by RTN can be optimized to do a RTN
   // at the end of each branch and eliminate the final RTN.
 
-  LispValue compileIf(SECDMachine machine, LispValue test, LispValue thenExpr, LispValue elseExpr,
-                      LispValue valueList, LispValue code)
-    throws CompilerException
-{
-    if ((f_lisp.car(code) == machine.RTN)
-      || (f_lisp.car(code) == machine.STOP))
-      return compileOptimizedIf(machine, test, thenExpr, elseExpr, valueList, code);
-    else
-      return
-              compile(test, valueList,
-                      f_lisp.makeCons(machine.SEL,
-                                                f_lisp.makeCons(compile(thenExpr, valueList,
-                                                                                  f_lisp.makeCons(machine.JOIN, NIL)),
-                                                                          f_lisp.makeCons(compile(elseExpr, valueList,
-                                                                                                            f_lisp.makeCons(machine.JOIN, NIL)),
-                                                                                                    code))));
-  }
+	LispValue compileIf(SECDMachine machine, LispValue test, LispValue thenExpr, LispValue elseExpr,
+						LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		if ((car(code) == RTN) || (car(code) == STOP))
+			return compileOptimizedIf(machine, test, thenExpr, elseExpr, valueList, code);
+		return compile(test, valueList,
+				cons(SEL,
+				     cons(compile(thenExpr, valueList, cons(JOIN, NIL)),
+				          cons(compile(elseExpr, valueList, cons(JOIN, NIL)),
+				               code))));
+	}
 
 
   LispValue compileOptimizedIf(SECDMachine machine, LispValue test, LispValue thenExpr,

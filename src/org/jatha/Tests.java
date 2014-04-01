@@ -31,13 +31,11 @@ import java.io.Reader;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.jatha.dynatype.LispFunction;
-import org.jatha.dynatype.LispMacro;
 import org.jatha.dynatype.LispValue;
 import org.jatha.dynatype.LispCons;
-import org.jatha.dynatype.LispConstant;
-import org.jatha.dynatype.StandardLispValue;
 import org.jatha.read.LispParser;
+import
+static org.jatha.dynatype.LispValue.*;
 
 public class Tests extends Object
 {
@@ -66,23 +64,10 @@ public class Tests extends Object
 							continue;
 						}
 						LispValue r = lisp.eval(s);
-						if (r == LispValue.T)
+						if (r == T)
 							continue;
-						
-//						if (r.functionp() == lisp.T)
-//							continue;
-//						if (r.macrop() == Lisp.T)
-//							continue;
-						
-						if ((r instanceof LispConstant && r != LispValue.T)
-						 || (r == LispValue.NIL)
-						) {
+						if (r == NIL)
 							errors.add(s.toString() + " -> " + r.toString());
-						}
-/*						if (!(r instanceof LispConstant && r.toString().equals("T")))
-						{
-							errors.add(s.toString() + " -> " + r.toString());
-						}*/
 					} catch (EOFException e) {
 						break;
 					}
@@ -95,32 +80,10 @@ public class Tests extends Object
 				}
 				else
 					System.out.println("Ok");
-/*	        if (result == T)
-	        {
-	            if (DEBUG) {
-	                System.out.println("  loaded " + baseFilename);
-	            }
-	          fileCounter++;
-	        }
-
-	        else if (result == NIL)  // No such file
-	          break;
-
-	        else
-	        {
-	            if(useConsole) {
-	                System.err.println("  error loading " + filename + ", " + result);
-	            }
-	        }*/
-	      } catch (Exception e) {
-	        System.err.println("Tests.main: " + e.getMessage());
-	        break;
-	      }
-	    }
-/*
-	    if (DEBUG) {
-	        System.out.println("Loaded " + fileCounter + " file(s).");
-	    }
-	  }*/
+			} catch (Exception e) {
+				System.err.println("Tests.main: " + e.getMessage());
+				break;
+			}
+		}
 	}
 }

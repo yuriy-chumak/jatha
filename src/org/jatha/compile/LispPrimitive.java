@@ -246,16 +246,15 @@ public abstract class LispPrimitive extends StandardLispValue
 
   // Todo: PROGN compiles right-to-left, but executes left-to-right, thus recursive calls are not correctly compiled
   
-
+  // if somebody want's to skip putting func as argument, must override this method
   public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
 			       LispValue args, LispValue valueList, LispValue code)
     throws CompilerException
   {
-      if (! (function instanceof LispFunction))
-        function = function.symbol_function();
+//      if (! (function instanceof LispFunction))
+//        function = function.symbol_function();
 
-      LispValue fncode = ((LispFunction)function).getCode().second();
-
+      LispValue fncode = function;//((LispFunction)function).getCode().second();
       return  CompileArgs(compiler, machine, args, valueList, cons(fncode, code));
   }
 

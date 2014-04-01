@@ -48,10 +48,10 @@ public abstract class LispPrimitive0 extends LispPrimitive
 	public void Execute(SECDMachine machine)
 			throws CompilerException
 	{
-	    LispValue result = this.Execute();
-	    
-		machine.S.push(result);
 		machine.C.pop();
+
+	    LispValue result = this.Execute();
+		machine.S.push(result);
 	}
 	
 

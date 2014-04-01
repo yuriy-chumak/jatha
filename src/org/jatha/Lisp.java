@@ -43,10 +43,12 @@ import java.util.jar.JarFile;
 
 import org.jatha.exception.*;
 import org.jatha.compile.LispCompiler;
+import org.jatha.compile.LispPrimitive;
 import org.jatha.dynatype.*;
 import org.jatha.machine.SECDMachine;
 import org.jatha.read.LispParser;
 import org.jatha.util.SymbolTable;
+
 import
 static org.jatha.dynatype.LispValue.*;
 import
@@ -1245,16 +1247,19 @@ public class Lisp extends LispProcessor
 		{
 			if ((code == null) || (code == NIL))
 				return false;
-		    
+
 			if (code instanceof LispSymbol)
 				if (code.fboundp())
 					code = code.symbol_function();
 				else
 					return false;
-
+			
 			if (code instanceof LispFunction)
 				code = ((LispFunction)code).getCode();
 
+			if (code instanceof LispPrimitive)
+				return true;
+			// or?
 			if (code instanceof LispList) {
 				LispValue a = code.first();
 				LispValue c = LispValue.PRIMITIVE;
@@ -1262,6 +1267,7 @@ public class Lisp extends LispProcessor
 				if (a == c)
 					return true;
 			}
+			
 			return false;
 	  }
 	  

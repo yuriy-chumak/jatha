@@ -66,12 +66,12 @@ public abstract class LispPrimitive1 extends LispPrimitive
 	public void Execute(SECDMachine machine)
 			throws CompilerException
 	{
+		machine.C.pop();
+
 	    LispValue arg1 = machine.S.pop();
-	    
 	    LispValue result = this.Execute(arg1);
 	    
 		machine.S.push(result);
-		machine.C.pop();
 	}
 	
 
