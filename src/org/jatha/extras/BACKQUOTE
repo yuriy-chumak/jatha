@@ -1,0 +1,23 @@
+; this macroses helps to notate defmacro body with ` and ,@
+
+(defun combine-exprs (lft rgt expr)
+  (if (and (constantp lft) (constantp rgt))
+      (list 'quote expr)
+  (if (null rgt)
+      (list 'list lft)
+  (if (and (consp rgt) (eql (car rgt) 'list))
+      (cons 'list (cons lft (cdr rgt )))
+  (list 'cons lft rgt ))))) 
+
+
+(defun f-backquote (expr)
+  (if (null expr) nil 
+    (if (atom expr) (list 'quote expr)
+       (if (eq (car expr) :COMMA) (car (cdr expr))  
+         (if (and (consp (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+            (list 'append (car (cdr (car expr))) (f-backquote (cdr expr))) 
+         (combine-exprs (f-backquote (car expr)) 
+            (f-backquote (cdr expr)) expr) )))))
+
+(defmacro backquote (expr)
+   (f-backquote expr))

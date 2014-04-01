@@ -59,6 +59,8 @@
 
 package org.jatha.exception;
 
+import org.jatha.compile.LispPrimitive;
+
 
 
 
@@ -74,5 +76,11 @@ public class ArgumentCountMismatchException extends CompilerException
    { super("The " + function + " function expects " + numArgsExpected
 	   + " arguments, but received "+ numArgsReceived);
    }
-}
 
+	public ArgumentCountMismatchException(LispPrimitive function, long numArgsReceived)
+	{
+		super("The " + function.LispFunctionNameString() +
+		      " function expects " + function.parameterCountString() +
+		      " arguments, but received "+ numArgsReceived);
+	}
+}

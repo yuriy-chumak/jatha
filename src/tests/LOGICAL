@@ -1,0 +1,12 @@
+;;;; lisp
+T
+(not NIL)
+(not (not T))
+
+;; OR
+(or T NIL NIL NIL)
+(not (or NIL NIL NIL NIL))
+
+;; AND
+(and T T T T)
+(not (and T T NIL T))

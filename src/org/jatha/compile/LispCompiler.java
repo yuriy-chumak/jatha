@@ -44,6 +44,7 @@ import org.jatha.exception.*;
 import org.jatha.machine.*;
 import org.jatha.read.LispParser;
 
+import sun.reflect.Reflection;
 import static org.jatha.dynatype.LispValue.*;
 import static org.jatha.machine.SECDMachine.*;
 
@@ -76,6 +77,9 @@ public class LispCompiler extends LispProcessor
 	static final LispValue PROGN     = new StandardLispSymbol("PROGN");
 	static final LispValue DEFUN     = new StandardLispSymbol("DEFUN");
 	static final LispValue BLOCK     = new StandardLispSymbol("BLOCK");
+	
+	static final LispValue ANDDUMMY  = new StandardLispSpecialSymbol("*AND-DUMMY-VAR*");
+	static final LispValue ORDUMMY   = new StandardLispSpecialSymbol("*OR-DUMMY-VAR*");
 
 //	static final LispValue MACRO     = LispValue.MACRO; // keyword used at begenning of macro code to detect macro
 //	static final LispValue PRIMITIVE = LispValue.PRIMITIVE;
@@ -229,6 +233,88 @@ public class LispCompiler extends LispProcessor
 		initializeConstants();
 	}
 
+	Set<String> requires = new HashSet<String>();
+	List<String> defaultPackages = new ArrayList<String>() {{
+		add("");
+		add("org.jatha.extras.");
+		add("org.jatha.extension.");
+	}};
+	/**
+	 * 1. try to load class as default
+	 * 2. try to load file as default
+	 * 3. try to load class as org.jatha.extension."name"
+	 * @param value
+	 * @return
+	 */
+	public final LispValue require(String module)
+	{
+		if (requires.contains(module))
+			return T;
+		ClassLoader classLoader = LispCompiler.class.getClassLoader();
+		for (String pkg : defaultPackages)
+		{
+			// classLoader.loadClass
+			try {
+				// 1. search for the .class for executa as native code
+				LispExtension extension = (LispExtension)Class.forName(
+						pkg + module, true, classLoader
+						).newInstance();
+				extension.Register(LispCompiler.this);
+				
+				requires.add(module);
+				return T;
+			}
+			catch (ClassNotFoundException ex) {
+				// class not found, continue.
+			}
+			catch (ClassCastException ex) {
+				// class cast exception, this module not a lisp extension, continue
+			}
+			catch (Exception ex) {
+				throw new LispException("Can't load required " +
+						module + " module.");
+			}
+			// try to load text file, not a class
+			Reader resourceReader;
+			try {
+				resourceReader = new InputStreamReader(
+						classLoader.getResourceAsStream(pkg.replace('.', '/') + module)
+				);
+				LispParser cli = new LispParser(f_lisp, resourceReader);
+				while (true) {
+					f_lisp.MACHINE.Execute(compile(f_lisp.MACHINE, cli.read(), NIL), NIL);
+				}
+			}
+			catch (EOFException ex) // ok. loaded.
+			{
+				requires.add(module);
+				return T;
+			}
+			catch (NullPointerException ex)
+			{
+				// file not found, continue search 
+			}
+			catch (LispUndefinedFunctionException ufe) {
+				System.err.println("ERROR: " + ufe.getMessage());
+				return string(ufe.getMessage());
+			}
+			catch (CompilerException ce) {
+				System.err.println("ERROR: " + ce);
+				return string(ce.toString());
+			}
+			catch (LispException le) {
+				System.err.println("ERROR: " + le.getMessage());
+				le.printStackTrace();
+				return string(le.getMessage());
+			}
+			catch (Exception e) {
+				throw new LispException("Can't load required " +
+						module + " module.");
+			}
+		}
+
+		return NIL;
+	}
 
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Wed Feb  5 09:33:27 1997
@@ -265,111 +351,19 @@ public class LispCompiler extends LispProcessor
 				
 				throw new LispValueNotASymbolOrConsException(values);
 			}
-			
-			Set<String> requires = new HashSet<String>();
 			LispValue require(LispValue value)
 			{
 //				assertSymbol(value);
 				if (value instanceof LispString ||
 					value instanceof LispSymbol) {
-					return require(value.toStringSimple());
+					return LispCompiler.this.require(value.toStringSimple());
 				}
-/*				if (value instanceof LispSymbol) {
+	/*				if (value instanceof LispSymbol) {
 					String name = "org.jatha.extras." + value.toStringSimple().replace('-','.');
 					return require(name);
 				}*/
 				throw new LispValueNotASymbolException(value);
 			}
-			/**
-			 * 1. try to load class as default
-			 * 2. try to load file as default
-			 * 3. try to load class as org.jatha.extension."name"
-			 * @param value
-			 * @return
-			 */
-			LispValue require(String value)
-			{
-				if (requires.contains(value))
-					return T;
-				ClassLoader classLoader = LispCompiler.class.getClassLoader();
-				try {
-					// 1. search for the .class for executa as native code
-					LispExtension extension = (LispExtension)classLoader.loadClass(
-							value
-							).newInstance();
-					extension.Register(LispCompiler.this);
-					requires.add(value);
-					
-					return T;
-				}
-				catch (ClassNotFoundException ex) {
-					// class not found, ok.
-				}
-				catch (ClassCastException ex) {
-					// class cast exception, this module not a lisp extension
-				}
-				catch (Exception ex) {
-					throw new LispException("Can't load required " +
-							value.toString() + " module.");
-				}
-				
-				// 2. if the are no dots - try to load from 
-				try {
-					if (value.indexOf('.') < 0) {
-						LispExtension extension = (LispExtension)classLoader.loadClass(
-								"org.jatha.extras." + value
-						).newInstance();
-						extension.Register(LispCompiler.this);
-						requires.add(value);
-						return T;
-					}
-/*					
-					for (String pkg : defaultPackages) {
-						LispExtension extension = (LispExtension)classLoader.loadClass(
-								pkg + "." + value
-						).newInstance();
-						extension.Register(LispCompiler.this);
-						requires.add(value);
-						return T;
-					}*/
-				}
-				catch (ClassNotFoundException ex) {
-					// class not found, ok.
-				}
-				catch (ClassCastException ex) {
-					// class cast exception, this module not a lisp extension
-				}
-				catch (Exception ex) {
-					throw new LispException("Can't load required " +
-							value.toString() + " module.");
-				}
-				
-				try {
-					Reader resourceReader = new InputStreamReader(
-							classLoader.getResourceAsStream(value)
-					);
-					LispParser cli = new LispParser(f_lisp, resourceReader);
-					while (true) {
-						try {
-							LispValue s = cli.read();
-							LispValue r = f_lisp.eval(s);
-						} catch (EOFException e) {
-							break;
-						}
-					}
-				}
-				catch (Exception ex) {
-					throw new LispException("Can't load required " +
-							value.toString() + " module.");
-				}
-				
-				
-				return T;
-			}
-			
-			private List<String> defaultPackages = new ArrayList<String>() {{
-				add("org.jatha.extension");
-			}};
 		});
 
 
@@ -481,10 +475,12 @@ public class LispCompiler extends LispProcessor
 			}
 		});
 		
+		
+
 		Register(new LispPrimitive2("EQ") {
 			public LispValue Execute(LispValue a, LispValue b) {
 				if (is_atom(a) && is_atom(b))
-					return bool(a == b);
+					return a.eq(b);
 				return NIL;
 			}
 		});
@@ -680,68 +676,18 @@ public class LispCompiler extends LispProcessor
 				return (a instanceof LispCons) ? T : NIL;
 			}
 		});
-/*		Register(new LispPrimitive1("LISTP") {
+		Register(new LispPrimitive1("LISTP") {
 			protected LispValue Execute(LispValue a) {
-				return (a instanceof LispList) ? T : NIL; ?
+				return (a instanceof LispList) ? T : NIL;
 			}
-		});*/
+		});
 		Register(new LispPrimitive1("CONSTANTP") {
 			protected LispValue Execute(LispValue a) {
-				return (a instanceof LispConstant) ? T : NIL;
+				return a.constantp();
 			}
 		});
 
 	
-		Register(new LispPrimitive1("STRING") {
-			protected LispValue Execute(LispValue a) {
-				return a.string();
-			}
-		});
-		Register(new LispPrimitive2("STRING-EQUAL") {
-			protected LispValue Execute(LispValue a, LispValue b) {
-				return a.stringEqual(b);
-			}
-		});
-		
-		
-		/**
-		 * Concatenate a string to another string.
-		 * Passing in any LispValue causes it to be converted to a string
-		 * and concatenated to the end.
-		 * This returns a new LispString.
-		 */
-		Register(new LispPrimitiveC("CONCATENATE", 1) {
-			// First argument should be 'STRING
-			// Apply concatenate to the next argument.
-			protected LispValue Execute(LispValue args) {
-				LispValue concatType = Lisp.car(args);
-				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
-					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
-				args = Lisp.cdr(args);
-				
-				if (args.basic_length() == 0)
-					return string("");
-				
-				StringBuffer buff = new StringBuffer(args.basic_length() * 5);
-
-				Iterator<LispValue> valuesIt = args.iterator();
-				while (valuesIt.hasNext())
-				{
-					LispValue value = valuesIt.next();
-					if (value instanceof LispString)
-						buff.append(value.toStringSimple());
-					else
-						buff.append(value.toString());
-				}
-				return new StandardLispString(buff.toString());
-				
-/*				if (args.basic_length() > 1)
-					return args.second().concatenate(f_lisp.makeCons(args.car(), args.cdr().cdr()));
-				return f_lisp.makeString("");*/
-			}
-		});
-		
-		
 		Register(new LispPrimitive1("SQRT") {
 			protected LispValue Execute(LispValue a) {
 				return a.sqrt();
@@ -770,9 +716,9 @@ public class LispCompiler extends LispProcessor
 				return now;
 			}
 		    private LispValue expand(final LispValue form) {
-		        final LispValue carForm = f_lisp.car(form); // todo: check for LispSymbol
+		        final LispValue carForm = car(form); // todo: check for LispSymbol
 		        if(carForm.fboundp() && carForm.symbol_function() != null && carForm.symbol_function().basic_macrop()) {
-		            return f_lisp.eval(f_lisp.makeCons(f_lisp.symbol("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple()), quoteList(f_lisp.cdr(form))));
+		            return f_lisp.eval(f_lisp.makeCons(f_lisp.symbol("%%%" + ((LispSymbol)carForm).symbol_name().toStringSimple()), quoteList(cdr(form))));
 		        } else {
 		            return form;
 		        }
@@ -866,7 +812,9 @@ public class LispCompiler extends LispProcessor
 			protected LispValue Execute(LispValue arg) throws CompilerException {
 				throw new LispAssertionException();
 			}});
-		
+
+		require("Strings");
+		require("BACKQUOTE");
 	}
 	
 	public LispValue eval(String expression)
@@ -1124,13 +1072,13 @@ public class LispCompiler extends LispProcessor
 		}
 
 		if (expr == NIL)
-			return cons(machine.LDNIL, code);
+			return cons(LDNIL, code);
 		
 		if (expr == T)
-			return cons(machine.LDT, code);
+			return cons(LDT, code);
 
 		if (expr instanceof LispKeyword)
-			return cons(machine.LDC, cons(expr, code));
+			return cons(LDC, cons(expr, code));
 		
 		if (expr instanceof LispSymbol) {
 			//LispValue varIndex = index(expr, valueList);
@@ -1164,13 +1112,21 @@ public class LispCompiler extends LispProcessor
 	LispValue compileList(SECDMachine machine, LispValue expr, LispValue valueList, LispValue code)
 			throws CompilerException
 	{
-		LispValue function = f_lisp.car(expr);
-		LispValue args     = f_lisp.cdr(expr);
+		LispValue function = car(expr);
+		LispValue args     = cdr(expr);
 
 		
 		if (DEBUG)
 			System.out.print("\nCompile List: " + expr);
 
+		// compile primitive
+		if (function instanceof LispPrimitive) {
+			if (!((LispPrimitive)function).validArgumentList(args))
+				throw new ArgumentCountMismatchException((LispPrimitive)function, ((LispInteger)(args.length())).getLongValue());
+
+			return ((LispPrimitive)function).CompileArgs(this, machine, args, valueList, cons(function, code));
+		}
+		
 		// User-defined function
 		if (function instanceof LispFunction) // was: basic_functionp()
 		{	// todo: doesn't called for now - maybe bug?
@@ -1310,81 +1266,79 @@ public class LispCompiler extends LispProcessor
   }
 
 
-  public LispValue compileLet(SECDMachine machine,
-                              LispValue vars, LispValue values,
-                              LispValue valueList,
-                              LispValue body, LispValue code)
-    throws CompilerException
-  {
-    // Divide the variables into special and non-special var sets.
-    // Special variables get extra binding instructions.
+	public LispValue compileLet(SECDMachine machine,
+					LispValue vars, LispValue values,
+					LispValue valueList,
+					LispValue body, LispValue code)
+	throws CompilerException
+	{
+		// Divide the variables into special and non-special var sets.
+		// Special variables get extra binding instructions.
 
-    LispValue specialVars = NIL;
-    LispValue specialVals = NIL;
-    LispValue localVars   = NIL;
-    LispValue localVals   = NIL;
-    LispValue varPtr      = vars;
-    LispValue valPtr      = values;
+		LispValue specialVars = NIL;
+		LispValue specialVals = NIL;
+		LispValue localVars   = NIL;
+		LispValue localVals   = NIL;
+		LispValue varPtr      = vars;
+		LispValue valPtr      = values;
 
-    while (varPtr != NIL)
-    {
-      if (f_lisp.car(varPtr).specialP())
-      {
-        specialVars = f_lisp.makeCons(f_lisp.car(varPtr), specialVars);
-        specialVals = f_lisp.makeCons(f_lisp.car(valPtr), specialVals);
-      }
-      else
-      {
-        localVars   = f_lisp.makeCons(f_lisp.car(varPtr), localVars);
-        localVals   = f_lisp.makeCons(f_lisp.car(valPtr), localVals);
-      }
+		while (varPtr != NIL)
+		{
+			if (car(varPtr).specialP())
+			{
+				specialVars = cons(car(varPtr), specialVars);
+				specialVals = cons(car(valPtr), specialVals);
+			}
+			else
+			{
+				localVars   = cons(car(varPtr), localVars);
+				localVals   = cons(car(valPtr), localVals);
+			}
 
-      varPtr = f_lisp.cdr(varPtr);
-      valPtr = f_lisp.cdr(valPtr);
-    }
+			varPtr = cdr(varPtr);
+			valPtr = cdr(valPtr);
+		}
 
-    // The local vars get compiled by the compileApp,
-    // the special vars get compiled after that and just
-    // before the Lambda is compiled.
-    LispValue ret =
-    		compileApp(machine, localVals, valueList,
-    				compileSpecialBind(machine, specialVars, specialVals, valueList,
-    						compileLambda(machine, body, cons(localVars, valueList),
-    								cons(machine.AP,
-    										compileSpecialUnbind(machine, specialVars, code)))));
-    return ret;
-    // (code.car() == machine.RTN) ?
-    // f_lisp.makeCons(machine.DAP, code.cdr())
-    //			        : f_lisp.makeCons(machine.AP, code));
-  }
+		// The local vars get compiled by the compileApp,
+		// the special vars get compiled after that and just
+		// before the Lambda is compiled.
+		LispValue ret =
+				compileApp(machine, localVals, valueList,
+						compileSpecialBind(machine, specialVars, specialVals, valueList,
+								compileLambda(machine, body, cons(localVars, valueList),
+										cons(AP,
+										     compileSpecialUnbind(machine, specialVars, code)))));
+		return ret;
+		// (code.car() == machine.RTN) ?
+		// f_lisp.makeCons(machine.DAP, code.cdr())
+		//			        : f_lisp.makeCons(machine.AP, code));
+	}
 
 
   // UTILITY functions for LET
 
-  // Inserts special-bind opcode for each var.
-  LispValue compileSpecialBind(SECDMachine machine, LispValue vars, LispValue values,
-                               LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    if (vars == NIL)
-      return code;
-    else
-      return compile(f_lisp.car(values), valueList,
-                     f_lisp.makeCons(machine.SP_BIND,
-                                               f_lisp.makeCons(f_lisp.car(vars),
-                                                                         compileSpecialBind(machine, f_lisp.cdr(vars), f_lisp.cdr(values), valueList, code))));
-  }
+	// Inserts special-bind opcode for each var.
+	LispValue compileSpecialBind(SECDMachine machine, LispValue vars, LispValue values,
+						LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		if (vars == NIL)
+			return code;
+		return compile(car(values), valueList,
+				cons(SP_BIND,
+				     cons(car(vars),
+				          compileSpecialBind(machine, cdr(vars), cdr(values), valueList, code))));
+	}
 
-  // Inserts special-bind opcode for each var.
-  LispValue compileSpecialUnbind(SECDMachine machine, LispValue vars, LispValue code)
-  {
-    if (vars == NIL)
-      return code;
-    else
-      return f_lisp.makeCons(machine.SP_UNBIND,
-                                       f_lisp.makeCons(f_lisp.car(vars),
-                                                                 compileSpecialUnbind(machine, f_lisp.cdr(vars), code)));
-  }
+	// Inserts special-bind opcode for each var.
+	LispValue compileSpecialUnbind(SECDMachine machine, LispValue vars, LispValue code)
+	{
+		if (vars == NIL)
+			return code;
+		return cons(SP_UNBIND,
+		            cons(car(vars),
+		                 compileSpecialUnbind(machine, cdr(vars), code)));
+	}
 
 
   // each entry is (VAR VAL) or VAR.  Latter has implied value of NIL.
@@ -1431,7 +1385,7 @@ public class LispCompiler extends LispProcessor
   }
   */
 
-  public boolean specialFormP(LispValue fn)
+/*  public boolean specialFormP(LispValue fn)
   {
     if ((fn instanceof LispSymbol)
         &&    ((fn == AND)
@@ -1450,7 +1404,7 @@ public class LispCompiler extends LispProcessor
       return true;
     else
       return false;
-  }
+  }*/
 
   // This version of 'compileApp' is modified from the version in Kogge's
   // book.  It puts args on stack in the correct L->R order and does
@@ -1554,43 +1508,40 @@ public class LispCompiler extends LispProcessor
   }
 
 
-  LispValue compileAnd(SECDMachine machine, LispValue args, LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    // No args: return default value of T
-    if (args == NIL)
-      return f_lisp.makeCons(machine.LDT, code);
+	LispValue compileAnd(SECDMachine machine, LispValue args, LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		// No args: return default value of T
+		if (args == NIL)
+			return cons(LDT, code);
 
-    // 1 arg: just compile the argument.
-    if (f_lisp.cdr(args) == NIL)
-      return compile(args.first(), valueList, code);
+		// 1 arg: just compile the argument.
+		if (cdr(args) == NIL)
+			return compile(car(args), valueList, code);
 
-    // Multiple arguments: construct an IF statement
-    // (let ((*dummy* args.first())) (if ...))
+		// Multiple arguments: construct an IF statement
+		// (let ((*dummy* args.first())) (if ...))
 
-    LispValue dummyVar = f_lisp.symbol("*AND-DUMMY-VAR*");
-    dummyVar.set_special(true);
+		LispValue dummyVar = ANDDUMMY;//f_lisp.symbol("*AND-DUMMY-VAR*");
+		dummyVar.set_special(true);
 
-    return compile(list(LET,
-      cons(list(dummyVar, args.first()), NIL),
-      list(IF, dummyVar, compileAndAux(dummyVar, cdr(args)), NIL)),
-      valueList,
-      code);
-  }
+		LispValue var = new StandardLispSymbol(); // here add new temporary variable
+		LispValue program =
+		compile(list(LET,
+		             cons(list(var, car(args)), NIL),
+		             list(IF, var, compileAndAux(var, cdr(args)), NIL)),
+		        valueList, code);
+		return program;
+	}
+	LispValue compileAndAux(LispValue var, LispValue args)
+	{
+		if (cdr(args) == NIL)
+			return (car(args));
 
-
-  LispValue compileAndAux(LispValue dummyVar, LispValue args)
-  {
-    if (cdr(args) == NIL)
-      return (car(args));
-
-    return
-            list(PROGN,
-              list(SETQ, dummyVar, car(args)),
-                list(IF, dummyVar,
-                  compileAndAux(dummyVar, cdr(args)),
-                    NIL));
-  }
+		return list(PROGN,
+		            list(SETQ, var, car(args)),
+		            list(IF, var, compileAndAux(var, cdr(args)), NIL));
+	}
 
 
 
@@ -1608,7 +1559,7 @@ public class LispCompiler extends LispProcessor
     // Multiple arguments: construct an IF statement
     // (let ((*dummy* args.first())) (if ...))
 
-    LispValue dummyVar = f_lisp.symbol("*OR-DUMMY-VAR*");
+    LispValue dummyVar = ORDUMMY;//f_lisp.symbol("*OR-DUMMY-VAR*");
     dummyVar.set_special(true);
 
     return compile(list(LET,
@@ -1780,15 +1731,14 @@ public class LispCompiler extends LispProcessor
   }
 
 
-  LispValue compileProgn(LispValue body, LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    if (body == NIL)
-      return code;
-    else
-      return compile(f_lisp.car(body), valueList,
-                     compileProgn(f_lisp.cdr(body), valueList, code));
-  }
+	LispValue compileProgn(LispValue body, LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		if (body == NIL)
+			return code;
+		return compile(car(body), valueList,
+				compileProgn(cdr(body), valueList, code));
+	}
     /*
     private java.util.Map blocks = new java.util.HashMap();
 
@@ -1817,15 +1767,14 @@ public class LispCompiler extends LispProcessor
     */
 
 
-  LispValue compileLambda(SECDMachine machine, LispValue body, LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    // System.out.print("\nCompile Lambda: "); body.prin1();
-    // System.out.print("\n code = "); code.prin1();
-    return f_lisp.makeCons(machine.LDF,
-                           f_lisp.makeCons(compile(body, valueList,
-                                                   f_lisp.makeCons(machine.RTN, NIL)),
-                                           code));
+	LispValue compileLambda(SECDMachine machine, LispValue body, LispValue valueList, LispValue code)
+			throws CompilerException
+	{
+		// System.out.print("\nCompile Lambda: "); body.prin1();
+		// System.out.print("\n code = "); code.prin1();
+		return cons(LDF,
+		            cons(compile(body, valueList, cons(RTN, NIL)),
+		                 code));
   }
 
 

@@ -42,12 +42,13 @@ import org.jatha.compile.LispCompiler;
  */
 public class StandardLispFunction extends StandardLispValue implements LispFunction
 {
-  private boolean   f_isBuiltin = false;
+  protected boolean   f_isBuiltin = false;
   private LispValue f_symbol    = null;
   private LispValue f_code      = null;
 
 
 /* ------------------  Constructors   ------------------------------ */
+  public StandardLispFunction() {}
 
   // author  Micheal S. Hewett    hewett@cs.stanford.edu
   /**

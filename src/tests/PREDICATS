@@ -1,0 +1,39 @@
+;; --- Functions needed to implement macros -----
+
+;; http://cybern.ru/lisp-predicat.html
+(atom 1);T
+(not (atom '(1 2)));NIL
+(not (listp '1));NIL 
+(listp '(1 2));T
+(not (null '1));NIL
+(null '());T
+(null nil);T
+
+
+(eq 1 1);T
+(eq 'cybern 'cybern);T
+(eq NIL ());T
+(not (eq 1.0 1.0));NIL
+(setq x 1)
+(setq y 1)
+(eq x y);T
+(eq x x);T
+(setq x '(a b))
+(setq y '(a b))
+(not (eq x y));NIL
+
+
+(eql 1.0 1.0);T
+(not (eql 1 1.0));NIL
+(setq x '(a b))
+(setq y '(a b))
+(not (eql x y));NIL
+
+
+;(equal 1 1.0);NIL
+;(setq x '(a b))
+;(setq y '(a b))
+;(equal x y);T
+
+
+;(equalp 1 1.0);T

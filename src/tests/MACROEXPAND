@@ -1,0 +1,14 @@
+;;;; MACRO tests
+
+; defmacro calls declared function and stores result as code
+; for test defmacro can be wrote defun and executes
+; for example:
+
+(defun f (x) (list '+ x x))
+;(f 12) must be equal to (LIST + 12 12) and after execute (eval (f 12)) must be 24
+(= (eval (f 12)) 24)
+
+; (&rest x) stores all arguments in list
+; (defun f (&rest x) x)
+; (f 1 2 3) produces list (1 2 3)
+

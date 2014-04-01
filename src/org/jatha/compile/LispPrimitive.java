@@ -87,6 +87,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	{
 		functionName        = fnName;
 		functionNameSymbol  = new StandardLispSymbol(fnName);
+//		f_isBuiltin = true;
 	}
 
   public String    LispFunctionNameString() { return functionName; }

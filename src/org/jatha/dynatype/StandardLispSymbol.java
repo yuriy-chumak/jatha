@@ -53,7 +53,11 @@ import org.jatha.Lisp;
  */
 public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 {
-
+	static long randomname = 0;
+	public StandardLispSymbol() // constructs unbound symbol with unique name
+	{
+		this("SYM-" + Long.toString(++randomname));
+	}
 /* ------------------  PRIVATE vars   ------------------------------ */
 
   // Every LISP symbol has these four components
