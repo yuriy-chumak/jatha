@@ -283,4 +283,18 @@ public abstract class LispPrimitive extends StandardLispValue
 			return (LispString)arg;
 		throw new LispValueNotAStringException(arg);
 	}
+
+	public LispCons assertCons(LispValue arg)
+	{
+		if (arg instanceof LispCons)
+			return (LispCons)arg;
+		throw new LispValueNotAConsException(arg);
+	}
+	public LispList assertList(LispValue arg)
+	{
+		if (arg instanceof LispList)
+			return (LispList)arg;
+		throw new LispValueNotAListException(arg);
+	}
+
 }

@@ -1,0 +1,13 @@
+;; test for LET primitive
+
+(set 'f 3)
+
+(set 'y
+(let ((x 1)) (progn
+  (let ((x 2)) (setq f (+ f x)))
+  x
+)))
+
+(= f 5)
+(= y 1)
+(not (= y 2))

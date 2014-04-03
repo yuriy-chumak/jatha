@@ -44,7 +44,6 @@ import org.jatha.exception.*;
 import org.jatha.machine.*;
 import org.jatha.read.LispParser;
 
-import sun.reflect.Reflection;
 import static org.jatha.dynatype.LispValue.*;
 import static org.jatha.machine.SECDMachine.*;
 
@@ -312,6 +311,47 @@ public class LispCompiler extends LispProcessor
 				throw new LispException("Can't load required " +
 						module + " module.");
 			}
+			
+			// temporary copy-paste. need to change.
+			// try to load text file, not a class
+			try {
+				resourceReader = new InputStreamReader(
+						classLoader.getResourceAsStream(pkg.replace('.', '/') + module + ".lisp")
+				);
+				LispParser cli = new LispParser(f_lisp, resourceReader);
+				while (true) {
+					f_lisp.MACHINE.Execute(compile(f_lisp.MACHINE, cli.read(), NIL), NIL);
+				}
+			}
+			catch (EOFException ex) // ok. loaded.
+			{
+				requires.add(module);
+				return T;
+			}
+			catch (NullPointerException ex)
+			{
+				// file not found, continue search 
+			}
+			catch (LispUndefinedFunctionException ufe) {
+				System.err.println("ERROR: " + ufe.getMessage());
+				return string(ufe.getMessage());
+			}
+			catch (CompilerException ce) {
+				System.err.println("ERROR: " + ce);
+				return string(ce.toString());
+			}
+			catch (LispException le) {
+				System.err.println("ERROR: " + le.getMessage());
+				le.printStackTrace();
+				return string(le.getMessage());
+			}
+			catch (Exception e) {
+				e.printStackTrace();
+				throw new LispException("Can't load required " +
+						module + " module.");
+			}
+			
+			
 		}
 
 		return NIL;
@@ -707,6 +747,9 @@ public class LispCompiler extends LispProcessor
 			}
 		});
 		
+		require("BACKQUOTE");
+		require("SETF");
+		
 		Register(new LispPrimitive1("MACROEXPAND") {
 			protected LispValue Execute(LispValue form) {
 		        LispValue now = expand(form);
@@ -816,12 +859,17 @@ public class LispCompiler extends LispProcessor
 			}});
 
 		require("Strings");
-		require("BACKQUOTE");
 	}
 	
 	public LispValue eval(String expression)
+			throws CompilerException
 	{
 		return f_lisp.eval(expression);
+	}
+	public LispValue load(Reader expression)
+			throws CompilerException
+	{
+		return f_lisp.load(expression);
 	}
 
 	// @author  Micheal S. Hewett    hewett@cs.stanford.edu

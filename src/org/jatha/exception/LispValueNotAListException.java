@@ -21,12 +21,15 @@
  *   hewett@cs.stanford.edu
  *
  */
-package org.jatha.exception
-;
+package org.jatha.exception;
 
+import org.jatha.dynatype.LispValue;
+
+@SuppressWarnings("serial")
 public class LispValueNotAListException extends LispException
 {
-  LispValueNotAListException()              { super();  }
-  public LispValueNotAListException(String s)      { super(s + " is not a LIST."); }
+	public LispValueNotAListException()            { super();  }
+	public LispValueNotAListException(String s)    { super(s + " is not a LIST."); }
+	public LispValueNotAListException(LispValue v) { this(v.toString()); }
 }
 

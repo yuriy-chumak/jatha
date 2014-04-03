@@ -21,8 +21,7 @@
  *   hewett@cs.stanford.edu
  *
  */
-package org.jatha.exception
-;
+package org.jatha.exception;
 
 import org.jatha.dynatype.LispValue;
 
