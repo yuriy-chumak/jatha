@@ -51,7 +51,7 @@ import org.jatha.machine.*;
  */
 public abstract class LispPrimitive extends StandardLispValue
 {
-	public static LispValue s_PRIMITIVE_TAG = LispValue.PRIMITIVE;
+//	public static LispValue s_PRIMITIVE_TAG = LispValue.PRIMITIVE;
   
 	/**
 	 * the <tt>functionName</tt> is part of the string that
@@ -259,7 +259,8 @@ public abstract class LispPrimitive extends StandardLispValue
   }
 
 
-	public LispValue bool(boolean arg)
+	// 
+	public final static LispValue BOOL(boolean arg)
 	{
 		return arg ? T : NIL;
 	}
@@ -271,26 +272,33 @@ public abstract class LispPrimitive extends StandardLispValue
 	 * @param arg
 	 * @return
 	 */
-	public LispNumber assertNumber(LispValue arg)
+	public static final LispNumber assertNumber(LispValue arg)
 	{
 		if (arg instanceof LispNumber)
 			return (LispNumber)arg;
 		throw new LispValueNotANumberException(arg);
 	}
-	public LispString assertString(LispValue arg)
+	public static final LispString assertString(LispValue arg)
 	{
 		if (arg instanceof LispString)
 			return (LispString)arg;
 		throw new LispValueNotAStringException(arg);
 	}
 
-	public LispCons assertCons(LispValue arg)
+	
+	public static final LispAtom assertAtom(LispValue arg)
+	{
+		if (arg instanceof LispAtom)
+			return (LispAtom)arg;
+		throw new LispValueNotAnAtomException(arg);
+	}
+	public static final LispCons assertCons(LispValue arg)
 	{
 		if (arg instanceof LispCons)
 			return (LispCons)arg;
 		throw new LispValueNotAConsException(arg);
 	}
-	public LispList assertList(LispValue arg)
+	public static final LispList assertList(LispValue arg)
 	{
 		if (arg instanceof LispList)
 			return (LispList)arg;

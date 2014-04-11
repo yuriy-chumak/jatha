@@ -67,16 +67,11 @@ public class StandardLispNIL extends StandardLispList
   public void internal_print_as_cdr(PrintStream os) { /* Do Nothing */ }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
-  public LispValue constantp()
-  {
-    return T;
-  }
-
   public String toString()      { return "NIL"; }
   public String toStringAsCdr() { return ""; }
 
 
-  public boolean basic_constantp() { return true;  }
+  public boolean constantp() { return true; }
   public int     basic_length()    { return 0;     }
   public boolean basic_symbolp()   { return true;  }
 

@@ -75,7 +75,7 @@ public class StandardLispString extends StandardLispAtom implements LispString
   public String toStringSimple() { return str; }
 
 
-  public boolean basic_constantp() { return true; }
+  public boolean constantp() { return true; }
   public LispValue basic_elt(int n) { return elt(integer(n)); }
   public int     basic_length()    { return str.length(); }
   public boolean basic_stringp()   { return true; }
@@ -83,11 +83,6 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
   // -----  LISP methods  ----------
   // contributed by Jean-Pierre Gaillardon, April 2005
-  public LispValue constantp()
-  {
-    return T;
-  }
-
   public LispValue elt(int index)
   {
     return elt(integer(index));

@@ -1,7 +1,7 @@
 ;; --- Functions needed to implement macros -----
 
 (defun f-cond (l)
-  (if (null l) nil
+  (if (null? l) nil
     (let ((clause (car l))) 
       `(if ,(car clause) (progn ,@(cdr clause))
         ,(f-cond (cdr l))))))
@@ -34,8 +34,8 @@
 )
  
 (DEFUN SUM_i(a b i)
- (COND ((NULL a) 0)
-       ((NULL b) 0)
+ (COND ((NULL? a) 0)
+       ((NULL? b) 0)
        (1 (+ (/ (+ (POW (CAR a) i) (POW (CAR b) i)) (+ (CAR a) (CAR b))) (SUM_i (CDR a) (CDR b) (+ i 1) )) )
  )
 )

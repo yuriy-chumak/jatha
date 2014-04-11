@@ -1,8 +1,8 @@
-;;; lisp
+;;;; lisp
 ; this macroses helps to notate defmacro body with ` and ,@
 
 (defun f-cond (l)
-  (if (null l) nil
+  (if (null? l) nil
     (let ((clause (car l))) 
       `(if ,(car clause) (progn ,@(cdr clause))
         ,(f-cond (cdr l))))))
@@ -11,17 +11,17 @@
    (f-cond l))
 
 (defmacro setf (place value)
-  (if (listp place)
+  (if (list? place)
       `(,(let ((name (car place)))
               (cond
-                ((eq name 'aref) 'setf-aref)
+;               ((eq name 'aref) 'setf-aref)
                 ((eq name 'car) 'setf-car)
                 ((eq name 'cdr) 'setf-cdr)
-                ((eq name 'documentation) 'setf-documentation)
-                ((eq name 'gethash) 'setf-gethash)
-                ((eq name 'symbol-function) 'setf-symbol-function)
-                ((eq name 'symbol-plist) 'setf-symbol-plist)
-                ((eq name 'symbol-value) 'setf-symbol-value)))
+;               ((eq name 'documentation) 'setf-documentation)
+;               ((eq name 'gethash) 'setf-gethash)
+               ((eq name 'symbol-function) 'setf-symbol-function)
+;               ((eq name 'symbol-plist) 'setf-symbol-plist)
+               ((eq name 'symbol-value) 'setf-symbol-value)))
          ,@(cdr place)
          ,value)
       `(set ',place ,value)))

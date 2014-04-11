@@ -24,12 +24,6 @@
 
 package org.jatha.dynatype;
 
-
-// See LispValue.java
-
-
-//-------------------------------  LispCons  --------------------------------
-
 public interface LispCons extends LispList
 {
 	/**
@@ -37,4 +31,14 @@ public interface LispCons extends LispList
 	 * CDR of NIL is NIL.
 	 */
 //	public LispValue second();
+
+	/**
+	 * Sets the first element of a list.
+	 */
+	public LispValue setf_car(LispValue newCar);
+  
+	/**
+	 * Sets the tail of a list.
+	 */
+	public LispValue setf_cdr(LispValue newCdr);
 }

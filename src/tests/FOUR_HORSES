@@ -10,7 +10,7 @@
 ;; COND
 ;; ------------------------------------------------
 (defun f-cond (l)
-  (if (null l) nil
+  (if (null? l) nil
     (let ((clause (car l)))
       `(if ,(car clause) (progn ,@(cdr clause))
         ,(f-cond (cdr l))))))
@@ -30,7 +30,7 @@
 
 (defun is_in (k lst)
   (cond
-   ( (NULL lst) NIL)
+   ( (NULL? lst) NIL)
    ( (eql k (car lst)) T)
    ( 1 (is_in k (cdr lst)) )
   )
@@ -38,7 +38,7 @@
 
 (defun remove (k lst)
  (cond
-  ((NULL lst) NIL)
+  ((NULL? lst) NIL)
   ((eql k (car lst)) (remove k (cdr lst)) )
   ( 1 (cons (car lst) (remove k (cdr lst))) )
  )
@@ -46,7 +46,7 @@
 
 (defun is_ok (lst)
  (cond
-  ( (NULL lst) T )
+  ( (NULL? lst) T )
   ( (is_in 'man lst) T )
   ( (and (is_in 'goat lst) (is_in 'cabbage lst)) NIL)
   ( (and (is_in 'wolf lst) (is_in 'goat lst)) NIL)

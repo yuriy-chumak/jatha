@@ -59,7 +59,10 @@ import static org.jatha.dynatype.LispValue.*;
  * Normal usage is to parse a string.  If you want to use a Reader,
  * do: <code>new PushbackReader(myReader)</code>.
  *
+ * example:
  * http://www.lispworks.com/documentation/lw50/CLHS/Body/02_cd.htm
+ * 
+ * todo: implements sha-bang (#!) in scenario
  * 
  * @see org.jatha.dynatype.LispValue
  * @author Micheal S. Hewett
@@ -71,9 +74,9 @@ public class LispParser extends LispProcessor
 //	static final LispSymbol COMMA_ATSIGN_FN = LispValue.COMMA_ATSIGN_FN;
 //	static final LispSymbol COMMA_DOT_FN    = LispValue.COMMA_DOT_FN;
 	
-	public static final LispSymbol COMMA_FN        = new StandardLispKeyword("COMMA");
-	public static final LispSymbol COMMA_ATSIGN_FN = new StandardLispKeyword("COMMA_ATSIGN");
-	public static final LispSymbol COMMA_DOT_FN    = new StandardLispKeyword("COMMA_DOT");
+	public static final LispSymbol COMMA_FN        = new StandardLispSymbol("COMMA");
+	public static final LispSymbol COMMA_ATSIGN_FN = new StandardLispSymbol("COMMA_ATSIGN");
+	public static final LispSymbol COMMA_DOT_FN    = new StandardLispSymbol("COMMA_DOT");
 	
 	public static final int UPCASE         = 1;
 	public static final int DOWNCASE       = 2;
@@ -81,6 +84,7 @@ public class LispParser extends LispProcessor
 
 	static final char AT_SIGN              = '@';
 	static final char BACK_QUOTE           = '`';
+	static final char SINGLE_QUOTE         = '\'';
 	static final char BACKSLASH            = '\\';
 	static final char COLON                = ':';
 	static final char COMMA                = ',';
@@ -96,7 +100,6 @@ public class LispParser extends LispProcessor
 	static final char RIGHT_PAREN          = ')';
 	static final char SEMICOLON            = ';';
 	static final char RIGHT_ANGLE_BRACKET  = '>';
-	static final char SINGLE_QUOTE         = '\'';
 	static final char UNDERSCORE           = '_';
 
 	// Parser states
@@ -115,47 +118,47 @@ public class LispParser extends LispProcessor
 	private static LispParser f_myParser = null;
 
 
-  // required by tokenToLispValue() to use "intern" and "keyword" functions
-  private Lisp f_lisp = null;
+	// required by tokenToLispValue() to use "intern" and "keyword" functions
+	private Lisp f_lisp = null;
 
-  public LispParser(Lisp lisp, Reader inStream)
-  {
-    this(lisp, inStream, UPCASE);
-  }
+	public LispParser(Lisp lisp, Reader inStream)
+	{
+		this(lisp, inStream, UPCASE);
+	}
 
-  public LispParser(Lisp lisp, String inString)
-  {
-    this(lisp, new StringReader(inString), UPCASE);
-  }
+	public LispParser(Lisp lisp, String inString)
+	{
+		this(lisp, new StringReader(inString), UPCASE);
+	}
 
 
-  /**
-   * Allows you to create a parser that handles
-   * input case conversion as you like.
-   * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
-   * @param inStream
-   */
-  public LispParser(Lisp lisp, Reader inStream, int caseSensitivity)
-  {
-    f_lisp = lisp;
+	/**
+	 * Allows you to create a parser that handles
+	 * input case conversion as you like.
+	 * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
+	 * @param inStream
+	 */
+	public LispParser(Lisp lisp, Reader inStream, int caseSensitivity)
+	{
+		f_lisp = lisp;
 
-    if (inStream instanceof PushbackReader)
-      inputReader = (PushbackReader)inStream;
-    else
-      inputReader   = new PushbackReader(inStream);
-    setCaseSensitivity(caseSensitivity);
-  }
+		if (inStream instanceof PushbackReader)
+			inputReader = (PushbackReader)inStream;
+		else
+			inputReader   = new PushbackReader(inStream);
+		setCaseSensitivity(caseSensitivity);
+	}
 
-  /**
-   * Allows you to create a parser that handles
-   * input case conversion as you like.
-   * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
-   */
-  public LispParser(Lisp lisp, String inString, int caseSensitivity)
-  {
-    this(lisp, new StringReader(inString));
-    setCaseSensitivity(caseSensitivity);
-  }
+	/**
+	 * Allows you to create a parser that handles
+	 * input case conversion as you like.
+	 * Default is UPCASE.  Other values are DOWNCASE and PRESERVE.
+	 */
+	public LispParser(Lisp lisp, String inString, int caseSensitivity)
+	{
+		this(lisp, new StringReader(inString));
+		setCaseSensitivity(caseSensitivity);
+	}
 
   /**
    * Retrieves the current case-sensitivity of the parser.
@@ -207,198 +210,169 @@ public class LispParser extends LispProcessor
   }
 
 
-  /**
-   * Parse() assumes that there is only one expression in the input
-   * string or file.  If you need to read multiple items from a
-   * string or file, use the read() function.
-   * Parse just calls read right now.
-   *
-   * @see #read
-   */
-  public LispValue parse()
-          throws EOFException
-  {
-    return read();
-  }
+	/**
+	 * Parse() assumes that there is only one expression in the input
+	 * string or file.  If you need to read multiple items from a
+	 * string or file, use the read() function.
+	 * Parse just calls read right now.
+	 *
+	 * @see #read
+	 */
+	public LispValue parse()
+			throws EOFException
+	{
+		return read();
+	}
 
-  /**
-   * Reads one s-expression from the input stream (a string or file).
-   * Throws an EOFxception when EOF is reached.
-   * Call this method repeatedly to do read-eval-print on a file.
-   */
-  public LispValue read()
-  throws EOFException
-  {
-    StringBuffer   token = new StringBuffer(80);    // Should cover most tokens.
-    char           ch;
-    int            intCh = 0;
-    int            parseState  = READING_NOTHING;
+	/**
+	 * Reads one s-expression from the input stream (a string or file).
+	 * Throws an EOFxception when EOF is reached.
+	 * Call this method repeatedly to do read-eval-print on a file.
+	 */
+	public LispValue read()
+			throws EOFException
+	{
+		StringBuffer token = new StringBuffer(80);    // Should cover most tokens.
+		char ch;
+		int  intCh = 0;
+		int  parseState = READING_NOTHING;
 
-    while (true)
-    {
-      try {
-        intCh = inputReader.read();
-      } catch (IOException ioe) {
-        break;
-      }
+		while (true)
+		{
+			try { intCh = inputReader.read(); }
+			catch (IOException ioex) { break; }
 
-      if (intCh < 0)
-        if (parseState == READING_SYMBOL)  // end of symbol at end of input
-          ch = ' ';
-        else
-          throw new EOFException("Premature end of LISP input at: " + token.toString());
-      else
-        ch = (char) intCh;
+			if (intCh < 0) {
+				if (parseState != READING_SYMBOL)  // end of symbol at end of input
+					throw new EOFException("Premature end of LISP input at: " + token.toString());
+			
+				ch = ' ';
+			}
+			else
+				ch = (char) intCh;
 
-      // Debugging
-      // System.err.print("\n Read: read: " + intCh + " ('" + ch + "')");
+			// Encounter a comment?: flush the remaining characters on the line.
+			if (isSemicolon(ch)
+					&& (parseState != READING_STRING)
+					&& (parseState != READING_CHARACTER))
+			{
+				do {
+					try { intCh = inputReader.read(); }
+					catch (IOException ioex) { break; }
+					if (intCh < 0)
+						throw new EOFException("Premature end of LISP input at: " + token.toString());
+					
+					ch = (char) intCh;
+				}
+				while (ch != '\n' && ch != '\r');
+				continue;
+			}
 
-      // Encounter a comment?: flush the remaining characters on the line.
-      if (isSemi(ch)
-              && (parseState != READING_STRING)
-              && (parseState != READING_CHARACTER))
-      {
-        do
-        {
-          try { intCh = inputReader.read(); }
-          catch (IOException e)
-          { break; }
-          if (intCh < 0)
-            throw new EOFException("Premature end of LISP input at: " + token.toString());
-          else
-            ch = (char) intCh;
+			switch (parseState) {
+			case READING_SYMBOL:
+				if (isTerminator(ch))       // Terminate reading token.
+				{
+					unread(ch);
+					parseState = READING_NOTHING;
+					return tokenToLispValue(
+							f_caseSensitivity == UPCASE   ? token.toString().toUpperCase() :
+							f_caseSensitivity == DOWNCASE ? token.toString().toLowerCase() :
+								token.toString()
+							);
+				}
+				
+				token.append(ch);
+				break;
 
-          // Apparently read() doesn't do translation.
-          if (ch == '\r')
-            ch = '\n';
-        }
-        while (ch != '\n');
-        // System.err.println("\n Finished comment with: " + (int) ch);
-        continue;
-      }
+			case READING_MIXED_CASE_SYMBOL:
+				if (isOrBar(ch))       // Terminate reading token.
+				{
+					String s = token.toString();
 
-      if (parseState != READING_NOTHING) {      /* If reading anything... */
-        switch (parseState) {
-          case READING_SYMBOL:
-            if (isTerminator(ch))       /* Terminate reading token. */
-            {
-              try { inputReader.unread(ch); }
-              catch (IOException e)
-              { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
-              parseState = READING_NOTHING;
-              if (f_caseSensitivity == UPCASE)
-                return(tokenToLispValue(token.toString().toUpperCase()));
-              else if (f_caseSensitivity == DOWNCASE)
-                return(tokenToLispValue(token.toString().toLowerCase()));
-              else // if (f_caseSensitivity == PRESERVE)
-                return(tokenToLispValue(token.toString()));
-            }
-            else
-              token.append(ch);
-            break;
+					token.append(ch);
+					parseState = READING_NOTHING;
+					// Strip off the beginning and ending Or Bars.
+					return tokenToLispValue(s.substring(1, s.length()));
+				}
+				
+				token.append(ch);
+				break;
 
-          case READING_MIXED_CASE_SYMBOL:
-            if (isOrBar(ch))       /* Terminate reading token. */
-            {
-              String s = token.toString();
+			case READING_STRING:
+				if (ch == BACKSLASH)  // Next char is always in the string
+				{
+					try { intCh = inputReader.read(); }
+					catch (IOException ioex) { break; }
+					if (intCh < 0)
+						throw new EOFException("Premature end of LISP input at: " + token.toString());
+					
+					ch = (char)intCh;
+					token.append(ch);
+					break;
+				}
 
-              token.append(ch);
-              parseState = READING_NOTHING;
-              // Strip off the beginning and ending Or Bars.
-              return(tokenToLispValue(s.substring(1, s.length())));
-            }
-            else
-              token.append(ch);
-            break;
+				if (ch == DOUBLE_QUOTE)
+				{
+					token.append(ch);
+					parseState = READING_NOTHING;
+					return tokenToLispValue(token.toString());
+				}
+				
+				token.append(ch);
+				break;
+			case READING_NOTHING:
+				if (!isSpace(ch))         /* Start reading a token */
+				{
+					if (isLparen(ch))
+						return read_list_token(inputReader);
+					if (isRparen(ch))
+					{
+						System.err.println("WARNING: Too many right parentheses.  NIL assumed.");
+						return NIL;
+					}
+					if (isQuote(ch))
+						return read_quoted_token(inputReader, UPCASE);
+					if (isColon(ch))
+						return read_quoted_token(inputReader, PRESERVE);
+					if (isDoubleQuote(ch)) {
+						token.append(ch);
+						parseState = READING_STRING;
+						break;
+					}
+					if (isPound(ch))
+						return(applyReaderMacro(inputReader));
+					if (isBackQuote(ch))
+						return(read_backquoted_token(inputReader));
+					if (isComma(ch))
+						return(read_comma_token(inputReader));
+					
+					if (isOrBar(ch)) {
+						token.append(ch);
+						parseState = READING_MIXED_CASE_SYMBOL;
+						break;
+					}
+					
+					parseState = READING_SYMBOL;
+					unread(ch);
+				}  /* if (!isSpace(ch)) */
+				break;
+			}
+		} /* main WHILE loop */
 
-          case READING_STRING:
-            if (ch == BACKSLASH)  // Next char is always in the string
-            {
-              try { intCh = inputReader.read(); }
-              catch (IOException e)
-              { break; }
-              if (intCh < 0)
-                throw new EOFException("Premature end of LISP input at: " + token.toString());
-              else
-                ch = (char) intCh;
-
-              token.append(ch);
-              break;
-            }
-
-            if (ch == DOUBLE_QUOTE)
-            {
-              token.append(ch);
-              parseState = READING_NOTHING;
-              return(tokenToLispValue(token.toString()));
-            }
-            else
-              token.append(ch);
-            break;
-        } /* END OF SWITCH */
-      } /* END OF IF (parseState) */
-
-      // We are not in the middle of reading something recognizable, so
-      // we try to start something recognizable.
-      else
-        if (!isSpace(ch))         /* Start reading a token */
-        {
-          if (isLparen(ch))
-          {
-            return(read_list_token(inputReader));
-          }
-          else if (isRparen(ch))
-          {
-            System.err.println("WARNING: Too many right parentheses.  NIL assumed.");
-            return(NIL);
-          }
-          else if (isQuote(ch))
-          {
-            return(read_quoted_token(inputReader));
-          }
-          else if (isDoubleQuote(ch))
-          {
-            token.append(ch);
-            parseState = READING_STRING;
-          }
-          else if (isPound(ch))
-          {
-            return(applyReaderMacro(inputReader));
-          }
-          else if (isBackQuote(ch))
-          {
-            return(read_backquoted_token(inputReader));
-          }
-          else if (isComma(ch))
-          {
-            return(read_comma_token(inputReader));
-          }
-          else if (isOrBar(ch))
-          {
-            token.append(ch);
-            parseState = READING_MIXED_CASE_SYMBOL;
-          }
-/*          else if (isColon(ch))
-          {
-              return(read_comma_token(inputReader));
-          }*/
-          else
-          {
-            parseState = READING_SYMBOL;
-            try { inputReader.unread(ch); }
-            catch (IOException e)
-            { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
-          }
-        }  /* if (!isSpace(ch)) */
-
-    } /* main WHILE loop */
-
-    /* WE ONLY EXECUTE THIS CODE IF WE HIT end of input string or file. */
-    if (token.length() > 0)
-      return(tokenToLispValue(token.toString()));
-    else
-      return(NIL);
-  }
+		/* WE ONLY EXECUTE THIS CODE IF WE HIT end of input string or file. */
+		if (token.length() > 0)
+			return(tokenToLispValue(token.toString()));
+		else
+			return(NIL);
+	}
+	
+	private final void unread(char ch)
+	{
+		try { inputReader.unread(ch); }
+		catch (IOException ioex) {
+			System.err.println("\n *** I/O error while unreading character '" + ch + "'.");
+		}
+	}
 
 
   /**
@@ -445,7 +419,7 @@ public class LispParser extends LispProcessor
         }
 
         // Encounter a comment?: flush the remaining characters on the line.
-        if (isSemi(ch))
+        if (isSemicolon(ch))
         {
           do
           {
@@ -465,9 +439,7 @@ public class LispParser extends LispProcessor
 
         // otherwise process a normal token.
 
-        try { inputReader.unread(ch); }
-        catch (IOException e)
-        { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
+        unread(ch);
 
         // System.err.print("\nRLT calling parse()");
         newToken = read();
@@ -501,50 +473,39 @@ public class LispParser extends LispProcessor
     return NIL;     // Shouldn't get here.
   }
 
-  /**
-   * This routine is called by parse when it encounters
-   * a quote mark.  It calls parse recursively.
-   */
-  LispValue read_quoted_token(PushbackReader stream) throws EOFException
-  {
-    LispValue newCell          = NIL;
-    LispValue newQuotedList    = NIL;
-
-    /* Construct the quoted list (QUOTE . (NIL . NIL)) then
-     * read a token and replace the first NIL by the token read.
-     */
-
-    newQuotedList = cons(QUOTE,
-                         cons(NIL, NIL));
-    newCell = read();
-    cdr(newQuotedList).rplaca(newCell);
-    return(newQuotedList);
-  }
+	/**
+	 * This routine is called by parse when it encounters
+	 * a quote mark.  It calls parse recursively.
+	 */
+	LispValue read_quoted_token(PushbackReader stream, int newCS) throws EOFException
+	{
+		int
+		wasCS = f_caseSensitivity;
+		f_caseSensitivity = newCS;
+		LispValue value = read();
+		f_caseSensitivity = wasCS;
+    
+		return cons(QUOTE, cons(value, NIL));
+	}
 
 
-  /**
-   * This routine is called by parse when it encounters
-   * a backquote mark.  It calls parse recursively.
-   */
-  public LispValue read_backquoted_token(PushbackReader stream) throws EOFException
-  {
-    LispValue newCell          = NIL;
-    LispValue newQuotedList    = NIL;
+	/**
+	 * This routine is called by parse when it encounters
+	 * a backquote mark.  It calls parse recursively.
+	 */
+	public LispValue read_backquoted_token(PushbackReader stream) throws EOFException
+	{
+		LispValue newCell          = NIL;
 
-    /* Construct the quoted list (SYS::BACKQUOTE . (NIL . NIL)) then
-    * read a token and replace the first NIL by the token read.
-    */
+		/* Construct the quoted list (SYS::BACKQUOTE . (NIL . NIL)) then
+		 * read a token and replace the first NIL by the token read.
+		 */
+		++BackQuoteLevel;
+		newCell = read();
+		--BackQuoteLevel;
 
-    newQuotedList = cons(BACKQUOTE,
-                         cons(NIL, NIL));
-
-    ++BackQuoteLevel;
-    newCell = read();
-    --BackQuoteLevel;
-
-    cdr(newQuotedList).rplaca(newCell);
-    return(newQuotedList);
-  }
+		return cons(BACKQUOTE, cons(newCell, NIL));
+	}
 
 
   /**
@@ -582,9 +543,7 @@ public class LispParser extends LispProcessor
     else
     {
       identifier = COMMA_FN;
-      try { inputReader.unread(ch); }
-      catch (IOException e)
-      { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
+      unread(ch);
     }
 
     newQuotedList = cons(identifier,
@@ -614,12 +573,12 @@ public class LispParser extends LispProcessor
       ch = (char) intCh;
 
     // #:foo is an uninterned symbol.
-    if (isColon(ch))
+/*    if (isColon(ch))
     {
       StringBuffer token = new StringBuffer(80);
       token.append('#');
 
-      while (!isTerminator(ch))       /* Terminate reading token. */
+      while (!isTerminator(ch))       // Terminate reading token.
       {
         token.append(ch);
         try { intCh = inputReader.read(); }
@@ -630,9 +589,7 @@ public class LispParser extends LispProcessor
           ch = (char) intCh;
       }
 
-      try { inputReader.unread(ch); }
-      catch (IOException e)
-      { System.err.println("\n *** I/O error while unreading character '" + ch + "'."); }
+      unread(ch);
 
       if (f_caseSensitivity == UPCASE)
         return(tokenToLispValue(token.toString().toUpperCase()));
@@ -643,7 +600,8 @@ public class LispParser extends LispProcessor
     }
 
     // #'foo means (function foo)
-    else if (isQuote(ch))
+    else */
+    if (isQuote(ch))
     {
       LispValue result = list(tokenToLispValue("FUNCTION"), read());
       return result;
@@ -859,7 +817,7 @@ public class LispParser extends LispProcessor
 		{
 			// Added packages, 10 May 1997 (mh)
 			// Removed packages, 19 Mar 2014 (yc)
-			if (token.indexOf(':') >= 0)
+			/*if (token.indexOf(':') >= 0)
 			{
 				String packageStr = token.substring(0, token.indexOf(':'));
 				token = token.substring(packageStr.length() + 1, token.length());
@@ -876,10 +834,11 @@ public class LispParser extends LispProcessor
 					if (!"".equals(packageStr))
 						throw(new LispUndefinedPackageException(packageStr));
 					
-					newCell = f_lisp.keyword(token.toUpperCase());
+					// was: keyword
+					newCell = f_lisp.intern(token.toUpperCase());
 				}
 			}
-			else
+			else*/
 				newCell = f_lisp.intern(token);
 		}
 		else {
@@ -897,54 +856,57 @@ public class LispParser extends LispProcessor
 		return(newCell);
 	}
 
-  // ----  Utility functions  ----------------------------------
+	// ----  Utility functions  ----------------------------------
 
-  static boolean isLparen(char x)             { return (x == LEFT_PAREN);   }
-  static boolean isRparen(char x)             { return (x == RIGHT_PAREN);  }
-  static boolean isAtSign(char x)             { return (x == AT_SIGN);      }
-  static boolean isBackQuote(char x)          { return (x == BACK_QUOTE);   }
-  static boolean isBackSlash(char x)          { return (x == BACKSLASH);    }
-  static boolean isColon(char x)              { return (x == COLON);        }
-  static boolean isComma(char x)              { return (x == COMMA);        }
-  static boolean isDoubleQuote(char x)        { return (x == DOUBLE_QUOTE); }
-  static boolean isOrBar(char x)              { return (x == OR_BAR);       }
-  static boolean isPound(char x)              { return (x == POUND);        }
-  static boolean isPeriod(char x)             { return (x == PERIOD);       }
-  static boolean isQuote(char x)              { return (x == SINGLE_QUOTE); }
-  static boolean isSemi(char x)               { return (x == SEMICOLON);    }
-  static boolean isLeftAngleBracket(char x)   { return (x == LEFT_ANGLE_BRACKET); }
-  static boolean isRightAngleBracket(char x)  { return (x == RIGHT_ANGLE_BRACKET); }
+	static final boolean isLparen(char x)             { return (x == LEFT_PAREN);   }
+	static final boolean isRparen(char x)             { return (x == RIGHT_PAREN);  }
+	static final boolean isAtSign(char x)             { return (x == AT_SIGN);      }
+	static final boolean isBackQuote(char x)          { return (x == BACK_QUOTE);   }
+	static final boolean isBackSlash(char x)          { return (x == BACKSLASH);    }
+	static final boolean isColon(char x)              { return (x == COLON);        }
+	static final boolean isComma(char x)              { return (x == COMMA);        }
+	static final boolean isDoubleQuote(char x)        { return (x == DOUBLE_QUOTE); }
+	static final boolean isOrBar(char x)              { return (x == OR_BAR);       }
+	static final boolean isPound(char x)              { return (x == POUND);        }
+	static final boolean isPeriod(char x)             { return (x == PERIOD);       }
+	static final boolean isQuote(char x)              { return (x == SINGLE_QUOTE); }
+	static final boolean isSemicolon(char x)          { return (x == SEMICOLON);    }
+	static final boolean isLeftAngleBracket(char x)   { return (x == LEFT_ANGLE_BRACKET); }
+	static final boolean isRightAngleBracket(char x)  { return (x == RIGHT_ANGLE_BRACKET); }
 
-  static boolean isSpace(char x)
-  { return
-      ((x == ' ')          // space
-       || (x == '\n')      // newline
-       || (x == '\r')      // carriage return
-       || (x == '\t')      // tab
-       || (x == '\f')      // form feed
-       || (x == '\b'));    // backspace
-      }
+	static boolean isSpace(char x)
+	{
+		return (x == ' ')       // real space
+			|| (x == '\n')      // newline
+			|| (x == '\r')      // carriage return
+			|| (x == '\t')      // tab
+			|| (x == '\f')      // form feed
+			|| (x == '\b');     // backspace
+	}
 
    /*
     * Because isTerminator is called in a very tight loop (for every input
     * character) and we want to deal with potentailly massive literals,
     * we use a small lookup table to make it as fast as possible.
+    * todo: change this
     */
    private static final boolean[] terminatorLookupTable = new boolean[256];
    static
    {
        for (int i = 0; i < 256; i++)
        {
-           terminatorLookupTable[i] = (isSpace((char)i) // white space
+           terminatorLookupTable[i] = isSpace((char)i) // white space
              || isLparen((char)i) || isRparen((char)i)
-             || isQuote((char)i)  || isSemi((char)i)
+             || isComma((char)i)  || isSemicolon((char)i)
              || isDoubleQuote((char)i)
-             || isComma((char)i));
+             || isQuote((char)i);
        }
    }
    static boolean isTerminator(char x)
    {
-       return terminatorLookupTable[(byte)x];
+	   if ((int)x < 256)
+		   return terminatorLookupTable[(byte)x];
+	   return false;
    }
 
 
@@ -1015,7 +977,6 @@ public class LispParser extends LispProcessor
     return(SymbolTools.firstCharNotInSet(index, str, INTchars) == length);
   }
 
-  boolean NIL_token_p(String str) { return(str.equalsIgnoreCase("NIL")); }
 
   boolean STRING_token_p(String str)
   {
@@ -1036,10 +997,9 @@ public class LispParser extends LispProcessor
   }
 
 
-  boolean SYMBOL_token_p(String str) { return(str.length() >= 1); }
-
-
-  boolean T_token_p(String str) { return(str.equalsIgnoreCase("T")); }
+	boolean T_token_p(String str) { return ("T".equalsIgnoreCase(str)); }
+	boolean NIL_token_p(String str) { return("NIL".equalsIgnoreCase(str)); }
+	boolean SYMBOL_token_p(String str) { return(str.length() >= 1); }
 
 
 

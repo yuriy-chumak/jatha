@@ -1,13 +1,10 @@
 ;;; lisp
 
-(defmacro backquote (expr)
-   (f-backquote expr))
-
 ;; ------------------------------------------------
 ;; COND
 ;; ------------------------------------------------
 (defun f-cond (l)
-  (if (null l) nil
+  (if (null? l) nil
     (let ((clause (car l))) 
       `(if ,(car clause) (progn ,@(cdr clause))
         ,(f-cond (cdr l))))))

@@ -2,7 +2,7 @@
 ;;; lisp
 
 (defun f-cond (l)
-  (if (null l) nil
+  (if (null? l) nil
     (let ((clause (car l))) 
       `(if ,(car clause) (progn ,@(cdr clause))
         ,(f-cond (cdr l))))))
@@ -14,7 +14,7 @@
 ;; solve
 (defun is_in(el spis)
  (cond
-   ((null spis) nil)
+   ((null? spis) nil)
    ((eql el (car spis)) T)
    (t (is_in el (cdr spis)))
  )
@@ -22,7 +22,7 @@
 
 (defun remove_first(el spis)
  (cond
-   ((null spis) nil )
+   ((null? spis) nil )
    ((eql el (car spis)) (cdr spis))
    (t (cons (car spis) ( remove_first el (cdr spis) ) ) )
  )
@@ -30,7 +30,7 @@
 
 (defun group(spis)
  (cond
-   ((null spis) nil )
+   ((null? spis) nil )
    ((is_in (car spis) (cdr spis)) (cons (car spis) (group (cons (car spis) (remove_first (car spis) (cdr spis))))))
    (t (cons (car spis) (group (cdr spis))) )
  )

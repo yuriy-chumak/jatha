@@ -47,7 +47,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 {
 	public StandardLispNumber() { }
 	
-  public boolean    basic_constantp()  { return true; }
+  public boolean constantp()  { return true; }
   public boolean    basic_numberp()    { return true; }
 
 
@@ -59,11 +59,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   // ---- LISP functions -------------
   
   // contributed by Jean-Pierre Gaillardon, April 2005
-  public LispValue constantp()
-  {
-    return T;
-  }
-
   /**
    * Default implementation of abs.
    */

@@ -29,6 +29,7 @@ import org.jatha.LispProcessor;
 import org.jatha.dynatype.*;
 import org.jatha.exception.*;
 import org.jatha.compile.*;
+
 import
 static org.jatha.dynatype.LispValue.*;
 
@@ -479,7 +480,7 @@ public class SECDMachine extends LispProcessor
   // Assume the caller has verified that this is a special variable.
   public void special_bind(LispValue symbol, LispValue value)
   {
-    if (symbol.basic_constantp())
+    if (symbol.constantp())
     {
       // Cause a LispConstant Redefined error
       symbol.setf_symbol_value(value);

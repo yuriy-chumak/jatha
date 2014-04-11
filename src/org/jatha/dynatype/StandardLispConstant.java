@@ -77,8 +77,7 @@ public class StandardLispConstant extends StandardLispSymbol
 
   // ------  BASIC (non-LISP) methods  --------
 
-  public boolean basic_constantp()
-  { return true; }
+  public boolean constantp() { return true; }
 
 
  

@@ -1,8 +1,8 @@
-;;;; Type Tests
+;;;; ATOM TESTS
 T
 (not NIL)
 
-;; atom
+;; positive tests
 (atom? 'a)
 (atom? ())
 (atom? "hello")
@@ -12,10 +12,5 @@ T
 (atom? 12.34)
 (atom? NIL)
 
-(not
-  (atom? '(a b c))
-
-;; cons?
-
-
-;; list?
+;; negative tests
+(not (atom? '(a b c))

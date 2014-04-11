@@ -42,9 +42,10 @@ import org.jatha.Lisp;
  */
 public class SECDRegister extends StandardLispSymbol
 {
+	private static int count = 1000;
 	public SECDRegister(String name)
 	{
-		super("*REGISTER-" + Math.rint(Math.random() * 1000.0) + "*");
+		super("*REGISTER-" + ++count + "*");
 
 		assign(NIL);
 	}

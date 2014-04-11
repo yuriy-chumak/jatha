@@ -145,10 +145,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
    */
   public String toString()
   {
-	  if (this instanceof LispKeyword)
-		  return ":" + f_name.getValue();
-	  else
-		  return f_name.getValue();
+	return f_name.getValue();
   }
 
 
@@ -159,9 +156,9 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public String toStringSimple()
   {
     // if (this instanceof LispKeyword)    // would this work?
-    if (this instanceof LispKeyword)
-      return ":" + f_name.getValue();
-    else
+//    if (this instanceof LispKeyword)
+//      return ":" + f_name.getValue();
+//    else
       return f_name.getValue();
   }
 

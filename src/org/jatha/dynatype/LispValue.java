@@ -68,8 +68,8 @@ public interface LispValue extends Comparable<LispValue>
 	public static final LispSymbol QUOTE     = new StandardLispSymbol("QUOTE");
 	public static final LispSymbol BACKQUOTE = new StandardLispSymbol("BACKQUOTE");
 	
-	public static final LispSymbol MACRO     = new StandardLispKeyword("MACRO");
-	public static final LispSymbol PRIMITIVE = new StandardLispKeyword("PRIMITIVE");
+	public static final LispSymbol MACRO     = new StandardLispSymbol("MACRO");
+//	public static final LispSymbol PRIMITIVE = new StandardLispSymbol("PRIMITIVE");
 	
 	public static final LispValue COLON   = new StandardLispCharacter(':');
 	public static final LispValue NEWLINE = new StandardLispCharacter('\n');
@@ -117,10 +117,10 @@ public interface LispValue extends Comparable<LispValue>
   public void internal_print_as_cdr(PrintStream os);
 
 
-  /**
-   * Returns Java true if the object is a constant.
-   */
-  public boolean basic_constantp();
+	/**
+	 * Returns true if the object is a constant.
+	 */
+	public boolean constantp();
 
   /**
    * Returns Java true if the object is a floating-point number.
@@ -141,11 +141,6 @@ public interface LispValue extends Comparable<LispValue>
    * Returns Java true if the object is an integer.
    */
   public boolean basic_integerp();
-
-  /**
-   * Returns Java true if the object is a keyword.
-   */
-  public boolean basic_keywordp();
 
   /**
    * Returns the Java length of a list or string.
@@ -344,16 +339,6 @@ public interface LispValue extends Comparable<LispValue>
   public LispValue butlast();
 
   /**
-   * Sets the first element of a list.
-   */
-  public LispValue setf_car(LispValue newCar);
-  
-  /**
-   * Sets the tail of a list.
-   */
-  public LispValue setf_cdr(LispValue newCdr);
-  
-  /**
    * Returns T if the object is a Character.
    */
   public LispValue characterp();
@@ -362,11 +347,6 @@ public interface LispValue extends Comparable<LispValue>
    * Clears a hash table.
    */
   public LispValue clrhash();
-
-  /**
-   * Returns T if the object is a constant.
-   */
-  public LispValue constantp();
 
   /**
    * Returns a copy of the top level of a list.

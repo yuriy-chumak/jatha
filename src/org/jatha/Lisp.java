@@ -192,7 +192,7 @@ public class Lisp extends LispProcessor
 //    PI   = StandardLispValue.real(StrictMath.PI);
 
     intern("MACRO",     MACRO);
-    intern("PRIMITIVE", PRIMITIVE);
+//    intern("PRIMITIVE", PRIMITIVE);
   }
 
 /* ------------------  PRIVATE VARIABLES   ------------------------------ */
@@ -1188,7 +1188,6 @@ public class Lisp extends LispProcessor
 	////////////// EVAL
 	public LispSymbol intern(String symbolString, LispSymbol symbol)
 	{
-//		symbol.setPackage(true);
 		SYMTAB.put(symbolString, symbol);
 		return symbol;
 	}
@@ -1197,32 +1196,13 @@ public class Lisp extends LispProcessor
 		return intern(symbolString.getValue(), symbol);
 	}
 	
-
-	public LispSymbol symbol(String symbolString)
+	public LispSymbol intern(String symbolString)
 	{
 		LispSymbol symbol = SYMTAB.get(symbolString);
 		if (symbol != null)
 			return symbol;
         symbol = makeSymbol(symbolString);
 		return intern(symbolString, symbol);
-	}
-	
-	public LispSymbol keyword(String symbolString)
-	{
-		LispSymbol symbol = SYMTAB.get(symbolString);
-		if (symbol != null)
-			return symbol;
-        symbol = new StandardLispKeyword(symbolString);
-		return intern(symbolString, symbol);
-	}
-	
-	
-	public LispSymbol intern(String symbolString)
-	{
-	    if (symbolString.charAt(0) == ':')
-	    	return keyword(symbolString.substring(1));
-	    else
-	    	return symbol(symbolString);
 	}
 	public LispSymbol intern(LispString symbolString)
 	{
@@ -1259,14 +1239,6 @@ public class Lisp extends LispProcessor
 
 			if (code instanceof LispPrimitive)
 				return true;
-			// or?
-			if (code instanceof LispList) {
-				LispValue a = code.first();
-				LispValue c = LispValue.PRIMITIVE;
-	        
-				if (a == c)
-					return true;
-			}
 			
 			return false;
 	  }

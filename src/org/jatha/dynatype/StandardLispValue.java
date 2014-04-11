@@ -108,12 +108,11 @@ public abstract class StandardLispValue extends LispProcessor
   public void internal_print_as_cdr(PrintStream os)
   { os.print(" . "); internal_print(os);  }
 
-  public boolean basic_constantp() { return false; }
+  public boolean constantp() { return false; }
   public boolean basic_floatp()    { return false; }
   public boolean basic_foreignp()  { return false; }
   public boolean basic_integerp()  { return false; }
   public boolean basic_functionp() { return false; }
-  public boolean basic_keywordp()  { return false; }
   public int     basic_length()    { throw new LispValueNotAListException("The argument to basic_length"); }
   public boolean basic_macrop()    { return false; }
   public boolean basic_numberp()   { return false; }
@@ -393,15 +392,9 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     car          ()
   { throw new LispValueNotAConsException("The argument to CAR");  }
 
-  public LispValue     setf_car          (LispValue newCar)
-  { throw new LispValueNotAConsException("The argument to SETF-CAR");  }
-  
   public LispValue     cdr          ()
   { throw new LispValueNotAConsException("The argument to CDR");  }
 
-  public LispValue     setf_cdr          (LispValue newCdr)
-  { throw new LispValueNotAConsException("The argument to SETF-CDR");  }
-  
   public LispValue     ceiling      ()
   { throw new LispValueNotANumberException("The first argument to CEILING"); }
 
@@ -410,11 +403,6 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     clrhash      ()
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
 
-
-  public LispValue     constantp    ()
-  {
-    return basic_constantp() ? T : NIL;  // Modification suggested by Jean-Pierre Gaillardon  7 Apr 2005
-  }
 
   public LispValue     copy_list    ()
   { throw new LispValueNotAListException("The argument to COPY-LIST");  }

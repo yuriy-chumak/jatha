@@ -74,17 +74,17 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
 
 	public LispValue car() { return carCell; }
-	public LispValue setf_car(LispValue newCar) 
+	public LispValue setf_car(LispValue value)
 	{ 
-		carCell = newCar;
-		return carCell; 
+		carCell = value;
+		return carCell;
 	}
 	  
 	public LispValue cdr() { return cdrCell; }
-	public LispValue setf_cdr(LispValue newCdr) 
+	public LispValue setf_cdr(LispValue value)
 	{ 
-		cdrCell = newCdr; 
-		return cdrCell; 
+		cdrCell = value;
+		return cdrCell;
 	}
 	
 // =-( unsorted )-=========================================	
@@ -137,7 +137,7 @@ public class StandardLispCons extends StandardLispList implements LispCons
   }
 
 
-  public boolean basic_constantp()
+  public boolean constantp()
   { // returns true if the list evaluates to itself - if it is quoted.
     return carCell == QUOTE;
   }

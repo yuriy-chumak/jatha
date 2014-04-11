@@ -1,13 +1,13 @@
 ;; --- Functions needed to implement macros -----
 
 ;; http://cybern.ru/lisp-predicat.html
-(atom 1);T
-(not (atom '(1 2)));NIL
-(not (listp '1));NIL 
-(listp '(1 2));T
-(not (null '1));NIL
-(null '());T
-(null nil);T
+(atom? 1);T
+(not (atom? '(1 2)));NIL
+(not (list? '1));NIL 
+(list? '(1 2));T
+(not (null? '1));NIL
+(null? '());T
+(null? nil);T
 
 
 (eq 1 1);T

@@ -140,10 +140,10 @@ public class StandardLispHashTable extends StandardLispValue implements LispHash
 		  LispValue typeArg, LispValue sizeArg,
 		  LispValue rehashSizeArg, LispValue rehashThresholdArg)
   {
-	    EQ     = lisp.keyword("EQ-HASH-TABLE");
-	    EQL    = lisp.keyword("EQL-HASH-TABLE");
-	    EQUAL  = lisp.keyword("EQUAL-HASH-TABLE");
-	    EQUALP = lisp.keyword("EQUALP-HASH-TABLE");
+	    EQ     = lisp.intern("EQ-HASH-TABLE");
+	    EQL    = lisp.intern("EQL-HASH-TABLE");
+	    EQUAL  = lisp.intern("EQUAL-HASH-TABLE");
+	    EQUALP = lisp.intern("EQUALP-HASH-TABLE");
 
 	    DEFAULT_TYPE             = EQL;
 

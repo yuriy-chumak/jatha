@@ -73,7 +73,7 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
 
   public String toString() { return String.valueOf(value); }
 
-  public boolean basic_constantp()  { return true; }
+  public boolean constantp() { return true; }
 
   // ----- LISP methods  ------------
 
@@ -83,11 +83,6 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
   }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
-  public LispValue constantp()
-  {
-    return T;
-  }
-
   public LispValue eql(LispValue val)
   {
     if (val instanceof LispCharacter)

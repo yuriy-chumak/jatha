@@ -36,6 +36,16 @@ public class SETF implements LispExtension
 				return a.setf_cdr(arg2);
 			}
 		});
+		compiler.Register(new LispPrimitive2("SETF-SYMBOL-VALUE") {
+			protected LispValue Execute(LispValue arg1, LispValue arg2) {
+				return arg1.setf_symbol_value(arg2);
+			}
+		});
+		compiler.Register(new LispPrimitive2("SETF-SYMBOL-FUNCTION") {
+			protected LispValue Execute(LispValue arg1, LispValue arg2) {
+				return arg1.setf_symbol_function(arg2);
+			}
+		});
 		
 		InputStreamReader resourceReader = null;
 		try
