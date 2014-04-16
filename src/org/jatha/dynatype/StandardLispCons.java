@@ -498,16 +498,21 @@ public class StandardLispCons extends StandardLispList implements LispCons
   }
 
 	@Override
-	public LispValue append(LispValue otherList)
+	public LispValue append(LispValue list)
 	{
-		LispValue rest = otherList;
-  
-		List list = toRandomAccess();
-		for (int i = list.size() - 1; i >= 0; i--)
-		{
-			rest = cons((LispValue)list.get(i), rest);
+		LispCons head = cons(NIL, NIL);
+		LispCons p = head;
+		
+		for (Iterator<LispValue> i = this.iterator(); i.hasNext();) {
+			p.setf_cdr(cons(i.next(), NIL));
+			p = (LispCons)cdr(p);
 		}
-		return rest;
+		for (Iterator<LispValue> i = list.iterator(); i.hasNext();) {
+			p.setf_cdr(cons(i.next(), NIL));
+			p = (LispCons)cdr(p);
+		}
+		
+		return cdr(head);
 	}
   
 };

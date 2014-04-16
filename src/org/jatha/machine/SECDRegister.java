@@ -58,7 +58,7 @@ public class SECDRegister extends LispProcessor
 	}
 
 	protected String f_name;           // Print name
-	protected LispList f_value = NIL;          // Assigned value
+	protected LispList f_value;        // Assigned value
 	
 	public LispValue push(LispValue newValue)
 	{

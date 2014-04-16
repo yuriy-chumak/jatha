@@ -29,10 +29,8 @@
 )
 
 (defun sort(f)
- (cond
-   ((null? f) nil)
-   (T (cons (min1 f) (sort (remove (min1 f) f))))
-  )
+  (if (null? f) nil
+      (cons (min1 f) (sort (remove (min1 f) f))))
 )
 
 (print (sort (list 2 3 1 1 1 7 5 6 4 4 5 6 5 6 5 6 1 1 1 8 9 8 5 5 6)))
