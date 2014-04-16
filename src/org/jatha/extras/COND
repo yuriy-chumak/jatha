@@ -1,0 +1,10 @@
+; SETF is similar to SETQ but works with generalized places.
+
+(defun cond:f (l)
+  (if (null? l) nil
+    (let ((clause (car l))) 
+      `(if ,(car clause) (progn ,@(cdr clause))
+        ,(cond:f (cdr l))))))
+
+(defmacro cond (&rest l) 
+   (cond:f l))

@@ -1,27 +1,18 @@
 ;;; required common functions
 ;;; lisp
 ; http://www.unicyb.kiev.ua/Library/Lisp/LISP.HTM
-
-(defun f-cond (l)
-  (if (null? l) nil
-    (let ((clause (car l))) 
-      `(if ,(car clause) (progn ,@(cdr clause))
-        ,(f-cond (cdr l))))))
-
-(defmacro cond (&rest l) 
-   (f-cond l))
-
+(require 'cond)
 
 ;; ======================================================
 ;; solve
 (defun > (a b) (or (< b a) (= b a)))
 
 (defun min2 (c f)
- (cond 
-  ((null? f) c)
-  ((> c (car f)) (min2 (car f) (cdr f)))
-  (T (min2 c (cdr f)))
- )
+  (cond 
+    ((null? f)     c)
+    ((> c (car f)) (min2 (car f) (cdr f)))
+    (T             (min2 c (cdr f)))
+  )
 )
 
 (defun min1 (f)
@@ -44,7 +35,7 @@
   )
 )
 
-(print (sort '(2 3 1 5 5 6)))
+(print (sort (list 2 3 1 1 1 7 5 6 4 4 5 6 5 6 5 6 1 1 1 8 9 8 5 5 6)))
 
 ;; --------------------------
 #|
