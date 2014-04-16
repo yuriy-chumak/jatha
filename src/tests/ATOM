@@ -13,4 +13,7 @@ T
 (atom? NIL)
 
 ;; negative tests
-(not (atom? '(a b c))
+(not  (atom? (cons 1 2)))
+(not  (atom? '(1 . 2))
+(not  (atom? '(1 2 3))
+(not  (atom? (list 1 2 3)))

@@ -1,27 +1,14 @@
-;;;; lisp
-; this macroses helps to notate defmacro body with ` and ,@
-
-(defun f-cond (l)
-  (if (null? l) nil
-    (let ((clause (car l))) 
-      `(if ,(car clause) (progn ,@(cdr clause))
-        ,(f-cond (cdr l))))))
-
-(defmacro cond (&rest l) 
-   (f-cond l))
+; SETF is similar to SETQ but works with generalized places.
 
 (defmacro setf (place value)
+  ""
   (if (list? place)
       `(,(let ((name (car place)))
-              (cond
-;               ((eq name 'aref) 'setf-aref)
-                ((eq name 'car) 'setf-car)
-                ((eq name 'cdr) 'setf-cdr)
-;               ((eq name 'documentation) 'setf-documentation)
-;               ((eq name 'gethash) 'setf-gethash)
-               ((eq name 'symbol-function) 'setf-symbol-function)
-;               ((eq name 'symbol-plist) 'setf-symbol-plist)
-               ((eq name 'symbol-value) 'setf-symbol-value)))
+            (if (eq name 'car) 'setf-car
+            (if (eq name 'cdr) 'setf-cdr
+            (if (eq name 'symbol-function) 'setf-symbol-function
+            (if (eq name 'symbol-value) 'setf-symbol-value)))))
          ,@(cdr place)
          ,value)
+  ;else         
       `(set ',place ,value)))

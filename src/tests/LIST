@@ -30,10 +30,10 @@
 
 (defun group(spis)
  (cond
-   ((null? spis) nil )
+   ((null? spis) NIL)
    ((is_in (car spis) (cdr spis)) (cons (car spis) (group (cons (car spis) (remove_first (car spis) (cdr spis))))))
    (t (cons (car spis) (group (cdr spis))) )
  )
 )
 
-(progn (PRINT  (group '(1 2 1 3 2 5 4 7 4 1))) t)
+(progn (print  (group '(1 2 1 3 2 5 4 7 4 1))) t)

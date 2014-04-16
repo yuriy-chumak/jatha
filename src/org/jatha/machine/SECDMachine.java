@@ -24,6 +24,8 @@
 
 package org.jatha.machine;
 
+import java.util.HashMap;
+
 import org.jatha.Lisp;
 import org.jatha.LispProcessor;
 import org.jatha.dynatype.*;
@@ -67,6 +69,16 @@ public class SECDMachine extends LispProcessor
 	// An X register for dumping tag information, as a stack. This is the same register as D, but not totally. =)
 	public final SECDRegister X = new SECDRegister("X-02324255");
 
+	// SPECIAL dynamic registers for machine:
+	// The B register is for dynamic bindings.  It contains a hash table
+	// that indexes on symbol name.  The value is a list of values,
+	// the most recent value at the front of the list.
+	//
+	// There is a B register for each machine so that it will
+	// function correctly in a multi-threaded environment.
+//	public final SECDHashTable B = new SECDHashTable();
+	public final HashMap<LispValue, LispValue> B = new HashMap<LispValue, LispValue>(103, 1.2f);
+	
 	// ------------------  BASIC MACHINE OPS   ------------------------------
 	
 	public final static SECDop BLK = new SECDop("BLK") {
@@ -158,12 +170,13 @@ public class SECDMachine extends LispProcessor
 		// Assume the caller has verified that this is a special variable.
 		private LispValue get_special_value(SECDMachine machine, LispValue symbol)
 		{
-			// System.err.println("specialCount of " + symbol + " is " + symbol.get_specialCount());
-
-			if (symbol.get_specialCount() > 0)
-				return car(machine.B.gethash(symbol));
-			else
+			if (symbol.get_specialCount() <= 0)
 				return ((LispSymbol)symbol).symbol_value();
+			
+			LispValue value = machine.B.get(symbol);
+			if (value == null)
+				return NIL;
+			return car(value);
 		}
 	};
 	
@@ -444,22 +457,10 @@ public class SECDMachine extends LispProcessor
 		}
 	};
 	
-	// SPECIAL dynamic registers for machine:
-	// The B register is for dynamic bindings.  It contains a hash table
-	// that indexes on symbol name.  The value is a list of values,
-	// the most recent value at the front of the list.
-	//
-	// There is a B register for each machine so that it will
-	// function correctly in a multi-threaded environment.
-	public LispValue B  = null;
 //	public SECDop TAG_B = null;
 	
-	public SECDMachine(final Lisp lisp)
+	public SECDMachine()
 	{
-		B = new StandardLispHashTable(lisp,
-				NIL, NIL,
-				NIL, NIL);
-		
 /*    
 		TAG_B = new SECDop("TAG_B") {
 			@Override
@@ -487,9 +488,10 @@ public class SECDMachine extends LispProcessor
     }
     else
     {
-      LispValue bindings = B.gethash(symbol, NIL);
+      LispValue bindings = B.get(symbol);
+      if (bindings == null) bindings = NIL;
 
-      B.setf_gethash(symbol, cons(value, bindings));
+      B.put(symbol, cons(value, bindings));
       symbol.adjustSpecialCount(+1);
     }
   }
@@ -497,9 +499,10 @@ public class SECDMachine extends LispProcessor
 
   public void special_unbind(LispValue symbol)
   {
-    LispValue bindings = B.gethash(symbol, NIL);
+    LispValue bindings = B.get(symbol);
+    if (bindings == null) bindings = NIL;
 
-    B.setf_gethash(symbol, cdr(bindings));
+    B.put(symbol, cdr(bindings));
     symbol.adjustSpecialCount(-1);
   }
 
@@ -511,8 +514,9 @@ public class SECDMachine extends LispProcessor
 	  
     if (symbol.get_specialCount() > 0)
     {
-      LispValue bindings = B.gethash(symbol, NIL);
-      B.setf_gethash(symbol, cons(value, cdr(bindings)));
+        LispValue bindings = B.get(symbol);
+        if (bindings == null) bindings = NIL;
+        B.put(symbol, cons(value, cdr(bindings)));
     }
     else
       symbol.setf_symbol_value(value);
@@ -526,7 +530,7 @@ public class SECDMachine extends LispProcessor
 	 * @return
 	 * @throws CompilerException
 	 */
-	public LispValue Execute(LispValue code, LispValue globals)
+	public LispValue Execute(LispValue code, LispList globals)
 			throws CompilerException
 	{
 		LispValue opcode;

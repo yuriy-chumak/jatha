@@ -40,9 +40,6 @@ public class StandardLispMacro extends StandardLispFunction implements LispMacro
     super(symbol, value);
   }
 
-  public boolean basic_functionp() { return false; }
-  public boolean basic_macrop()    { return true; }
-
 	public String toString()
 	{
 		return toString("standardMacro");

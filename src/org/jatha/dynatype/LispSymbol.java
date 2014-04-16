@@ -45,6 +45,9 @@ import org.jatha.machine.SECDMachine;
  */
 public interface LispSymbol extends LispAtom
 {
+	public String getName();
+	
+	
   /**
    * Assigns a value to a symbol.
    */

@@ -45,24 +45,20 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
 		f_value = theValue;
 	}
 
-  public StandardLispInteger()
-  {
-    f_value = 0L;
-  }
+	public StandardLispInteger()
+	{
+		this(0);
+	}
 
-  // ---  non-LISP methods  ---
-  public long    getValue()            { return f_value; }
-  public double  getDoubleValue()      { return f_value; }
+	// ---  non-LISP methods  ---
+	public long   getValue()       { return f_value; }
+	public double getDoubleValue() { return f_value; }
+	public long   getLongValue()   { return f_value; }
 
-  public BigInteger getBigIntegerValue()
-  {
-    return BigInteger.valueOf(f_value);
-  }
-
-  public long getLongValue()
-  {
-    return f_value;
-  }
+	public BigInteger getBigIntegerValue()
+	{
+		return BigInteger.valueOf(f_value);
+	}
 
   public void    internal_princ(PrintStream os) { os.print(f_value); }
   public void    internal_prin1(PrintStream os) { os.print(f_value); }
@@ -103,18 +99,16 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
   public String  toString() { return String.valueOf(f_value); }
 
 
-  // ---  LISP methods  ---
- /**
-   * Integer implementation of abs.
-   */
-  public LispValue abs()
-  {
-    if (this.getLongValue() > 0)
-      return this;
-    else
-      return integer(this.getLongValue() * -1);
-  }
-
+	// ---  LISP methods  ---
+	/**
+	 * Integer implementation of abs.
+	 */
+	public LispValue abs()
+	{
+		if (this.getLongValue() > 0)
+			return this;
+		return integer(- this.getLongValue());
+	}
 
   public LispValue eql(LispValue val)
   {
@@ -135,8 +129,6 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
   {
     return eql(val);
   }
-
-  public LispValue integerp  ()  { return T; }
 
   public LispValue zerop     ()
   {

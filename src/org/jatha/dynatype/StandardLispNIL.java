@@ -73,12 +73,9 @@ public class StandardLispNIL extends StandardLispList
 
   public boolean constantp() { return true; }
   public int     basic_length()    { return 0;     }
-  public boolean basic_symbolp()   { return true;  }
 
 /* ------------------  LISP functions   ------------------------------ */
 
-
-  public LispValue     append(LispValue otherList) { return otherList; }
   public LispValue     assoc(LispValue index)      { return NIL; }
   public boolean boundp() { return true; }
   public LispValue     butlast()                   { return NIL; }
@@ -123,6 +120,10 @@ public class StandardLispNIL extends StandardLispList
   public LispValue     subst(LispValue oldValue, LispValue newValue)
   { return this; }
 
+	public LispValue append(LispValue otherList)
+	{
+		return otherList;
+	}
 };
 
 

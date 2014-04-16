@@ -24,12 +24,8 @@
 
 package org.jatha.compile;
 
-import java.io.*;
-
-import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
-import org.jatha.exception.UndefinedFunctionException;
 import org.jatha.machine.*;
 
 public abstract class LispPrimitive0 extends LispPrimitive
@@ -48,45 +44,44 @@ public abstract class LispPrimitive0 extends LispPrimitive
 	public void Execute(SECDMachine machine)
 			throws CompilerException
 	{
-		machine.C.pop();
-
 	    LispValue result = this.Execute();
 		machine.S.push(result);
+
+		machine.C.pop(); // pop the primitive
 	}
 	
 
-  /**
-   * This method returns <code>true</code> if
-   * the list of arguments satisfies the length restrictions
-   * posed by the function, and <code>false</code> otherwise.
-   * @see LispPrimitive
-   * @param numberOfArguments  usually the result of args.length()
-   * @return boolean
-   */
-  boolean validArgumentLength(LispValue numberOfArguments)
-  {
-    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
+	/**
+	 * This method returns <code>true</code> if
+	 * the list of arguments satisfies the length restrictions
+	 * posed by the function, and <code>false</code> otherwise.
+	 * @see LispPrimitive
+	 * @param numberOfArguments  usually the result of args.length()
+	 * @return boolean
+	 */
+	boolean validArgumentLength(LispValue numberOfArguments)
+	{
+		long numArgs = ((LispInteger)numberOfArguments).getLongValue();
 
-    return (numArgs == 0);
-  }
+		return (numArgs == 0);
+	}
 
 
-  /**
-   * This method returns a Java string denoting the length of
-   * the expected argument list in some readable form.
-   * <p>
-   * This method is called by the compiler when an argument count
-   * exception is generated.
-   *
-   * @see LispPrimitive
-   * @see LispCompiler
-   * @return a Java string denoting the length of the expected argument list.
-   */
-  public String parameterCountString()
-  {
-    return "0";
-  }
-
+	/**
+	 * This method returns a Java string denoting the length of
+	 * the expected argument list in some readable form.
+	 * <p>
+	 * This method is called by the compiler when an argument count
+	 * exception is generated.
+	 *
+	 * @see LispPrimitive
+	 * @see LispCompiler
+	 * @return a Java string denoting the length of the expected argument list.
+	 */
+	public String parameterCountString()
+	{
+		return "0";
+	}
 
 	protected abstract LispValue Execute()
 			throws CompilerException;

@@ -285,7 +285,7 @@ public class Lisp extends LispProcessor
     
     PARSER       = new LispParser(this, new InputStreamReader(System.in));
     COMPILER     = new LispCompiler(this);
-    MACHINE      = new SECDMachine(this);
+    MACHINE      = new SECDMachine();
 
 
     // Need to allow *TOP-LEVEL-PROMPT* to change this.
@@ -491,8 +491,8 @@ public class Lisp extends LispProcessor
   {
     LispValue code, value;
 
-    final LispValue varNames = parseVarNames_new(vars);
-    final LispValue varValues = parseVarValues_new(vars);
+    final LispList varNames  = parseVarNames_new(vars);
+    final LispList varValues = parseVarValues_new(vars);
 
     try {
       // compile
@@ -543,44 +543,39 @@ public class Lisp extends LispProcessor
   }
 */
   
-  /**
-   * Not sure why parseVarNames has such a complicated structure.
-   * This one expects variables of the form ((A . 7) (B . 13) (C . (foo)))
-   * the CAR of each pair is the variable and the CDR of each pair is the value.
-   */
-  private LispValue parseVarNames_new(final LispValue vars)
-  {
-    LispValue outp = NIL;
-    if (vars == NIL)
-      return outp;
-
-    for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
-    {
-      final LispValue current = iter.next();
-      outp = makeCons(car(current), outp);
-    }
-    return outp.nreverse();
-  }
+	/**
+	 * Not sure why parseVarNames has such a complicated structure.
+	 * This one expects variables of the form ((A . 7) (B . 13) (C . (foo)))
+	 * the CAR of each pair is the variable and the CDR of each pair is the value.
+	 */
+	private LispList parseVarNames_new(final LispValue vars)
+	{
+		if (vars == NIL)
+			return NIL;
+		
+		LispList outp = NIL;
+		// todo: for (LispValue v : vars.iterator())
+		for (final Iterator<LispValue> i = vars.iterator(); i.hasNext();)
+			outp = cons(car(i.next()), outp);
+		return (LispList)outp.nreverse(); // todo: change to recursive
+	}
 
 
-  /**
-   * Not sure why parseVarNames has such a complicated structure.
-   * This one expects variables of the form ((A . 7) (B . 13) (C . (foo)))
-   * the CAR of each pair is the variable and the CDR of each pair is the value.
-   */
-  private LispValue parseVarValues_new(final LispValue vars)
-  {
-    LispValue outp = NIL;
-    if (vars == NIL)
-      return outp;
-
-    for (final Iterator<LispValue> iter = vars.iterator(); iter.hasNext();)
-    {
-      final LispValue current = iter.next();
-      outp = makeCons(this.cdr(current), outp);
-    }
-    return outp.nreverse();
-  }
+	/**
+	 * Not sure why parseVarNames has such a complicated structure.
+	 * This one expects variables of the form ((A . 7) (B . 13) (C . (foo)))
+	 * the CAR of each pair is the variable and the CDR of each pair is the value.
+	 */
+	private LispList parseVarValues_new(final LispValue vars)
+	{
+		if (vars == NIL)
+			return NIL;
+		
+		LispList outp = NIL;
+		for (final Iterator<LispValue> i = vars.iterator(); i.hasNext();)
+			outp = cons(cdr(i.next()), outp);
+		return (LispList)outp.nreverse();
+	}
 
 
   /**
@@ -1017,7 +1012,7 @@ public class Lisp extends LispProcessor
    * The result is one list.
    * Note that this operation is expensive in terms of storage.
    */
-
+/*
   public LispList makeAppendList(Collection<LispValue> elements)
   {
     if (elements.size() == 0)
@@ -1031,7 +1026,7 @@ public class Lisp extends LispProcessor
     }
 
     return (LispList) result;
-  }
+  }*/
 
 
   /**
@@ -1039,7 +1034,7 @@ public class Lisp extends LispProcessor
    * The elements will be destructively appended to each other.
    * The result is one list.
    */
-
+/*
   public LispList makeNconcList(Collection<LispValue> elements)
   {
     if (elements.size() == 0)
@@ -1053,7 +1048,7 @@ public class Lisp extends LispProcessor
     }
 
     return (LispList) result;
-  }
+  }*/
 
   //* @author  Micheal S. Hewett    hewett@cs.stanford.edu
   //* @date    Thu Feb 20 12:19:15 1997

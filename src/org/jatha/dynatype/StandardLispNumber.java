@@ -93,7 +93,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    */
   public LispValue expt(LispValue n)
   {
-    boolean allIntegers = (this.basic_integerp() && n.basic_integerp());
+    boolean allIntegers = (this instanceof LispInteger && n instanceof LispInteger);
     if (n instanceof LispNumber)
       if (allIntegers)
       {
@@ -112,7 +112,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
    */
   public LispValue mod(LispValue n)
   {
-    boolean allIntegers = (this.basic_integerp() && n.basic_integerp());
+    boolean allIntegers = (this instanceof LispInteger && n instanceof LispInteger);
     if (n instanceof LispNumber)
       if (allIntegers)
       {
@@ -142,7 +142,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     double    maxValue    = this.getDoubleValue();
     double    otherValue  = 0;
-    boolean   allIntegers = (this instanceof LispInteger);
+    boolean   allIntegers = this instanceof LispInteger;
     LispValue arglist;
 
     //System.err.println("Checking max of " + this + " and " + args);
@@ -153,18 +153,12 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != NIL)
     {
-      LispValue arg = car(arglist);
-
-      if (! arg.basic_numberp())
-      {
-        super.max(car(arglist));  // generates an error.
-        return(NIL);
-      }
+      LispNumber arg = assertNumber(car(arglist));
 
       // Keep a flag to see whether the final value
       // should be an integer or not.
       if (allIntegers)
-        if (! arg.basic_integerp())
+        if (! (arg instanceof LispInteger))
           allIntegers = false;
 
       // Do the MAX function.
@@ -208,18 +202,12 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != NIL)
     {
-      LispValue arg = car(arglist);
-
-      if (! arg.basic_numberp())
-      {
-        super.max(car(arglist));  // generates an error.
-        return(NIL);
-      }
+        LispNumber arg = assertNumber(car(arglist));
 
       // Keep a flag to see whether the final value
       // should be an integer or not.
       if (allIntegers)
-        if (! arg.basic_integerp())
+        if (! (arg instanceof LispInteger))
           allIntegers = false;
 
       // Do the Min function.
@@ -244,8 +232,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   {
     return this.sub(NIL);  // Returns the negative.
   }
-
-  public LispValue    numberp()  { return T; }
 
   /**
    * Computes 1/x of the given number.  Only valid for numbers.
@@ -299,8 +285,9 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     double    d_sum  = this.getDoubleValue();
     long      l_sum  = 0;
     long      l_addend = 0;
-    LispValue addend, arglist;
-    boolean   allIntegers = this.basic_integerp();
+    LispNumber addend;
+    LispValue arglist;
+    boolean   allIntegers = this instanceof LispInteger;
 
     if (allIntegers)
       l_sum = this.getLongValue();
@@ -312,15 +299,10 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != NIL)
     {
-      addend = car(arglist);
-      if (! addend.basic_numberp())
-      {
-        super.add(car(arglist));  // generates an error.
-        return null;//(NIL);// todo: add exception
-      }
+      addend = assertNumber(car(arglist));
 
       // Might need to convert to a double
-      if (allIntegers && (addend.basic_floatp()))
+      if (allIntegers && (addend instanceof LispReal))
       {
         allIntegers = false;
         d_sum = l_sum;
@@ -371,7 +353,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (allIntegers)
         l_sum += l_addend;
       else
-        if (addend.basic_floatp())
+        if (addend instanceof LispReal)
           d_sum += ((LispReal)addend).getDoubleValue();
         else if (addend.bignump() == T)
           d_sum += ((LispBignum)addend).getDoubleValue();
@@ -399,8 +381,8 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   {
     double    d_quotient = 0.0;
     long      l_quotient = 0, term_value;
-    boolean   allIntegers  = this.basic_integerp();
-    LispValue term;
+    boolean   allIntegers  = this instanceof LispInteger;
+    LispNumber term;
     int       argCount     = 1;
     LispValue arglist      = null;
 
@@ -423,17 +405,11 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != NIL)
     {
-      term = car(arglist);             /* Arglist is already evaluated. */
-      if (! term.basic_numberp())
-      {
-        super.div(car(arglist));  // Generate an error
-        return null;//(NIL);
-      }
-
+      term = assertNumber(car(arglist));             /* Arglist is already evaluated. */
 
       ++argCount;
 
-      if (allIntegers && (term.basic_floatp()
+      if (allIntegers && (term instanceof LispReal
         || (term.bignump() == T)))
       {
         allIntegers = false;
@@ -447,7 +423,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
           if (term.bignump() == T)
             d_quotient = d_quotient
               / ((LispBignum)term).getDoubleValue();
-          else if (term.basic_floatp())
+          else if (term instanceof LispReal)
             d_quotient = d_quotient / ((LispReal)term).getDoubleValue();
           else
             d_quotient = d_quotient / ((LispInteger)term).getLongValue();
@@ -505,7 +481,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     double     d_product     = this.getDoubleValue();
     long       l_product     = 0;
     long       l_term, l_result = 0;
-    boolean    allIntegers = this.basic_integerp();
+    boolean    allIntegers = this instanceof LispInteger;
     LispValue  term, arglist;
 
     // Is this number zero?
@@ -524,16 +500,9 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     // have to send the remainder to BigNum to process
     LispValue ptr = arglist;
 
-    for (Iterator iterator = arglist.iterator(); iterator.hasNext();)
+    for (Iterator<LispValue> iterator = arglist.iterator(); iterator.hasNext();)
     {
-      term = (LispValue) iterator.next();
-
-      // Check for a non-numeric argument.
-      if (! term.basic_numberp())    // generates an error
-      {
-        super.mul(term);
-        return null;//(NIL);
-      }
+    	term = assertNumber(iterator.next());
 
       // Multiplying by one?
       if (term.equals(ONE))
@@ -548,7 +517,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
 
       // Convert to a double if the next term is a floating-point number.
-      if (allIntegers && term.basic_floatp())
+      if (allIntegers && term instanceof LispReal)
       {
         allIntegers = false;
         d_product = l_product;
@@ -587,7 +556,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (allIntegers)
         l_product =  l_result;
       else
-        if (term.basic_floatp())
+        if (term instanceof LispReal)
           d_product *=  ((LispReal)term).getDoubleValue();
         else if (term.bignump() == T)
           d_product *= ((LispBignum)term).getDoubleValue();
@@ -624,8 +593,9 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     double    d_sum  = - this.getDoubleValue();
     long      l_sum  = 0;
     long      l_addend = 0;
-    LispValue addend, arglist;
-    boolean   allIntegers = this.basic_integerp();
+    LispNumber addend;
+    LispValue arglist;
+    boolean   allIntegers = this instanceof LispInteger;
     int       argCount = 1;
 
     //System.out.println("LispNumber.subtract: this = " + this + ", args = " + args);
@@ -640,15 +610,10 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
     while (arglist != NIL)
     {
-      addend = car(arglist);
-      if (! addend.basic_numberp())
-      {
-        super.sub(car(arglist));  // generates an error.
-        return null;//(NIL);
-      }
+      addend = assertNumber(car(arglist));
 
       // Might need to convert to a double
-      if (allIntegers && addend.basic_floatp())
+      if (allIntegers && addend instanceof LispReal)
       {
         allIntegers = false;
         d_sum = l_sum;
@@ -706,7 +671,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       if (allIntegers)
         l_sum -= l_addend;
       else
-        if (addend.basic_floatp())
+        if (addend instanceof LispReal)
           d_sum -= ((LispReal)addend).getDoubleValue();
         else if (addend.bignump() == T)
           d_sum -= ((LispBignum)addend).getDoubleValue();

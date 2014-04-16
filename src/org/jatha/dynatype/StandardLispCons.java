@@ -294,19 +294,6 @@ public class StandardLispCons extends StandardLispList implements LispCons
 
   // --------  LISP methods  --------------
 
-  public LispValue append(LispValue otherList)
-  {
-    LispValue rest = NIL.append(otherList);
-      
-    List list = toRandomAccess();
-    for (int i = list.size() - 1; i >= 0; i--)
-    {
-      rest = cons((LispValue)list.get(i), rest);
-    }
-    return rest;
-  }
-
-
   public LispValue assoc(LispValue index)
   {
     LispValue  ptr = this;
@@ -510,5 +497,18 @@ public class StandardLispCons extends StandardLispList implements LispCons
       return cons(car(), cdr().subst(newValue, oldValue));
   }
 
+	@Override
+	public LispValue append(LispValue otherList)
+	{
+		LispValue rest = otherList;
+  
+		List list = toRandomAccess();
+		for (int i = list.size() - 1; i >= 0; i--)
+		{
+			rest = cons((LispValue)list.get(i), rest);
+		}
+		return rest;
+	}
+  
 };
 

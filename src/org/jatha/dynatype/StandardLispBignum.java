@@ -175,17 +175,12 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     // Args is a list of numbers that has already been evaluated.
     // Terminate if we hit any non-numbers.
     BigInteger sum = this.value;
-    LispValue addend;
+    LispNumber addend;
 
     while (args != NIL)
     {
       // System.out.println("LispBignum.add: " + sum + " and " + args);
-      addend = car(args);
-      if (addend.numberp() != T)
-      {
-        this.add(car(args));
-        return null;//(NIL);	// todo: throw exception?
-      }
+      addend = assertNumber(car(args));
 
       // If an addend is a float, we need to convert the
       // pending result to a LispReal and add the rest of
@@ -226,17 +221,12 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     BigInteger quotient    = this.getBigIntegerValue();
     BigInteger quotientAndRem[];
     BigInteger term_value;
-    LispValue  term;
+    LispNumber term;
     int        argCount     = 1;
 
     while (args != NIL)
     {
-      term = car(args);             /* Arglist is already evaluated. */
-      if (term.numberp() != T)
-      {
-        this.div(car(args));  // generate error
-        return null;//(NIL);
-      }
+      term = assertNumber(car(args));             /* Arglist is already evaluated. */
 
       ++argCount;
 
@@ -306,7 +296,8 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
   public LispNumber     mul    (LispValue  args)
   {
     BigInteger product     = this.getBigIntegerValue();
-    LispValue  term,arglist;
+    LispNumber term;
+    LispValue arglist;
 
     // Make sure the argument is a list of numbers.
     arglist = args;
@@ -315,14 +306,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
     while (arglist != NIL)
     {
-      term = car(arglist);
-
-      // Generate an error if the multiplicand is not a number.
-      if (term.numberp() != T)
-      {
-        super.mul(car(arglist));  // generates an error
-        return null;//(NIL);
-      }
+      term = assertNumber(car(arglist));
 
       // If a term is a float, we need to convert the
       // pending result to a LispReal and multiply the rest of
@@ -370,18 +354,13 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
     // Args is a list of numbers that has already been evaluated.
     // Terminate if we hit any non-numbers.
     BigInteger sum = this.value.negate();
-    LispValue term;
+    LispNumber term;
     int       argCount = 1;
 
     while (args != NIL)
     {
       // System.out.println("LispBignum.subtract: " + sum + " and " + args);
-      term = car(args);
-      if (term.numberp() != T)
-      {
-        this.sub(car(args));  // generate error
-        return null;//(NIL);
-      }
+      term = assertNumber(car(args));
 
       // If a term is a float, we need to convert the
       // pending result to a LispReal and add the rest of
@@ -417,7 +396,6 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
 
   public LispValue bignump   ()  { return T; }
-  public LispValue integerp  ()  { return T; }
 
   public LispValue negate()
   {

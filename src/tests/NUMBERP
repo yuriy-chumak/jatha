@@ -1,5 +1,5 @@
 ;;;; LISP
-(comment 12
+#|
 
      (numberp 0)
 (NOT (numberp nil))
@@ -13,7 +13,7 @@
      (numberp 123)
 (NOT (numberp nil))
 
-)
+|#
 ;;; recursive
 (restart)
 (defun f1 (n)

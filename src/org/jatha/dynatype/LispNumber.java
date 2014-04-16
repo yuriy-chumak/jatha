@@ -77,5 +77,11 @@ public interface LispNumber extends LispAtom
 	 * This is the <code>-</code> function in LISP.
 	 */
 	public LispNumber sub(LispValue args);
+
+  /**
+   * Returns the absolute value of any number, including complex.
+   * The result is always a real number.
+   */
+  public LispValue abs();
 	
 }

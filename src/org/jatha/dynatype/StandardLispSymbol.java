@@ -53,7 +53,7 @@ import org.jatha.Lisp;
  */
 public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 {
-	static long randomname = 0;
+	static long randomname = 1100;
 	public StandardLispSymbol() // constructs unbound symbol with unique name
 	{
 		this("SYM-" + Long.toString(++randomname));
@@ -69,8 +69,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   protected  boolean    f_isExternalInPackage = false;
   protected  boolean    f_isSpecial = false;  // Special? (dynamically-bound)
   protected  int        f_specialCount = 0;   // Number of special binding nestings
-
-  protected  boolean    f_mixedCase;          // For mixed-case symbols
 
   protected Map f_documentation;
 
@@ -91,18 +89,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     // If the symbol contains lower-case letters, or anything other than
     // the following set of letters, we need to print OR-bars around it.
 
-    f_mixedCase  = (SymbolTools.firstCharNotInSet(0, symbolNameString.getValue(),
-                                               "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ:*/+-?!.%$<>=_")
-            < ((LispInteger)symbolNameString.length()).getLongValue());
-
     f_documentation = new HashMap();
   }
 
 
 /* ------------------  BASIC (non-LISP) methods   ------------------------------ */
 
-
-  public boolean basic_symbolp()   { return true; }
 
   // 'equals' is required for HashTable.
   public boolean equals(LispSymbol otherSymbol)
@@ -114,7 +106,7 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   /**
    * Returns the Java String representing the symbol's name, without any quoting.
    */
-  public String internal_getName()
+  public String getName()
   {
     return f_name.getValue();
   }
@@ -248,16 +240,16 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public LispValue setf_symbol_function(LispValue newCode)
   {
     // function or macro
-    if (newCode.basic_functionp())
+    if (newCode instanceof LispFunction/* && !(newCode instanceof LispMacro)*/) // ??
     {
       f_function = newCode;
       return f_function;
     }
 
     // A macro has the symbol :MACRO as the first element.
-    if (LispCompiler.isMacroCode(newCode))
+    if (isMacroCode(newCode))
     {
-      f_function = new StandardLispMacro(this, Lisp.cdr(newCode));
+      f_function = new StandardLispMacro(this, cdr(newCode));
       return f_function;
     }
 
@@ -338,5 +330,15 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
         f_documentation.put(type,value);
         return value;
     }
+
+	/**
+	 * @param code a Lisp list
+	 * @return true if code is code for a macro (the first element is :MACRO)
+	 */
+	public static boolean isMacroCode(LispValue code)
+	{
+		return (code instanceof LispList) && (Lisp.car(code) == MACRO);
+	}
+
 };
 

@@ -44,6 +44,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
 {
   protected boolean   f_isBuiltin = false;
   private LispValue f_symbol    = null;
+  
   private LispValue f_code      = null;
 
 
@@ -91,12 +92,6 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
       return ((LispCons)f_code.toJava());
     else
       return null;
-  }
-
-
-  public boolean basic_functionp()
-  {
-    return true;
   }
 
   /**

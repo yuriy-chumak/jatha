@@ -28,6 +28,9 @@ import java.util.Iterator;
 
 import org.jatha.Lisp;
 
+import
+static org.jatha.dynatype.LispValue.*;
+
 
 // @date    Thu Mar 27 13:35:07 1997
 /**
@@ -38,30 +41,39 @@ import org.jatha.Lisp;
  * @see LispReal
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class LispConsIterator extends StandardLispValue
+public class LispConsIterator// extends StandardLispValue
 		implements Iterator<LispValue>
 {
 	protected LispValue m_list = null;
 
-  public LispConsIterator(LispValue list)
-  {
-    m_list = list;
-  }
+	public LispConsIterator(LispValue list)
+	{
+		m_list = list;
+	}
 
-  public boolean hasNext()
-  {
-    return (m_list != NIL);
-  }
+	public boolean hasNext()
+	{
+		return (m_list != NIL);
+	}
 
-  public LispValue next()
-  {
-    LispValue result = Lisp.car(m_list);
-    m_list = Lisp.cdr(m_list);
-    return result;
-  }
+	public LispValue next()
+	{
+		LispValue result = car(m_list);
+		m_list = cdr(m_list);
+		return result;
+	}
 
-  public void remove()
-  {
-    throw new UnsupportedOperationException("LispCons iterator does not support remove().");
-  }
+	public void remove()
+	{
+		throw new UnsupportedOperationException("LispCons iterator does not support remove().");
+	}
+	
+	static final LispValue car(LispValue arg)
+	{
+		return ((LispList)arg).car();
+	}
+	static final LispValue cdr(LispValue arg) 
+	{
+		return ((LispList)arg).cdr();
+	}
 }

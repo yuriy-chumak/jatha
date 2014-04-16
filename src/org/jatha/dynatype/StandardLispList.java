@@ -28,6 +28,7 @@ import org.jatha.Lisp;
 import org.jatha.exception.*;
 
 import java.util.Iterator;
+import java.util.List;
 
 
 // @date    Thu Mar 27 13:35:07 1997
@@ -43,7 +44,7 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
 {
 	public StandardLispList() {}
 
-  // ------ LISP methods  ----------
+	// ------ LISP methods  ----------
 
   public LispValue butlast()
   {
@@ -54,23 +55,17 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
 
   public LispValue elt (LispValue index)
   {
-    long indexValue;
+    long indexValue = assertInteger(index).getLongValue();
+    
+    if ((indexValue < 0) || (indexValue > (((LispInteger)this.length()).getLongValue() - 1)))
+	  throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
 
-    if (!index.basic_integerp())
-      throw new LispValueNotAnIntegerException("to ELT");
-    else
-    {
-      indexValue = ((LispInteger)index).getLongValue();
-      if ((indexValue < 0) || (indexValue > (((LispInteger)this.length()).getLongValue() - 1)))
-	throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+    // All is okay
+    LispValue element = this;
 
-      // All is okay
-      LispValue element = this;
+    for (int i = 0; i < indexValue; ++i)  element = cdr(element);
 
-      for (int i = 0; i < indexValue; ++i)  element = cdr(element);
-
-      return Lisp.car(element);
-    }
+    return car(element);
   }
 
 
@@ -176,4 +171,7 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
 
   public abstract LispValue car();
   public abstract LispValue cdr();
+  
+  // todo: remove this
+	public abstract LispValue append(LispValue otherList);
 }

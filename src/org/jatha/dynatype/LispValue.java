@@ -60,21 +60,22 @@ import org.jatha.machine.SECDMachine;
  *   \------ LispPackage
  *   \------ LispPrimitive
  */
-public interface LispValue extends Comparable<LispValue>
+public interface LispValue extends 
+		Comparable<LispValue>
 {
 	public static final LispList NIL = new StandardLispNIL();
 	public static final LispConstant T = new StandardLispT();
-	
+
 	public static final LispSymbol QUOTE     = new StandardLispSymbol("QUOTE");
 	public static final LispSymbol BACKQUOTE = new StandardLispSymbol("BACKQUOTE");
-	
+
 	public static final LispSymbol MACRO     = new StandardLispSymbol("MACRO");
 //	public static final LispSymbol PRIMITIVE = new StandardLispSymbol("PRIMITIVE");
-	
+
 	public static final LispValue COLON   = new StandardLispCharacter(':');
 	public static final LispValue NEWLINE = new StandardLispCharacter('\n');
 	public static final LispValue SPACE   = new StandardLispCharacter(' ');
-	
+
 	// basic type checks
 //	basic_atom()  => instanceof LispAtom
 //	basic_null()  => == NIL
@@ -83,26 +84,20 @@ public interface LispValue extends Comparable<LispValue>
 	
 //	basic_numberp
 //	basic_bignump
-//	basic_floatp
 //	basic_integerp
 //	complex
 
 //	basic_stringp
 //	characterp
 	
-//	basic_symbolp
 //	basic_constantp
-//	basic_functionp
 //	basic_keywordp
-//	basic_macrop
 	// =-( unsorted )-=========================================	
 	
 	
 	
 	
   /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
-
-  public String internal_getName();
 
   public void internal_princ(PrintStream os);
 
@@ -123,50 +118,14 @@ public interface LispValue extends Comparable<LispValue>
 	public boolean constantp();
 
   /**
-   * Returns Java true if the object is a floating-point number.
-   */
-  public boolean basic_floatp();
-
-  /**
    * Returns Java true if the object is a reference to an object in a foreign computer language.
    */
   public boolean basic_foreignp();
 
   /**
-   * Returns Java true if the object is a function.
-   */
-  public boolean basic_functionp();
-
-  /**
-   * Returns Java true if the object is an integer.
-   */
-  public boolean basic_integerp();
-
-  /**
    * Returns the Java length of a list or string.
    */
   public int basic_length();
-
-  /**
-   * Returns Java true if the object is a macro.
-   */
-  public boolean basic_macrop();
-
-  /**
-   * Returns Java true if the object is a number.
-   */
-  public boolean basic_numberp();
-
-  /**
-   * Returns Java true if the object is a string.
-   */
-  public boolean basic_stringp();
-
-  /**
-   * Returns Java true if the object is a symbol.
-   */
-  public boolean basic_symbolp();
-
 
   /**
    * Wrapper for member().
@@ -277,17 +236,6 @@ public interface LispValue extends Comparable<LispValue>
 
 
 /* ------------------  LISP functions    ------------------------------ */
-
-  /**
-   * Absolute value of a number.
-   */
-  public LispValue abs();
-
-  /**
-   * Append two lists together.  The first list is copied.
-   * @param otherList
-   */
-  public LispValue append(LispValue otherList);
 
   /**
    * Apply a function to an argument list.
@@ -467,11 +415,6 @@ public interface LispValue extends Comparable<LispValue>
 //  public LispValue hash_table_test();
 
   /**
-   * Returns T if the object is an Integer.
-   */
-  public LispValue integerp();
-
-  /**
    * Returns the last cons cell in a list.
    * LAST of NIL is NIL.
    */
@@ -522,11 +465,6 @@ public interface LispValue extends Comparable<LispValue>
    * May or may not return the same pointer.
    */
   public LispValue nreverse();
-
-  /**
-   * Returns T if the object is any kind of number.
-   */
-  public LispValue numberp();
 
   /**
    * Pops a list and returns the first element.
@@ -969,5 +907,5 @@ public interface LispValue extends Comparable<LispValue>
   /**
    * Returns true if this package uses the given package
    */
-  boolean uses(LispValue pkg);
+    boolean uses(LispValue pkg);
 }

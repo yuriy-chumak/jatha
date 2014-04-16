@@ -25,10 +25,8 @@
 )
 
 (defun min1 (f)
- (cond 
-  ((null? f) nil)
-  (T (min2 (car f) (cdr f)))
- )
+  (if (null? f) nil
+      (min2 (car f) (cdr f)))
 )
 
 (defun remove(c f)
@@ -49,7 +47,7 @@
 (print (sort '(2 3 1 5 5 6)))
 
 ;; --------------------------
-(comment
+#|
 (defun sum(n f)
  (cond
   ((> n 0) (+ (FUNCALL f n) (sum (- n 1) f)))
@@ -58,10 +56,10 @@
 )
 
 (sum 5 '(LAMBDA (x) (/ 1 (sum x '(LAMBDA (x) (sin x)))    )))
-)
+|#
 
 ;; --------------------------
-(comment
+#|
 (defun neq (x y) (not (eq x y)))
 
 (defun scalarMul(a b)
@@ -95,4 +93,4 @@
 )
 
 (print (multiply '(2 3 5 6) '(7 8 3 0)))
-)
+|#

@@ -88,36 +88,25 @@ public abstract class StandardLispValue extends LispProcessor
 {
 //	public StandardLispValue() { }
 
-  public String internal_getName()
-  {
-    throw new LispValueNotASymbolException("The argument to internal_getName()");
-  }
+	public void internal_princ(PrintStream os)
+	{ os.print("#<unprintable object>"); }
+	
+	public void internal_princ_as_cdr(PrintStream os)
+	{ os.print(" . "); internal_princ(os);  }
 
-  public void internal_princ(PrintStream os)
-  { os.print("#<unprintable object>"); }
-  public void internal_princ_as_cdr(PrintStream os)
-  { os.print(" . "); internal_princ(os);  }
+	public void internal_prin1(PrintStream os)
+	{ os.print("#<unprintable object>"); }
+	public void internal_prin1_as_cdr(PrintStream os)
+	{ os.print(" . "); internal_prin1(os);  }
 
-  public void internal_prin1(PrintStream os)
-  { os.print("#<unprintable object>"); }
-  public void internal_prin1_as_cdr(PrintStream os)
-  { os.print(" . "); internal_prin1(os);  }
+	public void internal_print(PrintStream os)
+	{ System.err.print("#<unprintable object>"); }
+	public void internal_print_as_cdr(PrintStream os)
+	{ os.print(" . "); internal_print(os);  }
 
-  public void internal_print(PrintStream os)
-  { System.err.print("#<unprintable object>"); }
-  public void internal_print_as_cdr(PrintStream os)
-  { os.print(" . "); internal_print(os);  }
-
-  public boolean constantp() { return false; }
-  public boolean basic_floatp()    { return false; }
+	public boolean constantp() { return false; }
   public boolean basic_foreignp()  { return false; }
-  public boolean basic_integerp()  { return false; }
-  public boolean basic_functionp() { return false; }
   public int     basic_length()    { throw new LispValueNotAListException("The argument to basic_length"); }
-  public boolean basic_macrop()    { return false; }
-  public boolean basic_numberp()   { return false; }
-  public boolean basic_stringp()   { return false; }
-  public boolean basic_symbolp()   { return false; }
 
   public boolean uses(LispValue pkg) { throw new LispValueNotAPackageException("the argument to uses"); }
 
@@ -342,13 +331,6 @@ public abstract class StandardLispValue extends LispProcessor
 /* ------------------  LISP functions    ------------------------------ */
 
   /**
-   * Returns the absolute value of any number, including complex.
-   * The result is always a real number.
-   */
-  public LispValue     abs       ()
-  { throw new LispValueNotANumberException("The first argument to ABS");  }
-
-  /**
    * Arccos function, argument in radians.
    * Also called Inverse Cosine, this is the
    * angle whose cosine is the argument.
@@ -371,9 +353,6 @@ public abstract class StandardLispValue extends LispProcessor
     throw new LispValueNotAnArrayException("The first argument to ARRAY-DIMENSIONS"); 
   }
   public LispValue     arrayp   ()  { return NIL; }
-
-  public LispValue     append       (LispValue otherList)
-  { throw new LispValueNotAListException("The first argument to APPEND");  }
 
   public LispValue     apply        (LispValue args)
   { throw new LispValueNotAFunctionException("The first argument to APPLY");  }
@@ -530,8 +509,6 @@ public abstract class StandardLispValue extends LispProcessor
 //  public LispValue hash_table_test ()
 //  { throw new LispValueNotAHashtableException("The argument to HASH-TABLE-TEST"); }
 
-  public LispValue     integerp     ()  { return NIL; }
-
   public LispValue     last         ()
   { throw new LispValueNotAListException("The argument to LAST");  }
 
@@ -578,8 +555,6 @@ public abstract class StandardLispValue extends LispProcessor
 
   public LispValue     nreverse     ()
   { throw new LispValueNotAListException("The argument to NREVERSE");  }
-
-  public LispValue     numberp      () { return NIL; }
 
   /**
    * Pops a list and returns the first element.
@@ -1082,4 +1057,58 @@ public abstract class StandardLispValue extends LispProcessor
 	{
 		return new StandardLispReal(0.0);
 	}
+
+
+	// util function for assert argument type:
+	
+	/**
+	 * If argument not a number throws NOT A NUMBER exception
+	 * @param arg
+	 * @return
+	 */
+	public static final LispNumber assertNumber(LispValue arg)
+	{
+		if (arg instanceof LispNumber)
+			return (LispNumber)arg;
+		throw new LispValueNotANumberException(arg);
+	}
+	public static final LispString assertString(LispValue arg)
+	{
+		if (arg instanceof LispString)
+			return (LispString)arg;
+		throw new LispValueNotAStringException(arg);
+	}
+
+	
+	public static final LispAtom assertAtom(LispValue arg)
+	{
+		if (arg instanceof LispAtom)
+			return (LispAtom)arg;
+		throw new LispValueNotAnAtomException(arg);
+	}
+	public static final LispCons assertCons(LispValue arg)
+	{
+		if (arg instanceof LispCons)
+			return (LispCons)arg;
+		throw new LispValueNotAConsException(arg);
+	}
+	public static final LispList assertList(LispValue arg)
+	{
+		if (arg instanceof LispList)
+			return (LispList)arg;
+		throw new LispValueNotAListException(arg);
+	}
+	
+	public static final LispInteger assertInteger(LispValue arg)
+	{
+		if (arg instanceof LispInteger)
+			return (LispInteger)arg;
+		throw new LispValueNotANumberException(arg);
+	}
+
+	public final static LispValue BOOL(boolean arg)
+	{
+		return arg ? T : NIL;
+	}
+	
 }

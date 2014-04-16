@@ -1,6 +1,8 @@
 ;;;; LISP
 
-(comment
+T
+(progn
+#|
 	(require 'symbols)
 
 	(symbolp 'elephant)
@@ -9,4 +11,5 @@
 	(symbolp '())
 	(symbolp :pp)
 	(not (symbolp "s"))
-)
+|#
+T)

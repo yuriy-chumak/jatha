@@ -1,15 +1,6 @@
 ;; --- Functions needed to implement macros -----
 
-(defun f-cond (l)
-  (if (null? l) nil
-    (let ((clause (car l))) 
-      `(if ,(car clause) (progn ,@(cdr clause))
-        ,(f-cond (cdr l))))))
-
-(defmacro cond (&rest l) 
-   (f-cond l))
-
-;; NOD
+(require 'cond)
 (defun nod(a b)
   (cond
     ((= a b) a)
@@ -26,6 +17,7 @@
 
 
 ; http://protsyk.com/cms/wp-content/uploads/2009/06/PRO38.png
+#|
 (DEFUN POW(a i)
  (COND ((= a 0) 1)
        ((= i 1) a)
@@ -43,10 +35,10 @@
 (DEFUN SUM(a b)
   ( SUM_i a b 1)
 )
-
-(print (SUM '(1 2 5) '(3 4 6)))
-(comment
+|#
+;(print (SUM '(1 2 5) '(3 4 6)))
+#|
 (let ((f (SUM '(1 2 5) '(3 4 6))))
   (< 34 f 35)
-)
-)
+
+)|#

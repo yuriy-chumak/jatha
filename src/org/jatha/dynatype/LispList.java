@@ -46,4 +46,10 @@ public interface LispList extends LispValue
 	 * CDR of NIL is NIL.
 	 */
 	public LispValue cdr();
+	
+	/**
+	 * Append two lists together.  The first list is copied.
+	 * @param otherList
+	 */
+	public LispValue append(LispValue otherList);
 }

@@ -42,8 +42,42 @@ public class Tests extends Object
 	public static void main(String[] args)
 	{
 		final String TESTS = "tests";
+		// 1. Test the negatives
+		try {
+			System.out.print("Testing required predicates (using " + NIL + " script) ... ");
+			Reader resourceReader = new InputStreamReader(
+					Tests.class.getClassLoader().getResourceAsStream(TESTS + "/NIL")
+			);
+			Lisp lisp = new Lisp();
+			LispParser cli = new LispParser(lisp, resourceReader);
+			boolean errors = false;
+			while (true) {
+				try {
+					LispValue s = cli.read();
+					LispValue r = lisp.eval(s);
+					if (r != NIL)
+						errors = true;
+				} catch (EOFException e) {
+					break;
+				}
+			}
+			if (errors) {
+				System.out.println("FAILED!!!");
+				return;
+			}
+			else
+				System.out.println("Ok");
+		} catch (Exception e) {
+			System.err.println("Tests.main: " + e.getMessage());
+			return;
+		}
+		
+		// 2. Test all
 		for (File filename : new File(Tests.class.getClassLoader().getResource(TESTS).toString().substring(5).toString()).listFiles())
 		{
+			if (filename.getName().equals("NIL"))
+				continue;
+
 			try {
 				Reader resourceReader = new InputStreamReader(
 						Tests.class.getClassLoader().getResourceAsStream(TESTS + "/" + filename.getName())
@@ -51,13 +85,16 @@ public class Tests extends Object
 				
 				System.out.print("Testing " + filename.getName() + " ... ");
 				List<String> errors = new ArrayList<String>();
-				
+
 				Lisp lisp = new Lisp();// lisp.eval("(defun restart () `restart)"); // сигнал к перезагрузке интерпретатора
 				LispParser cli = new LispParser(lisp, resourceReader);
 				while (true) {
 					// System.io.printnl();
 					try {
 						LispValue s = cli.read();
+						if (s == NIL)
+							continue;
+						
 						if (s instanceof LispCons && s.toString().equals("(RESTART)")) {
 							lisp = new Lisp();
 							cli = new LispParser(lisp, resourceReader);

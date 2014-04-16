@@ -90,19 +90,13 @@ public class StandardLispString extends StandardLispAtom implements LispString
 
   public LispValue elt (LispValue index)
   {
-    long indexValue;
+    long indexValue = assertInteger(index).getLongValue();
 
-    if (!index.basic_integerp())
-      throw new LispValueNotAnIntegerException("to ELT");
-    else
-    {
-      indexValue = ((LispInteger)index).getLongValue();
-      if ((indexValue < 0) || (indexValue >= str.length()))
-        throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+    if ((indexValue < 0) || (indexValue >= str.length()))
+    	throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
 
-      // All is okay - return the element, which is a character.
-      return new StandardLispCharacter(str.charAt((int) indexValue));
-    }
+    // All is okay - return the element, which is a character.
+    return new StandardLispCharacter(str.charAt((int) indexValue));
   }
 
 

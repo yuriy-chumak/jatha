@@ -69,12 +69,6 @@ public abstract class LispPrimitive extends StandardLispValue
     return "#<function " + functionName + " " + parameterCountString() + ">";
   }
 
-  public boolean basic_functionp()
-  {
-    return true;
-  }
-
-
 /* ------------------ CONSTRUCTORS    ------------------------------ */
 	/**
 	 * The constructor for the LispPrimitive class.
@@ -90,12 +84,12 @@ public abstract class LispPrimitive extends StandardLispValue
 //		f_isBuiltin = true;
 	}
 
-  public String    LispFunctionNameString() { return functionName; }
-  public LispValue LispFunctionNameSymbol() { return functionNameSymbol; }
+	public String    LispFunctionNameString() { return functionName; }
+	public LispValue LispFunctionNameSymbol() { return functionNameSymbol; }
 
-  public void internal_princ(PrintStream os) { os.print(toString()); }
-  public void internal_prin1(PrintStream os) { os.print(toString()); }
-  public void internal_print(PrintStream os) { os.print(toString()); }
+	public void internal_princ(PrintStream os) { os.print(toString()); }
+	public void internal_prin1(PrintStream os) { os.print(toString()); }
+	public void internal_print(PrintStream os) { os.print(toString()); }
 
   /**
    * This method returns <code>true</code> if
@@ -204,7 +198,7 @@ public abstract class LispPrimitive extends StandardLispValue
 //	todo: restore this after code refactoring
 //	public abstract LispValue Execute(LispValue arg)
 //			throws CompilerException;
-	public LispValue Execute_(LispValue arg) // todo: remove this
+/*	public LispValue Execute_(LispValue arg) // todo: remove this
 	throws CompilerException
 	{
 		// todo: assert for arg count as 1
@@ -221,7 +215,7 @@ public abstract class LispPrimitive extends StandardLispValue
 	LispValue BuiltinFunctionCode(LispValue fn)
 	{
 		return ((LispFunction)fn).getCode().second();
-	}
+	}*/
 
 
   /**
@@ -237,72 +231,24 @@ public abstract class LispPrimitive extends StandardLispValue
    * @param code
    * @return LispValue The code generated and cons'ed onto the front of the incoming code.
    */
-  public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
-			       LispValue valueList, LispValue code)
-    throws CompilerException
-  {
-    return  compiler.compileArgsLeftToRight(args, valueList, code);
-  }
+	public LispCons CompileArgs(LispCompiler compiler, SECDMachine machine, LispList args,
+					LispList valueList, LispCons code)
+			throws CompilerException
+	{
+		return compiler.compileArgsLeftToRight(args, valueList, code);
+	}
 
-  // Todo: PROGN compiles right-to-left, but executes left-to-right, thus recursive calls are not correctly compiled
+	// Todo: PROGN compiles right-to-left, but executes left-to-right, thus recursive calls are not correctly compiled
   
-  // if somebody want's to skip putting func as argument, must override this method
-  public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
-			       LispValue args, LispValue valueList, LispValue code)
-    throws CompilerException
-  {
+	// if somebody want's to skip putting func as argument, must override this method
+	public LispCons CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue function,
+					LispList args, LispList valueList, LispCons code)
+			throws CompilerException
+	{
 //      if (! (function instanceof LispFunction))
 //        function = function.symbol_function();
 
-      LispValue fncode = function;//((LispFunction)function).getCode().second();
-      return  CompileArgs(compiler, machine, args, valueList, cons(fncode, code));
-  }
-
-
-	// 
-	public final static LispValue BOOL(boolean arg)
-	{
-		return arg ? T : NIL;
+		LispValue fncode = function;//((LispFunction)function).getCode().second();
+		return CompileArgs(compiler, machine, args, valueList, cons(fncode, code));
 	}
-	
-	// util function for assert argument type:
-	
-	/**
-	 * If argument not a number throws NOT A NUMBER exception
-	 * @param arg
-	 * @return
-	 */
-	public static final LispNumber assertNumber(LispValue arg)
-	{
-		if (arg instanceof LispNumber)
-			return (LispNumber)arg;
-		throw new LispValueNotANumberException(arg);
-	}
-	public static final LispString assertString(LispValue arg)
-	{
-		if (arg instanceof LispString)
-			return (LispString)arg;
-		throw new LispValueNotAStringException(arg);
-	}
-
-	
-	public static final LispAtom assertAtom(LispValue arg)
-	{
-		if (arg instanceof LispAtom)
-			return (LispAtom)arg;
-		throw new LispValueNotAnAtomException(arg);
-	}
-	public static final LispCons assertCons(LispValue arg)
-	{
-		if (arg instanceof LispCons)
-			return (LispCons)arg;
-		throw new LispValueNotAConsException(arg);
-	}
-	public static final LispList assertList(LispValue arg)
-	{
-		if (arg instanceof LispList)
-			return (LispList)arg;
-		throw new LispValueNotAListException(arg);
-	}
-
 }

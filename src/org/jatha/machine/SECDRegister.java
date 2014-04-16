@@ -25,7 +25,14 @@
 package org.jatha.machine;
 
 import org.jatha.dynatype.*;
+import org.jatha.exception.LispException;
+import org.jatha.exception.LispUnboundVariableException;
+import org.jatha.exception.LispValueNotAListException;
 import org.jatha.Lisp;
+import org.jatha.LispProcessor;
+
+import
+static org.jatha.dynatype.LispValue.*;
 
 // @date    Mon Feb  3 19:02:37 1997
 /**
@@ -40,23 +47,57 @@ import org.jatha.Lisp;
  *
  * @author  Micheal S. Hewett    hewett@cs.stanford.edu
  */
-public class SECDRegister extends StandardLispSymbol
+public class SECDRegister extends LispProcessor
 {
 	private static int count = 1000;
 	public SECDRegister(String name)
 	{
-		super("*REGISTER-" + ++count + "*");
+		f_name = "*REGISTER-" + ++count + "*";
 
 		assign(NIL);
 	}
 
+	protected String f_name;           // Print name
+	protected LispList f_value = NIL;          // Assigned value
+	
+	public LispValue push(LispValue newValue)
+	{
+		f_value = cons(newValue, f_value);
+		return newValue;
+	}
+	
+	public LispValue pop()
+	{
+		LispValue returns = car(f_value);
+		f_value = (LispList)cdr(f_value);
+		return returns;
+	}
+	
+	
 	public void assign(LispValue newValue)
 	{
-		this.setf_symbol_value(newValue);
+		f_value = (LispList)newValue;
+//		this.setf_symbol_value(newValue);
 	}
 
 	public LispValue value()
 	{
-		return this.symbol_value();
+		return f_value;
+	}
+	
+/*	protected LispValue setf_symbol_value(LispValue newValue)
+	{
+		f_value = (LispList)newValue;
+		return f_value;
+	}
+	protected LispValue symbol_value() throws LispException
+	{
+		return f_value;
+	}*/
+	
+	@Override
+	public String toString()
+	{
+		return f_name;
 	}
 }

@@ -101,8 +101,6 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
 
   public String toString() { return String.valueOf(f_value); }
 
-  public boolean basic_floatp() { return true; }
-
   public LispValue eql(LispValue val)
   {
     if (val instanceof LispReal)

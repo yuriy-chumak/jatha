@@ -752,7 +752,7 @@ public class LispParser extends LispProcessor
       } catch (IOException e) {
         System.err.println("\n *** I/O error while reading a block comment.  Not terminated?");
       }
-    return NIL;
+      return NIL;
     }
 
     else
@@ -853,7 +853,7 @@ public class LispParser extends LispProcessor
 			newCell = NIL;
 		}
 
-		return(newCell);
+		return newCell;
 	}
 
 	// ----  Utility functions  ----------------------------------

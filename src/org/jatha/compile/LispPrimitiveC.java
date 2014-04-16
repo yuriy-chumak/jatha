@@ -31,7 +31,7 @@ import
 static org.jatha.machine.SECDMachine.*;
 
 // primitive with variable count of arguments
-public abstract class LispPrimitiveC extends LispPrimitive
+public abstract class LispPrimitiveC extends LispPrimitive1
 {
 	// Fields
 	protected long minNumberOfArgs;
@@ -70,26 +70,13 @@ public abstract class LispPrimitiveC extends LispPrimitive
 	
 
 	// Unlimited number of evaluated args.
-	public LispValue CompileArgs(LispCompiler compiler, SECDMachine machine, LispValue args,
-			LispValue valueList, LispValue code)
+	@Override
+	public LispCons CompileArgs(LispCompiler compiler, SECDMachine machine, LispList args,
+			LispList valueList, LispCons code)
 			throws CompilerException
 	{
 		return compiler.compileArgsLeftToRight(args, valueList,
 						cons(LIS,
 						     cons(args.length(), code)));
 	}
-	
-	public void Execute(SECDMachine machine)
-			throws CompilerException
-	{
-	    LispValue arg1 = machine.S.pop();
-	    
-	    LispValue result = this.Execute(arg1);
-	    
-		machine.S.push(result);
-		machine.C.pop();
-	}
-	
-	protected abstract LispValue Execute(LispValue arg)
-			throws CompilerException;
 }

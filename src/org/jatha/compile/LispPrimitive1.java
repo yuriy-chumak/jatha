@@ -24,12 +24,8 @@
 
 package org.jatha.compile;
 
-import java.io.*;
-
-import org.jatha.Lisp;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
-import org.jatha.exception.UndefinedFunctionException;
 import org.jatha.machine.*;
 
 // @date    Fri Jan 31 17:31:40 1997
@@ -66,12 +62,11 @@ public abstract class LispPrimitive1 extends LispPrimitive
 	public void Execute(SECDMachine machine)
 			throws CompilerException
 	{
-		machine.C.pop();
-
 	    LispValue arg1 = machine.S.pop();
 	    LispValue result = this.Execute(arg1);
 	    
 		machine.S.push(result);
+		machine.C.pop();
 	}
 	
 

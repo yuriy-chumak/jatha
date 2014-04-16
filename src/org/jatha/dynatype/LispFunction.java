@@ -38,12 +38,12 @@ package org.jatha.dynatype;
  */
 public interface LispFunction extends LispValue
 {
-  /**
-   * Returns the code of the Function.  The code is
-   * not cached so that changes in definitions will
-   * take effect immediately.
-   */
-  LispValue getCode();
+	/**
+	 * Returns the code of the Function.  The code is
+	 * not cached so that changes in definitions will
+	 * take effect immediately.
+	 */
+	LispValue getCode();
 
   /**
    * Returns the symbol whose function this represents.
