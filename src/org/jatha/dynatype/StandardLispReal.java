@@ -64,40 +64,6 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
   }
 
 
-  /**
-   * Returns a Java Double object with the value of this number.
-   */
-  public Object toJava()
-  {
-    return new Double(f_value);
-  }
-
-
-  /**
-   * Returns a Java Double, Float or Integer object,
-   * depending on the typeHint.
-   */
-  public Object toJava(String typeHint)
-  {
-    if (typeHint == null)
-      return toJava();
-
-    else if (typeHint.equalsIgnoreCase("Double"))
-       return toJava();
-
-    else if (typeHint.equalsIgnoreCase("Float"))
-      return new Float(f_value);
-
-    else if (typeHint.equalsIgnoreCase("Integer"))
-      return new Integer((int)f_value);
-
-    else if (typeHint.equalsIgnoreCase("Long"))
-      return new Long((long)f_value);
-
-    else
-      return toJava();
-  }
-
 
   public String toString() { return String.valueOf(f_value); }
 
@@ -119,8 +85,6 @@ public class StandardLispReal extends StandardLispNumber implements LispReal
   {
     return eql(val);
   }
-
-  public LispValue floatp   ()  { return T; }
 
   public LispValue zerop    ()
   {

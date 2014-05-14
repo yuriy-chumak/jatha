@@ -70,8 +70,6 @@ public class StandardLispConstant extends StandardLispSymbol
 
 		if (oldSymbol.fboundp())
 			f_function = oldSymbol.symbol_function();
-
-		f_plist    = oldSymbol.symbol_plist();
 	}
 
 

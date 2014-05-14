@@ -27,11 +27,12 @@ package org.jatha.compile;
 import org.jatha.dynatype.*;
 import org.jatha.exception.CompilerException;
 import org.jatha.machine.*;
+
 import
 static org.jatha.machine.SECDMachine.*;
 
 // primitive with variable count of arguments
-public abstract class LispPrimitiveC extends LispPrimitive1
+public abstract class LispPrimitiveC extends LispPrimitive
 {
 	// Fields
 	protected long minNumberOfArgs;
@@ -48,15 +49,28 @@ public abstract class LispPrimitiveC extends LispPrimitive1
 		maxNumberOfArgs = maxArgs;
 	}
 	
-      boolean validArgumentLength(LispValue numberOfArguments)
-	  {
-	    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
-
-	    return ((minNumberOfArgs <= numArgs)
-		    && (numArgs <= maxNumberOfArgs));
-	  }
-	  public String parameterCountString()
-	  {
+	public void Execute(SECDMachine machine)
+			throws CompilerException
+	{
+	    LispValue arg1 = machine.S.pop();
+	    LispValue result = this.Execute(assertList(arg1));
+	    
+		machine.S.push(result);
+		machine.C.pop();
+	}
+	protected abstract LispValue Execute(LispList arg)
+			throws CompilerException;
+	
+	
+	
+	
+	boolean validArgumentLength(int numberOfArguments)
+	{
+		return ((minNumberOfArgs <= numberOfArguments)
+		    && (numberOfArguments <= maxNumberOfArgs));
+	}
+	public String parameterCountString()
+	{
 	    String result = Long.toString(minNumberOfArgs);
 
 	    if (maxNumberOfArgs == Long.MAX_VALUE)
@@ -77,6 +91,6 @@ public abstract class LispPrimitiveC extends LispPrimitive1
 	{
 		return compiler.compileArgsLeftToRight(args, valueList,
 						cons(LIS,
-						     cons(args.length(), code)));
+						     cons(integer(args.length()), code)));
 	}
 }

@@ -48,27 +48,129 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 	public StandardLispNumber() { }
 	
   public boolean constantp()  { return true; }
-  public boolean    basic_numberp()    { return true; }
 
+	// ---  non-LISP methods  ---
 
-  // ---  non-LISP methods  ---
+	public abstract double getDoubleValue();
 
-  public abstract double getDoubleValue();
+	// ---- LISP functions -------------
+	/**
+	 * Default implementation of abs.
+	 */
+	public LispNumber abs()
+	{
+		if (this.getDoubleValue() > 0.0)
+			return this;
+		else
+			return real(this.getDoubleValue() * -1.0);
+	}
+	
+	/**
+	 * ADD adds any combination of real or integer numbers.
+	 * May create a Bignum or signal floating-point overflow
+	 * if necessary.
+	 *
+	 * @see LispReal
+	 * @see LispInteger
+	 */
+	public LispNumber add(LispValue  args)
+	{
+		// The list of numbers has already been evaluated.
+		// Terminate if we hit any non-numbers.
+		// Keep the sum in a Long value until the value
+		// either overflows, in which case we turn it into
+		// a bignum, or else a real value is added, in which
+		// case the result is a double.
 
+		double    d_sum  = this.getDoubleValue();
+		long      l_sum  = 0;
+		long      l_addend = 0;
+		LispNumber addend;
+		LispValue arglist;
+		boolean   allIntegers = this instanceof LispInteger;
 
-  // ---- LISP functions -------------
+		if (allIntegers)
+			l_sum = this.getLongValue();
+
+	    // Make sure the argument is a list of numbers.
+		arglist = args;
+		if (! (arglist instanceof LispList))
+			arglist = list(arglist);
+
+		while (arglist != NIL)
+		{
+			addend = assertNumber(car(arglist));
+
+			// Might need to convert to a double
+			if (allIntegers && (addend instanceof LispReal))
+			{
+				allIntegers = false;
+				d_sum = l_sum;
+			}
+
+	      // Might need to convert to a Bignum
+	      // a>0, b>0 : (MAX - a) < b
+	      // a<0, b<0 : (MIN - a) > b
+
+	      if (allIntegers)
+	      {
+	        if (addend instanceof LispBignum)
+	        {
+	          // System.out.println("Bignum arg...converting " + l_sum + " to bignum.");
+	          LispBignum bn_val = bignum(l_sum);
+	          return bn_val.add(arglist);
+	        }
+
+	        l_addend = ((LispInteger)addend).getLongValue();
+
+	        if ((l_sum > 0) && (l_addend > 0))
+	        {
+	          // System.out.println("Comparing " + l_sum + " to " + Long.MAX_VALUE);
+
+	          if ((Long.MAX_VALUE - l_sum) < l_addend)
+	          // Need to convert to bignum
+	          {
+	            // System.out.println("Converting " + l_sum + " to bignum.");
+	            LispBignum bn_val = bignum(l_sum);
+	            return bn_val.add(arglist);
+	          }
+	        }
+	        else if ((l_sum < 0) && (l_addend < 0))
+	        {
+	          // System.out.println("Comparing " + l_sum + " to " + Long.MIN_VALUE);
+	          if ((Long.MIN_VALUE - l_sum) > l_addend)
+	          {
+	            // Need to convert to bignum
+	            // System.out.println("Converting " + l_sum + " to bignum.");
+	            LispBignum bn_val = bignum(l_sum);
+	            return bn_val.add(arglist);
+	          }
+	        }
+	      }
+
+	      // If not allIntegers, result is a double.
+
+	      if (allIntegers)
+	        l_sum += l_addend;
+	      else
+	        if (addend instanceof LispReal)
+	          d_sum += ((LispReal)addend).getDoubleValue();
+	        else if (addend instanceof LispBignum)
+	          d_sum += ((LispBignum)addend).getDoubleValue();
+	        else
+	          d_sum += ((LispInteger)addend).getLongValue();
+
+	      arglist = cdr(arglist);
+	    };
+
+	    if (allIntegers)
+	      return(integer(l_sum));
+	    else
+	      return(real(d_sum));
+	  }
+	
   
   // contributed by Jean-Pierre Gaillardon, April 2005
-  /**
-   * Default implementation of abs.
-   */
-  public LispValue abs()
-  {
-    if (this.getDoubleValue() > 0.0)
-      return this;
-    else
-      return real(this.getDoubleValue() * -1.0);
-  }
 
   /**
    * Converts a numeric value from degrees to radians.
@@ -88,24 +190,17 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
     return real(this.getDoubleValue() * 180.0 / StrictMath.PI);
   }
 
-  /**
-   * Calculate the object raised to the power of n.
-   */
-  public LispValue expt(LispValue n)
-  {
-    boolean allIntegers = (this instanceof LispInteger && n instanceof LispInteger);
-    if (n instanceof LispNumber)
-      if (allIntegers)
-      {
-        return bignum(getBigIntegerValue().pow((int) ((LispNumber)n).getLongValue()));
-      }
-      else
-      {
-        return real(StrictMath.pow(getDoubleValue(), ((LispNumber)n).getDoubleValue()));
-      }
-    else
-      throw new LispValueNotANumberException("The second argument to expt (" + n + ")");
-  }
+	/**
+	 * Calculate the object raised to the power of n.
+	 */
+	public LispNumber power(LispNumber n)
+	{
+		boolean allIntegers = (this instanceof LispInteger && n instanceof LispInteger);
+		if (allIntegers)
+			return bignum(getBigIntegerValue().pow((int) n.getLongValue()));
+		else
+			return real(StrictMath.pow(getDoubleValue(), n.getDoubleValue()));
+	}
 
   /**
    * Calculate the object raised to the power of n.
@@ -228,7 +323,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   /**
    * Returns the negative of the given number.
    */
-  public LispValue    negate()
+  public LispNumber negate()
   {
     return this.sub(NIL);  // Returns the negative.
   }
@@ -265,109 +360,6 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
   //
 
 
-  /**
-   * ADD adds any combination of real or integer numbers.
-   * May create a Bignum or signal floating-point overflow
-   * if necessary.
-   *
-   * @see LispReal
-   * @see LispInteger
-   */
-  public LispNumber     add(LispValue  args)
-  {
-    // The list of numbers has already been evaluated.
-    // Terminate if we hit any non-numbers.
-    // Keep the sum in a Long value until the value
-    // either overflows, in which case we turn it into
-    // a bignum, or else a real value is added, in which
-    // case the result is a double.
-
-    double    d_sum  = this.getDoubleValue();
-    long      l_sum  = 0;
-    long      l_addend = 0;
-    LispNumber addend;
-    LispValue arglist;
-    boolean   allIntegers = this instanceof LispInteger;
-
-    if (allIntegers)
-      l_sum = this.getLongValue();
-
-    // Make sure the argument is a list of numbers.
-    arglist = args;
-    if (! (arglist instanceof LispList))
-      arglist = list(arglist);
-
-    while (arglist != NIL)
-    {
-      addend = assertNumber(car(arglist));
-
-      // Might need to convert to a double
-      if (allIntegers && (addend instanceof LispReal))
-      {
-        allIntegers = false;
-        d_sum = l_sum;
-      }
-
-      // Might need to convert to a Bignum
-      // a>0, b>0 : (MAX - a) < b
-      // a<0, b<0 : (MIN - a) > b
-
-      if (allIntegers)
-      {
-        if (addend instanceof LispBignum)
-        {
-          // System.out.println("Bignum arg...converting " + l_sum + " to bignum.");
-          LispBignum bn_val = bignum(l_sum);
-          return bn_val.add(arglist);
-        }
-
-        l_addend = ((LispInteger)addend).getLongValue();
-
-        if ((l_sum > 0) && (l_addend > 0))
-        {
-          // System.out.println("Comparing " + l_sum + " to " + Long.MAX_VALUE);
-
-          if ((Long.MAX_VALUE - l_sum) < l_addend)
-          // Need to convert to bignum
-          {
-            // System.out.println("Converting " + l_sum + " to bignum.");
-            LispBignum bn_val = bignum(l_sum);
-            return bn_val.add(arglist);
-          }
-        }
-        else if ((l_sum < 0) && (l_addend < 0))
-        {
-          // System.out.println("Comparing " + l_sum + " to " + Long.MIN_VALUE);
-          if ((Long.MIN_VALUE - l_sum) > l_addend)
-          {
-            // Need to convert to bignum
-            // System.out.println("Converting " + l_sum + " to bignum.");
-            LispBignum bn_val = bignum(l_sum);
-            return bn_val.add(arglist);
-          }
-        }
-      }
-
-      // If not allIntegers, result is a double.
-
-      if (allIntegers)
-        l_sum += l_addend;
-      else
-        if (addend instanceof LispReal)
-          d_sum += ((LispReal)addend).getDoubleValue();
-        else if (addend.bignump() == T)
-          d_sum += ((LispBignum)addend).getDoubleValue();
-        else
-          d_sum += ((LispInteger)addend).getLongValue();
-
-      arglist = cdr(arglist);
-    };
-
-    if (allIntegers)
-      return(integer(l_sum));
-    else
-      return(real(d_sum));
-  }
 
 
   /**
@@ -409,8 +401,8 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
 
       ++argCount;
 
-      if (allIntegers && (term instanceof LispReal
-        || (term.bignump() == T)))
+      if (allIntegers &&
+    		  (term instanceof LispReal || term instanceof LispBignum))
       {
         allIntegers = false;
         d_quotient  = l_quotient;
@@ -420,7 +412,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       {
         if (!allIntegers)
         {
-          if (term.bignump() == T)
+          if (term instanceof LispBignum)
             d_quotient = d_quotient
               / ((LispBignum)term).getDoubleValue();
           else if (term instanceof LispReal)
@@ -558,7 +550,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
         if (term instanceof LispReal)
           d_product *=  ((LispReal)term).getDoubleValue();
-        else if (term.bignump() == T)
+        else if (term instanceof LispBignum)
           d_product *= ((LispBignum)term).getDoubleValue();
         else
           d_product *= ((LispInteger)term).getLongValue();
@@ -673,7 +665,7 @@ abstract public class StandardLispNumber extends StandardLispAtom implements Lis
       else
         if (addend instanceof LispReal)
           d_sum -= ((LispReal)addend).getDoubleValue();
-        else if (addend.bignump() == T)
+        else if (addend instanceof LispBignum)
           d_sum -= ((LispBignum)addend).getDoubleValue();
         else
           d_sum -= ((LispInteger)addend).getLongValue();

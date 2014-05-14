@@ -98,6 +98,8 @@ public class SECDRegister extends LispProcessor
 	@Override
 	public String toString()
 	{
+		if (value() != null)
+			return value().toString();
 		return f_name;
 	}
 }

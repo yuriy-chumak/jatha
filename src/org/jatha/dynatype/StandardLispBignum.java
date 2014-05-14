@@ -36,79 +36,48 @@ import org.jatha.Lisp;
  */
 public class StandardLispBignum extends StandardLispInteger implements LispBignum
 {
-  private  BigInteger value;
+	private  BigInteger value;
   
-  // ---  static initializer  ---
+	// ---  Constructors  ---
+	public StandardLispBignum(BigInteger theValue)
+	{
+		value = theValue;
+	}
 
-  // ---  Constructors  ---
+	public StandardLispBignum(long theValue)
+	{
+		this(BigInteger.valueOf(theValue));
+	}
 
-  public StandardLispBignum(BigInteger  theValue)
-  {
-    value = theValue;
-  }
+	public StandardLispBignum(double theValue)
+	{
+		this(BigInteger.valueOf((long)theValue));
+	}
 
-  public StandardLispBignum(long   theValue)
-  {
-    value = BigInteger.valueOf(theValue);
-  }
+	public StandardLispBignum()
+	{
+		this(BIGZERO);
+	}
 
+	
+	public double  getDoubleValue()
+	{
+		return value.doubleValue();
+	}
 
-  public StandardLispBignum(double theValue)
-  {
-    value = BigInteger.valueOf((long)theValue);
-  }
+	public BigInteger getBigIntegerValue()
+	{
+		return value;
+	}
 
+	public long getLongValue()
+	{
+		return value.longValue();
+	}
 
-  public StandardLispBignum()
-  {
-    value = BIGZERO;
-  }
-
-  public double  getDoubleValue()
-  {
-    return value.doubleValue();
-  }
-
-  public BigInteger getBigIntegerValue()
-  {
-    return value;
-  }
-
-  public long getLongValue()
-  {
-    return value.longValue();
-  }
-
-  public void    internal_princ(PrintStream os) { os.print(value); }
-  public void    internal_prin1(PrintStream os) { os.print(value); }
-  public void    internal_print(PrintStream os) { os.print(value); }
-  public boolean basic_integerp()  { return true; }
-
-
-  /**
-   * Returns a Java Double, Float or Integer object,
-   * depending on the typeHint.
-   */
-  public Object toJava(String typeHint)
-  {
-    if (typeHint == null)
-      return toJava();
-
-    else if (typeHint.equalsIgnoreCase("Double"))
-      return new Double(getDoubleValue());
-
-    else if (typeHint.equalsIgnoreCase("Float"))
-      return new Float(getDoubleValue());
-
-    else if (typeHint.equalsIgnoreCase("Integer"))
-      return new Integer((int)(getLongValue()));
-
-    else if (typeHint.equalsIgnoreCase("Long"))
-      return new Long(getLongValue());
-
-    else
-      return value;
-  }
+	public void    internal_princ(PrintStream os) { os.print(value); }
+	public void    internal_prin1(PrintStream os) { os.print(value); }
+	public void    internal_print(PrintStream os) { os.print(value); }
 
 
   public String  toString() { return value.toString(); }
@@ -116,17 +85,16 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
   // ---  LISP methods  ---
 
-  /**
-   * Bignum implementation of abs.
-   */
-  public LispValue abs()
-  {
-    if (this.value.signum() > 0)
-      return this;
-    else
-      return bignum(this.value.negate());
-  }
-
+	/**
+	 * Bignum implementation of abs.
+	 */
+	public LispNumber abs()
+	{
+		if (this.value.signum() > 0)
+			return this;
+		else
+			return negate();
+	}
 
   public LispValue eql(LispValue val)
   {
@@ -185,7 +153,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       // If an addend is a float, we need to convert the
       // pending result to a LispReal and add the rest of
       // the numbers as reals.
-      if (addend.floatp() == T)
+      if (addend instanceof LispReal)
       {
         // Do we print a warning?
         LispReal realValue = real(this.getDoubleValue());
@@ -233,7 +201,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       // If a term is a float, we need to convert the
       // pending result to a LispReal and divide the rest of
       // the numbers as reals.
-      if (term.floatp() == T)
+      if (term instanceof LispReal)
       {
         // Do we print a warning?
         LispReal realValue = real(quotient.doubleValue());
@@ -311,7 +279,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       // If a term is a float, we need to convert the
       // pending result to a LispReal and multiply the rest of
       // the numbers as reals.
-      if (term.floatp() == T)
+      if (term instanceof LispReal)
       {
         // Do we print a warning?
         LispReal realValue = real(this.getDoubleValue());
@@ -365,7 +333,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
       // If a term is a float, we need to convert the
       // pending result to a LispReal and add the rest of
       // the numbers as reals.
-      if (term.floatp() == T)
+      if (term instanceof LispReal)
       {
         // Do we print a warning?
         LispReal realValue = real(this.getDoubleValue());
@@ -395,9 +363,7 @@ public class StandardLispBignum extends StandardLispInteger implements LispBignu
 
 
 
-  public LispValue bignump   ()  { return T; }
-
-  public LispValue negate()
+  public LispNumber negate()
   {
     return bignum(value.negate());
   }

@@ -52,13 +52,14 @@ import org.jatha.machine.SECDMachine;
  *             \----- LispSymbol
  *                      \------- LispConstant
  *                                 \--------- LispKeyword
+ *                      \------- LispPrimitive (?)
  *   \------ LispList
  *             \---------- LispCons
  *             \---------- LispNil
  *   \------ LispFunction
  *             \--------- LispMacro
  *   \------ LispPackage
- *   \------ LispPrimitive
+ *  - \------ LispPrimitive
  */
 public interface LispValue extends 
 		Comparable<LispValue>
@@ -82,11 +83,6 @@ public interface LispValue extends
 //	basic_consp() => instanceof LispCons
 //	basic_listp() => instanceof LispList
 	
-//	basic_numberp
-//	basic_bignump
-//	basic_integerp
-//	complex
-
 //	basic_stringp
 //	characterp
 	
@@ -95,22 +91,65 @@ public interface LispValue extends
 	// =-( unsorted )-=========================================	
 	
 	
+	/* Interface copied from org.jatha.dyntatype.StandardLispValue. */
+
+	public void internal_princ(PrintStream os);
+	public void internal_princ_as_cdr(PrintStream os);
+	public void internal_prin1(PrintStream os);
+	public void internal_prin1_as_cdr(PrintStream os);
+	public void internal_print(PrintStream os);
+	public void internal_print_as_cdr(PrintStream os);
+
+	/**
+	 * <code>toString()</code> returns a printed representation
+	 * of the form (as printed by <code>(prin1)</code>) in
+	 * a Java string.
+	 * @return String The value in a string.
+	 */
+	public String toString();
+
+	/**
+	 * Same as toString unless you are getting a String representation
+	 * of an array.  Then it uses the columnSeparator variable to separate columns in the output.
+	 * @param columnSeparator optional column separator string, defaults to a single space.
+	 * @return a String containing a printed representation of the value.
+	 */
+	String toString(String columnSeparator);
+
+	/**
+	 * Strips double-quotes and leading colons from a LispString value.
+	 */
+	public String toStringSimple();
+
+	/**
+	 * Prints a short version of the item.  Can optionally
+	 * send in the number of elements to print.  Most useful
+	 * for arrays or long lists.
+	 */
+	public String toStringShort();
+
+	/**
+	 * Prints out a short version of the Array.  Defaults to 5 elements
+	 * @param numberOfElements the maximum number of elements to print.
+	 */
+	String toStringShort(int numberOfElements);
 	
+	public String toStringAsCdr();
+
+	public String toString_internal(long length, long level);
+
+	/**
+	 * Counts cars so as not to have runaway lists.
+	 * Max depth is determined by *PRINT-LEVEL*.
+	 */
+	public String toStringAsCar_internal(long length, long level);
+
+	/**
+	 * Counts cdrs so as not to have runaway lists.
+	 * Max length is determined by *PRINT-LENGTH*.
+	 */
+	public String toStringAsCdr_internal(long length, long level);
 	
-  /* Interface copied from org.jatha.dyntatype.StandardLispValue. */
-
-  public void internal_princ(PrintStream os);
-
-  public void internal_princ_as_cdr(PrintStream os);
-
-  public void internal_prin1(PrintStream os);
-
-  public void internal_prin1_as_cdr(PrintStream os);
-
-  public void internal_print(PrintStream os);
-
-  public void internal_print_as_cdr(PrintStream os);
-
 
 	/**
 	 * Returns true if the object is a constant.
@@ -141,22 +180,6 @@ public interface LispValue extends
 
 
   /**
-   * Returns a Java equivalent of the object.
-   * For example, the number 3 is returned as an instance of new Integer(3).
-   * If it can't be converted to a more useful Java object, it returns a String representation.
-   */
-  public Object toJava();
-
-
-  /**
-   * Returns a Java equivalent of the object.
-   * For example, the number 3 is returned as an instance of new Integer(3).
-   * If it can't be converted to a more useful Java object, it returns a String representation.
-   * You can optionally send in a hint as to what type is preferred.
-   */
-  public Object toJava(String typeHint);
-
-  /**
    * Returns the Lisp value as a Collection.  Most useful
    * for lists, which are turned into Collections.
    * But also works for single values.
@@ -170,57 +193,6 @@ public interface LispValue extends
   
   // @author  Micheal S. Hewett    hewett@cs.stanford.edu
   // @date    Wed Feb 19 17:18:50 1997
-  /**
-   * <code>toString()</code> returns a printed representation
-   * of the form (as printed by <code>(prin1)</code>) in
-   * a Java string.
-   * @return String The value in a string.
-   */
-  public String toString();
-
-  /**
-   * Same as toString unless you are getting a String representation
-   * of an array.  Then it uses the columnSeparator variable to separate columns in the output.
-   * @param columnSeparator optional column separator string, defaults to a single space.
-   * @return a String containing a printed representation of the value.
-   */
-  String toString(String columnSeparator);
-
-  /**
-   * Strips double-quotes and leading colons from a LispString value.
-   */
-  public String toStringSimple();
-
-  /**
-   * Prints a short version of the item.  Can optionally
-   * send in the number of elements to print.  Most useful
-   * for arrays or long lists.
-   */
-  public String toStringShort();
-
-  /**
-   * Prints out a short version of the Array.  Defaults to 5 elements
-   * @param numberOfElements the maximum number of elements to print.
-   */
-  String toStringShort(int numberOfElements);
-
-
-  public String toStringAsCdr();
-
-
-  public String toString_internal(long length, long level);
-
-  /**
-   * Counts cars so as not to have runaway lists.
-   * Max depth is determined by *PRINT-LEVEL*.
-   */
-  public String toStringAsCar_internal(long length, long level);
-
-  /**
-   * Counts cdrs so as not to have runaway lists.
-   * Max length is determined by *PRINT-LENGTH*.
-   */
-  public String toStringAsCdr_internal(long length, long level);
 
 
 
@@ -271,11 +243,6 @@ public interface LispValue extends
   public LispValue assoc(LispValue index);
 
   /**
-   * Returns T if the object is a Bignum.
-   */
-  public LispValue bignump();
-
-  /**
    * Returns T if the symbol has been assigned a value.
    */
   public boolean boundp();
@@ -285,11 +252,6 @@ public interface LispValue extends
    * Butlast is the mirror image of CDR.
    */
   public LispValue butlast();
-
-  /**
-   * Returns T if the object is a Character.
-   */
-  public LispValue characterp();
 
   /**
    * Clears a hash table.
@@ -309,12 +271,6 @@ public interface LispValue extends
    * In Java, a string is not mutable so strings are also not copied.
    */
   public LispValue copy();
-
-  /**
-   * Converts a numeric value from degrees to radians.
-   * @return The value in radians.
-   */
-  public LispValue degreesToRadians();
 
   /**
    * Returns the nth element of a list.
@@ -343,26 +299,10 @@ public interface LispValue extends
   public LispValue equal(LispValue val);
 
   /**
-   * Calculate the object raised to the power of n.
-   */
-  public LispValue expt(LispValue n);
-
-  /**
    * Returns T if the symbol has an assigned function.
    */
   public boolean fboundp();
 
-  /**
-   * Returns T if the object is a floating-point number.
-   */
-  public LispValue floatp();
-
-  /**
-   * Returns the first element of a list.
-   * Identical to the CAR function.
-   */
-  public LispValue first();
-  
   /**
    * Retrieves values from a hash table.
    */
@@ -420,10 +360,10 @@ public interface LispValue extends
    */
   public LispValue last();
 
-  /**
-   * Returns the length of a list or string.
-   */
-  public LispValue length();
+	/**
+	 * Returns the length of a list or string.
+	 */
+	public int length();
 
   /**
    * Creates a list from the object.
@@ -439,20 +379,10 @@ public interface LispValue extends
   public LispValue member(LispValue elt);
 
   /**
-   * Calculate the object module to n.
-   */
-  public LispValue mod(LispValue n);
-
-  /**
    * Destructively appends a list to the end of the
    * given list.
    */
   public LispValue nconc(LispValue arg);
-
-  /**
-   * Return the negative of a number.
-   */
-  public LispValue negate();
 
   /**
    * Not in the LISP standard, but useful so we
@@ -597,11 +527,6 @@ public interface LispValue extends
    * Sets the function of a symbol.
    */
   public LispValue setf_symbol_function(LispValue newFunction);
-
-  /**
-   * Sets the property list of a symbol.
-   */
-  public LispValue setf_symbol_plist(LispValue newPlist);
 
   /**
    * Sets the value of a symbol.
@@ -781,16 +706,6 @@ public interface LispValue extends
   public LispValue symbol_function() throws LispException;
 
   /**
-   * Returns the package of a symbol.
-   */
-  public LispValue symbol_package();
-
-  /**
-   * Returns the property list of a symbol.
-   */
-  public LispValue symbol_plist();
-
-  /**
    * Returns the third element of a list or NIL if the list
    * is less than three elements long.
    */
@@ -872,37 +787,6 @@ public interface LispValue extends
   LispValue elt(int index);
 
   LispValue functionp();
-
-    /**
-     * Returns the documentation string for this symbol, of the type specified.
-     * The type may be any symbol, but the most common ones are:
-     * <ul>
-     * <li>variable (for defvar, defparameter, defconstant)</li>
-     * <li>function (for defun, defmacro)</li>
-     * <li>structure (for defstruct)</li>
-     * <li>type (for deftype)</li>
-     * <li>setf (for defsetf)</li>
-     * </ul>
-     * @param type a symbol
-     * @return a LispString or NIL
-     */
-    LispValue documentation(final LispValue type);
-
-    /**
-     * Sets the documentation string for this symbol of the type specified.
-     * The type may be any symbol, but the most common ones are:
-     * <ul>
-     * <li>variable (for defvar, defparameter, defconstant)</li>
-     * <li>function (for defun, defmacro)</li>
-     * <li>structure (for defstruct)</li>
-     * <li>type (for deftype)</li>
-     * <li>setf (for defsetf)</li>
-     * </ul>
-     * @param type a symbol
-     * @param value a lispstring
-     * @return value
-     */
-    LispValue setf_documentation(final LispValue type, final LispValue value);
 
   /**
    * Returns true if this package uses the given package

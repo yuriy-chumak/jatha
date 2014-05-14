@@ -84,11 +84,9 @@ public abstract class LispPrimitive2 extends LispPrimitive
    * @param numberOfArguments  usually the result of args.length()
    * @return boolean
    */
-  boolean validArgumentLength(LispValue numberOfArguments)
+  boolean validArgumentLength(int numberOfArguments)
   {
-    long numArgs = ((LispInteger)numberOfArguments).getLongValue();
-
-    return (numArgs == 2);
+	  return numberOfArguments == 2;
   }
 
 

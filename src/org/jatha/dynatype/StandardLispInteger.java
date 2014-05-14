@@ -63,38 +63,6 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
   public void    internal_princ(PrintStream os) { os.print(f_value); }
   public void    internal_prin1(PrintStream os) { os.print(f_value); }
   public void    internal_print(PrintStream os) { os.print(f_value); }
-  public boolean basic_integerp()      { return true; }
-
-  /**
-   * Returns a Java Long object with the value of this integer.
-   */
-  public Object toJava()
-  {
-    return new Long(f_value);
-  }
-
-
-  /**
-   * Returns a Java Double, Float or Integer object,
-   * depending on the typeHint.
-   */
-  public Object toJava(String typeHint)
-  {
-    if (typeHint == null)
-      return toJava();
-
-    else if (typeHint.equalsIgnoreCase("Double"))
-       return new Double(getDoubleValue());
-
-    else if (typeHint.equalsIgnoreCase("Float"))
-      return new Float(f_value);
-
-    else if (typeHint.equalsIgnoreCase("Integer"))
-      return new Integer((int)f_value);
-
-    else
-      return toJava();
-  }
 
   public String  toString() { return String.valueOf(f_value); }
 
@@ -103,7 +71,7 @@ public class StandardLispInteger extends StandardLispNumber implements LispInteg
 	/**
 	 * Integer implementation of abs.
 	 */
-	public LispValue abs()
+	public LispNumber abs()
 	{
 		if (this.getLongValue() > 0)
 			return this;

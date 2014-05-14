@@ -77,15 +77,20 @@ public class StandardLispCons extends StandardLispList implements LispCons
 	public LispValue setf_car(LispValue value)
 	{ 
 		carCell = value;
-		return carCell;
+		return car();
 	}
 	  
 	public LispValue cdr() { return cdrCell; }
 	public LispValue setf_cdr(LispValue value)
 	{ 
 		cdrCell = value;
-		return cdrCell;
+		return cdr();
 	}
+	
+	
+	public LispValue first  () { return carCell; }
+	public LispValue second () { return ((LispList)cdr()).first();  }
+	public LispValue third  () { return ((LispList)cdr()).second(); }
 	
 // =-( unsorted )-=========================================	
   public void internal_princ(PrintStream os)
@@ -142,9 +147,9 @@ public class StandardLispCons extends StandardLispList implements LispCons
     return carCell == QUOTE;
   }
 
-  public int     basic_length()
+  public int basic_length()
   {
-    return (int)(((LispInteger)length()).getLongValue());
+    return length();
   }
 
 
@@ -349,10 +354,6 @@ public class StandardLispCons extends StandardLispList implements LispCons
     }
   }
 
-  public LispValue     first  () { return carCell;        }
-  public LispValue     second () { return cdr().first();  }
-  public LispValue     third  () { return cdr().second(); }
-
   public LispValue last()
   {
     LispValue ptr = this;
@@ -376,47 +377,44 @@ public class StandardLispCons extends StandardLispList implements LispCons
   }
 
 
-  /**
-   * Returns a LispInteger containing the length of the list.
-   * Throws an error on a malformed list, and if the length
-   * of the list is greater than *MAX-LIST-LENGTH*.
-   *
-   */
-  public LispValue length()
-  {
-    LispValue ptr = this;
-    long      len = 0;
-    long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;
+	/**
+	 * Returns a LispInteger containing the length of the list.
+	 * Throws an error on a malformed list, and if the length
+	 * of the list is greater than *MAX-LIST-LENGTH*.
+	 *
+	 */
+	@Override
+	public int length()
+	{
+		LispValue ptr = this;
+		int       len = 0;
+		long      maxLength = Lisp.MAX_LIST_LENGTH_VALUE;
 
-    while (ptr != NIL)
-    {
-      ++len;
-      if (len > maxLength)
-      {
-        System.err.println("list is: " + this.car() + ", remainder is: " + car(ptr) + ", " + ptr.second() + ", " + ptr.third());
-        throw new LispValueNotAListException("Encountered a list whose length is greater than " +
+		while (ptr != NIL)
+		{
+			++len;
+			if (len > maxLength)
+			{
+				System.err.println("list is: " + this.car() + ", remainder is: " + car(ptr) + ", " + ptr.second() + ", " + ptr.third());
+				throw new LispValueNotAListException("Encountered a list whose length is greater than " +
                                              maxLength + ".  This is probably an error.  Set *MAX-LIST-LENGTH* to a larger value if necessary.");
-      }
+			}
 
-      if (!(ptr instanceof LispCons))
-      {
-        throw new LispValueNotAListException("An argument to LENGTH");
-      }
-      else
-        ptr = cdr(ptr);
-    }
-    return integer(len);
-  }
+			if (ptr instanceof LispCons)
+				ptr = ((LispCons)ptr).cdr();
+			else
+				throw new LispValueNotAListException("An argument to LENGTH");
+		}
+		return len;
+	}
 
-  public LispValue member(LispValue elt)
-  {
-    if (car().eql(elt) == T)
-    {
-      return this;
-    }
-    else
-      return cdr().member(elt);
-  }
+	public LispValue member(LispValue elt)
+	{
+		if (car().eql(elt) == T)
+			return this;
+		else
+			return cdr().member(elt);
+	}
 
   public LispValue pop()
   {

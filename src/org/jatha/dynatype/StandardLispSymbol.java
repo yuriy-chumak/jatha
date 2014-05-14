@@ -29,6 +29,7 @@ import java.util.HashMap;
 import java.io.*;
 
 import org.jatha.compile.LispCompiler;
+import org.jatha.compile.LispPrimitive;
 import org.jatha.exception.*;
 import org.jatha.machine.SECDMachine;
 import org.jatha.read.*;
@@ -60,17 +61,16 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 	}
 /* ------------------  PRIVATE vars   ------------------------------ */
 
-  // Every LISP symbol has these four components
-  protected  LispValue    f_function;     // Function value
-  protected  LispString   f_name;           // Print name
-  protected  LispValue    f_value;          // Assigned value
-  protected  LispValue    f_plist;          // Property list
-  
-  protected  boolean    f_isExternalInPackage = false;
-  protected  boolean    f_isSpecial = false;  // Special? (dynamically-bound)
-  protected  int        f_specialCount = 0;   // Number of special binding nestings
+	// Every LISP symbol has these three components
+	protected  LispValue    f_function;     // Function value
+	protected  LispString   f_name;         // Print name
+	protected  LispValue    f_value;        // Assigned value
 
-  protected Map f_documentation;
+	protected  boolean    f_isExternalInPackage = false;
+	protected  boolean    f_isSpecial = false;  // Special? (dynamically-bound)
+	protected  int        f_specialCount = 0;   // Number of special binding nestings
+
+	protected Map f_documentation;
 
 /* ------------------  CONSTRUCTORS   ------------------------------ */
 	public StandardLispSymbol(String symbolName)
@@ -78,20 +78,18 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
 		this(string(symbolName));
 	}
 
-  // Only 'name' is required to create a symbol.
-  public StandardLispSymbol(LispString symbolNameString)
-  {
-    f_name       = symbolNameString;
-    f_value      = null;              // Default to UNBOUND
-    f_function   = null;              // Default to UNBOUND
-    f_plist      = NIL;        // Default to NIL
+	// Only 'name' is required to create a symbol.
+	public StandardLispSymbol(LispString symbolNameString)
+	{
+		f_name       = symbolNameString;
+		f_value      = null;              // Default to UNBOUND
+		f_function   = null;              // Default to UNBOUND
 
-    // If the symbol contains lower-case letters, or anything other than
-    // the following set of letters, we need to print OR-bars around it.
+		// If the symbol contains lower-case letters, or anything other than
+		// the following set of letters, we need to print OR-bars around it.
 
-    f_documentation = new HashMap();
-  }
-
+		f_documentation = new HashMap();
+	}
 
 /* ------------------  BASIC (non-LISP) methods   ------------------------------ */
 
@@ -122,14 +120,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
   public void internal_print(PrintStream os)
   {
     os.print(toString());
-  }
-
-  /**
-   * Returns a Java String containing a printed representation of this symbol.
-   */
-  public Object toJava()
-  {
-    return toStringSimple();
   }
 
   /**
@@ -246,6 +236,12 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
       return f_function;
     }
 
+    if (newCode instanceof LispPrimitive) // ??
+    {
+      f_function = newCode;
+      return f_function;
+    }
+    
     // A macro has the symbol :MACRO as the first element.
     if (isMacroCode(newCode))
     {
@@ -256,12 +252,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     // Else, create a new function.
     f_function = new StandardLispFunction(this, newCode);
     return f_function;
-  }
-
-  public LispValue setf_symbol_plist(LispValue newPlist)
-  {
-    f_plist = newPlist;
-    return f_plist;
   }
 
   public LispValue setf_symbol_value(LispValue newValue)
@@ -298,11 +288,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     return f_name;
   }
 
-  public LispValue symbol_plist()
-  {
-    return f_plist;
-  }
-
   public LispValue symbol_value() throws LispException
   {
     if (f_value == null)
@@ -311,25 +296,6 @@ public class StandardLispSymbol extends StandardLispAtom implements LispSymbol
     }
     return f_value;
   }
-
-    public LispValue documentation(final LispValue type) {
-        if(!(type instanceof LispSymbol)) {
-            throw new LispValueNotASymbolException("The second argument to DOCUMENTATION");
-        }
-        final LispValue val = (LispValue)f_documentation.get(type);
-        return (val == null) ? NIL : val;
-    }
-
-    public LispValue setf_documentation(final LispValue type, final LispValue value) {
-        if(!(type instanceof LispSymbol)) {
-            throw new LispValueNotASymbolException("The second argument to SETF-DOCUMENTATION");
-        }
-        if(!(value instanceof LispString) && value != NIL) {
-            throw new LispValueNotAStringException("The third argument to SETF-DOCUMENTATION");
-        }
-        f_documentation.put(type,value);
-        return value;
-    }
 
 	/**
 	 * @param code a Lisp list

@@ -54,6 +54,10 @@ public class LispProcessor
 	{
 		return new StandardLispCons(car, cdr);
 	}
+	public static final LispCons variable(LispValue car, LispValue cdr)
+	{
+		return new StandardLispVariable(car, cdr);
+	}
 	public static final LispList list(LispValue... parts)
 	{
 		LispList result = NIL;
@@ -63,10 +67,30 @@ public class LispProcessor
 	}
 	
 	// constructors
+	public static final LispSymbol symbol(String name)
+	{
+		return new StandardLispSymbol(name);
+	}
+	
 	public static final LispString string(String str)
 	{
 		return new StandardLispString(str);
 	}
+	
+	public static final LispNumber number(long value)
+	{
+		return new StandardLispInteger(value);
+	}
+	public static final LispNumber number(float value)
+	{
+		return new StandardLispReal(value);
+	}
+	public static final LispNumber number(BigInteger value)
+	{
+		return new StandardLispBignum(value);
+	}
+	
+	
 
 	public static final LispInteger integer(Long value)
 	{

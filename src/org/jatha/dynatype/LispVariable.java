@@ -24,38 +24,6 @@
 
 package org.jatha.dynatype;
 
-// @date    Thu Mar 27 13:35:07 1997
-/**
- * An abstract class for the LIST data type.
- *
- * @see LispValue
- * @see LispInteger
- * @see LispReal
- * @author  Micheal S. Hewett    hewett@cs.stanford.edu
- */
-public interface LispList extends LispValue
+public interface LispVariable extends LispCons
 {
-	/**
-	 * Returns the first element of a list.
-	 * CAR of NIL is NIL.
-	 */
-	public LispValue car();
-
-	/**
-	 * Returns all but the first element of a list.
-	 * CDR of NIL is NIL.
-	 */
-	public LispValue cdr();
-	
-	/**
-	 * Append two lists together.  The first list is copied.
-	 * @param otherList
-	 */
-	public LispValue append(LispValue otherList);
-	
-	/**
-	 * Returns the first element of a list.
-	 * Identical to the CAR function.
-	 */
-	public LispValue first();
 }

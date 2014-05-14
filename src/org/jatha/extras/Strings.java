@@ -8,6 +8,7 @@ import org.jatha.compile.LispExtension;
 import org.jatha.compile.LispPrimitive1;
 import org.jatha.compile.LispPrimitive2;
 import org.jatha.compile.LispPrimitiveC;
+import org.jatha.dynatype.LispList;
 import org.jatha.dynatype.LispNumber;
 import org.jatha.dynatype.LispString;
 import org.jatha.dynatype.LispValue;
@@ -42,20 +43,19 @@ public class Strings implements LispExtension
 		compiler.Register(new LispPrimitiveC("CONCATENATE", 1) {
 			// First argument should be 'STRING
 			// Apply concatenate to the next argument.
-			protected LispValue Execute(LispValue args) {
-				LispValue concatType = Lisp.car(args);
+			protected LispValue Execute(LispList args) {
+				LispValue concatType = args.car();
 				if (!concatType.toStringSimple().equalsIgnoreCase("string"))
 					throw new LispUndefinedFunctionException("The first argument to Concatenate (" + concatType + ") must be the symbol STRING. Use 'string.");
-				args = Lisp.cdr(args);
 				
+				args = (LispList)args.cdr();
 				if (args.basic_length() == 0)
 					return string("");
 				
 				StringBuffer buff = new StringBuffer(args.basic_length() * 5);
 
 				Iterator<LispValue> valuesIt = args.iterator();
-				while (valuesIt.hasNext())
-				{
+				while (valuesIt.hasNext()) {
 					LispValue value = valuesIt.next();
 					if (value instanceof LispString)
 						buff.append(value.toStringSimple());

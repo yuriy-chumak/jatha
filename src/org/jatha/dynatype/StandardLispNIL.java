@@ -94,7 +94,7 @@ public class StandardLispNIL extends StandardLispList
   public LispValue     tenth        ()  { return NIL; }
 
   public LispValue     last()                    { return NIL; }
-  public LispValue     length()                  { return integer(0);}
+  public int length() { return 0; }
   public LispValue     member(LispValue elt)     { return NIL; }
   public LispValue     nreverse(LispValue index) { return NIL; }
 
@@ -114,7 +114,6 @@ public class StandardLispNIL extends StandardLispList
 
   public LispString    symbol_name()    { return null;  } // ?
   public LispValue     symbol_package() { return null;  }
-  public LispValue     symbol_plist()   { return this; }
   public LispValue     symbol_value()   { return this; }
 
   public LispValue     subst(LispValue oldValue, LispValue newValue)

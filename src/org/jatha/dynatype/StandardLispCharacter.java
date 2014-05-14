@@ -63,24 +63,11 @@ public class StandardLispCharacter extends StandardLispAtom implements LispChara
   char getValue() { return value; }
 
 
-  /**
-   * Returns a Java Character containing this object.
-   */
-  public Object toJava()
-  {
-    return new Character(value);
-  }
-
   public String toString() { return String.valueOf(value); }
 
   public boolean constantp() { return true; }
 
   // ----- LISP methods  ------------
-
-  public LispValue     characterp ()
-  {
-    return T;
-  }
 
   // contributed by Jean-Pierre Gaillardon, April 2005
   public LispValue eql(LispValue val)

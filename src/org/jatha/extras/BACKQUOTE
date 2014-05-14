@@ -11,13 +11,18 @@
 
 
 (defun backquote:f (expr)
-  (if (null? expr) nil 
-    (if (atom? expr) (list 'quote expr)
-       (if (eq (car expr) :COMMA) (car (cdr expr))  
-         (if (and (cons? (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
-            (list 'append (car (cdr (car expr))) (backquote:f (cdr expr))) 
-         (combine-exprs (backquote:f (car expr)) 
-            (backquote:f (cdr expr)) expr) )))))
+  (if (null? expr)
+      nil 
+  (if (atom? expr)
+      (list 'QUOTE expr)
+  (if (eq (car expr) :COMMA)
+      (car (cdr expr))  
+  (if (and (cons? (car expr)) (eq (car (car expr)) :COMMA-ATSIGN )) 
+      (list 'APPEND (car (cdr (car expr))) (backquote:f (cdr expr))) 
+  (combine-exprs
+      (backquote:f (car expr)) 
+      (backquote:f (cdr expr))
+      expr) )))))
 
 ; todo: hardcode "backquote" as builtin macro
 (defmacro BACKQUOTE (expr)

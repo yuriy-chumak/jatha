@@ -1,8 +1,8 @@
 ;; test for LET primitive
 
-(set 'f 3)
+(setq f 3)
 
-(set 'y
+(setq y
 (let ((x 1)) (progn
   (let ((x 2)) (setq f (+ f x)))
   x

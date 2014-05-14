@@ -59,14 +59,6 @@ public class StandardLispString extends StandardLispAtom implements LispString
   { os.print("\"" + str + "\""); }
 
 
-  /**
-   * Returns a Java String object with the value of this string.
-   */
-  public Object toJava()
-  {
-    return str;
-  }
-
   public String toString() { return "\"" + str + "\""; }
 
   /**
@@ -138,8 +130,10 @@ public class StandardLispString extends StandardLispAtom implements LispString
    */
   public LispValue     last         ()  { return elt(basic_length() - 1); }
 
-  public LispValue length()
-  { return integer(str.length()); }
+	public int length()
+	{
+		return str.length();
+	}
 
   public LispValue     stringp      ()     { return T; }
 

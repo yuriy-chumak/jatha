@@ -53,31 +53,36 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
     return NIL;
   }
 
-  public LispValue elt (LispValue index)
-  {
-    long indexValue = assertInteger(index).getLongValue();
+	public LispValue elt(LispValue index)
+	{
+		long indexValue = assertInteger(index).getLongValue();
     
-    if ((indexValue < 0) || (indexValue > (((LispInteger)this.length()).getLongValue() - 1)))
-	  throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+		if (indexValue < 0)
+			throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+//		if ((indexValue < 0) || (indexValue > (this.length() - 1)))
+//			throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
 
-    // All is okay
-    LispValue element = this;
+		LispValue element = this;
+		for (int i = 0; i < indexValue; ++i) {
+			if (element == NIL)
+				throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+			element = cdr(element);
+		}
+		if (element == NIL)
+			throw new LispIndexOutOfRangeException(String.valueOf(indexValue) + " to ELT");
+		return car(element);
+	}
 
-    for (int i = 0; i < indexValue; ++i)  element = cdr(element);
 
-    return car(element);
-  }
+	@Override
+	public int length()
+	{
+		int count = 0;
+		LispValue ptr = this;
 
-
-  public LispValue length ()
-  {
-    long       count = 0;
-    LispValue  ptr   = this;
-
-    while (ptr != NIL) { ++count; ptr = Lisp.cdr(ptr); }
-
-    return integer(count);
-  }
+		while (ptr != NIL) { ++count; ptr = cdr(ptr); }
+		return count;
+	}
 
   /**
    * If this object is NIL, returns the argument.
@@ -168,10 +173,9 @@ public abstract class StandardLispList extends StandardLispValue  implements Lis
     return new LispConsIterator(this);
   }
 
+	public abstract LispValue car();
+	public abstract LispValue cdr();
 
-  public abstract LispValue car();
-  public abstract LispValue cdr();
-  
-  // todo: remove this
+	// todo: remove this
 	public abstract LispValue append(LispValue otherList);
 }

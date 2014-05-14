@@ -31,12 +31,10 @@ package org.jatha.dynatype;
 
 public interface LispString extends LispAtom
 {
-  /**
-   * Returns a Java string containing this value.
-   */ 
-  public String getValue();
+	/**
+	 * Returns a Java string containing this value.
+	 */ 
+	public String getValue();
 
-  LispValue basic_elt(int n);
-
+	LispValue basic_elt(int n);
 }
-

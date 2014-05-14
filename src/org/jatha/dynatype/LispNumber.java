@@ -52,7 +52,18 @@ public interface LispNumber extends LispAtom
 	 */
 	public double getDoubleValue();
 	public BigInteger getBigIntegerValue();
-	long getLongValue();
+	public long getLongValue();
+
+	/**
+	 * Returns the absolute value of any number, including complex.
+	 * The result is always a real number.
+	 */
+	public LispNumber abs();
+
+	/**
+	 * Return the negative of a number.
+	 */
+	public LispNumber negate();
 
 	/**
 	 * Returns the sum of the object and the object(s) in the argument list.
@@ -78,10 +89,23 @@ public interface LispNumber extends LispAtom
 	 */
 	public LispNumber sub(LispValue args);
 
+	/**
+	 * Calculate the object module to n.
+	 */
+	public LispValue mod(LispValue n);
+
+
+	/**
+	 * Calculate the object raised to the power of n.
+	 */
+	public LispNumber power(LispNumber n);
+
+
   /**
-   * Returns the absolute value of any number, including complex.
-   * The result is always a real number.
+   * Converts a numeric value from degrees to radians.
+   * @return The value in radians.
    */
-  public LispValue abs();
-	
+  public LispValue degreesToRadians();
+
+
 }

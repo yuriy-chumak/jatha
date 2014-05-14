@@ -124,6 +124,38 @@ public class SECDMachine extends LispProcessor
 			machine.C.pop();
 		}
 	};
+	// set the variable value
+	public final static SECDop ST   = new SECDop("ST") {
+		@Override
+		public void Execute(SECDMachine machine) {
+/*			machine.C.pop();
+					
+			machine.S.push(car(machine.C.value()));
+			machine.C.pop();*/
+			LispValue val = machine.S.pop();
+			LispValue sym = machine.S.pop();
+
+			if (sym instanceof LispCons) {   // local variable
+				LispCons ij = (LispCons)sym;
+				LispCons valueList = (LispCons)machine.E.value();
+				LispValue newValue = val;
+		    	
+				nth(ij, valueList).rplaca(newValue);
+			}
+			else
+			if (sym instanceof LispSymbol) {
+				if (sym.specialP())  // special variable
+					machine.special_set(sym, val);
+				else  // global variable
+					sym.setf_symbol_value(val);
+			}
+			else
+				throw new LispValueNotASymbolException(sym);
+
+			machine.S.push(val);
+			machine.C.pop(); // ST
+		}
+	};
 	public final static SECDop LDR   = new SECDop("LDR") {
 		@Override
 		public void Execute(SECDMachine machine) {

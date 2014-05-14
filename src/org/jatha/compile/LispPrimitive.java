@@ -58,16 +58,16 @@ public abstract class LispPrimitive extends StandardLispValue
 	 * gets printed when the instruction appears in a printed list.
 	 */
 	protected String    functionName;
-	protected LispValue functionNameSymbol;
+//	protected LispValue functionNameSymbol;
 
-  /**
-   * The output of this function is printed when the
-   * instruction needs to be printed.
-   */
-  public String toString()
-  {
-    return "#<function " + functionName + " " + parameterCountString() + ">";
-  }
+	/**
+	 * The output of this function is printed when the
+	 * instruction needs to be printed.
+	 */
+	public String toString()
+	{
+		return "#<function " + functionName + " " + parameterCountString() + ">";
+	}
 
 /* ------------------ CONSTRUCTORS    ------------------------------ */
 	/**
@@ -79,27 +79,29 @@ public abstract class LispPrimitive extends StandardLispValue
 	 */
 	public LispPrimitive(String fnName)
 	{
+//		super(fnName);
+		
 		functionName        = fnName;
-		functionNameSymbol  = new StandardLispSymbol(fnName);
+//		functionNameSymbol  = new StandardLispSymbol(fnName);
 //		f_isBuiltin = true;
 	}
 
 	public String    LispFunctionNameString() { return functionName; }
-	public LispValue LispFunctionNameSymbol() { return functionNameSymbol; }
+	public LispValue LispFunctionNameSymbol() { return this; }
 
 	public void internal_princ(PrintStream os) { os.print(toString()); }
 	public void internal_prin1(PrintStream os) { os.print(toString()); }
 	public void internal_print(PrintStream os) { os.print(toString()); }
 
-  /**
-   * This method returns <code>true</code> if
-   * the list of arguments satisfies the length restrictions
-   * posed by the function, and <code>false</code> otherwise.
-   * @see LispPrimitive
-   * @param numberOfArguments  usually the result of args.length()
-   * @return boolean
-   */
-  abstract boolean validArgumentLength(LispValue numberOfArguments);
+	/**
+	 * This method returns <code>true</code> if
+	 * the list of arguments satisfies the length restrictions
+	 * posed by the function, and <code>false</code> otherwise.
+	 * @see LispPrimitive
+	 * @param numberOfArguments  usually the result of args.length()
+	 * @return boolean
+	 */
+	abstract boolean validArgumentLength(int numberOfArguments);
 
 
   /**

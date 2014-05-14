@@ -131,28 +131,6 @@ public abstract class StandardLispValue extends LispProcessor
 
 
   /**
-   * Returns a Java equivalent of the object.
-   * For example, the number 3 is returned as an instance of new Integer(3).
-   * If it can't be converted to a more useful Java object, it returns a String representation.
-   */
-  public Object toJava()
-  {
-    return toStringSimple();
-  }
-
-
-  /**
-   * Returns a Java equivalent of the object.
-   * For example, the number 3 is returned as an instance of new Integer(3).
-   * If it can't be converted to a more useful Java object, it returns a String representation.
-   * You can optionally send in a hint as to what type is preferred.
-   */
-  public Object toJava(String typeHint)
-  {
-    return toStringSimple();
-  }
-
-  /**
    * Returns the Lisp value as a Collection.  Most useful
    * for lists, which are turned into Collections.
    * But also works for single values.
@@ -360,8 +338,6 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     assoc        (LispValue index)
   { throw new LispValueNotAListException("The second argument to ASSOC"); }
 
-  public LispValue     bignump      ()  { return NIL; }
-
   public boolean boundp       ()
   { throw new LispValueNotASymbolException("The argument to BOUNDP");  }
 
@@ -376,8 +352,6 @@ public abstract class StandardLispValue extends LispProcessor
 
   public LispValue     ceiling      ()
   { throw new LispValueNotANumberException("The first argument to CEILING"); }
-
-  public LispValue     characterp   ()  { return NIL; }
 
   public LispValue     clrhash      ()
   { throw new LispValueNotAHashtableException("The argument to CLRHASH"); }
@@ -409,15 +383,6 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue csc()
   {
     throw new LispValueNotANumberException("The first argument to CSC");
-  }
-
-  /**
-   * Converts a numeric value from degrees to radians.
-   * @return The value in radians.
-   */
-  public LispValue degreesToRadians()
-  {
-    throw new LispValueNotANumberException("The argument to DegreesToRadians");
   }
 
   public LispValue     eighth       ()
@@ -455,18 +420,8 @@ public abstract class StandardLispValue extends LispProcessor
       return NIL;
   }
 
-  /**
-   * Calculate the object raised to the power of n.
-   */
-  public LispValue expt(LispValue n)
-  {
-    throw new LispValueNotANumberException("The argument to EXPT");
-  }
-
   public boolean fboundp      ()
   { throw new LispValueNotASymbolException("The argument to FBOUNDP");  }
-
-  public LispValue floatp()  { return NIL; }
 
   public LispValue     fifth        ()
   { throw new LispValueNotASequenceException("The first argument to FIFTH"); }
@@ -512,8 +467,10 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     last         ()
   { throw new LispValueNotAListException("The argument to LAST");  }
 
-  public LispValue     length       ()
-  { throw new LispValueNotASequenceException("The argument to LENGTH");  }
+	public int length()
+	{
+		throw new LispValueNotASequenceException("The argument to LENGTH");
+	}
 
   public LispValue     max          (LispValue args)
   { throw new LispValueNotANumberException("One of the arguments to MAX"); }
@@ -524,19 +481,8 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     member       (LispValue elt)
   { throw new LispValueNotAListException("The second argument to MEMBER");  }
 
-  /**
-   * Calculate the object raised to the power of n.
-   */
-  public LispValue mod(LispValue n)
-  {
-    throw new LispValueNotANumberException("The argument to MOD");
-  }
-
   public LispValue     nconc        (LispValue arg)
   { throw new LispValueNotAListException("The argument to NCONC");  }
-
-  public LispValue     negate       ()
-  { throw new LispValueNotANumberException("The argument to NEGATE");  }
 
   /**
    * Returns NIL if eql returns T, and vice versa.
@@ -682,9 +628,6 @@ public abstract class StandardLispValue extends LispProcessor
 
   public LispValue     setf_symbol_function(LispValue newFunction)
   { throw new LispValueNotASymbolException("The argument to SETF-SYMBOL-FUNCTION"); }
-
-  public LispValue setf_symbol_plist(LispValue newPlist)
-  { throw new LispValueNotASymbolException("The argument to SETF-SYMBOL-PLIST"); }
 
   public LispValue setf_symbol_value(LispValue newValue)
   { throw new LispValueNotASymbolException("The argument to SETF-SYMBOL-VALUE"); }
@@ -945,9 +888,6 @@ public abstract class StandardLispValue extends LispProcessor
   public LispValue     symbol_package()
   { throw new LispValueNotASymbolException("The argument to SYMBOL_PACKAGE");  }
 
-  public LispValue     symbol_plist()
-  { throw new LispValueNotASymbolException("The argument to SYMBOL_PLIST");  }
-
   /**
    * Tangent trigonometric function.  Argument is in radians.
    */
@@ -998,13 +938,6 @@ public abstract class StandardLispValue extends LispProcessor
 
   public LispValue equalNumeric(LispValue arg)
   { throw new LispValueNotANumberException("An argument to = (numeric equal)"); }
-
-    public LispValue documentation(final LispValue type) {
-        throw new LispValueNotASymbolException("The first argument to DOCUMENTATION");
-    }
-    public LispValue setf_documentation(final LispValue type, final LispValue value) {
-        throw new LispValueNotASymbolException("The first argument to SETF-DOCUMENTATION");
-    }
 
     public void showStackTrace()
     {

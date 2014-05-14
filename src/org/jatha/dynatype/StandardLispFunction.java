@@ -70,7 +70,7 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
 	protected String toStringNamed(String name)
 	{
 		return "#<" + name + " " +
-				(f_symbol != null ? f_symbol.symbol_package().toString() : "NIL")
+				(f_symbol != null ? "" : "NIL")
 	        	+ " " +
 	        	(f_symbol != null ? f_symbol.toStringSimple() : "anonymous")
 	        	+ ">";
@@ -82,17 +82,6 @@ public class StandardLispFunction extends StandardLispValue implements LispFunct
   public void    internal_princ(PrintStream os) { os.print(toString()); }
   public void    internal_prin1(PrintStream os) { os.print(toString()); }
   public void    internal_print(PrintStream os) { os.print(toString()); }
-
-  /**
-   * Returns a Java HashMap containing the contents of this HashTable.
-   */
-  public Object toJava()
-  {
-    if (f_code != null)
-      return ((LispCons)f_code.toJava());
-    else
-      return null;
-  }
 
   /**
    * Gets the code of the function.
